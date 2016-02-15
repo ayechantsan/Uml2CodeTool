@@ -94,6 +94,10 @@ void UiEventDispatcher::generateCode()
     mClassDiagram->applyVisitor(mCodeGenerator);
     uDebugPrinter::printText("done generating code");
 }
+void UiEventDispatcher::saveDiagram()
+{
+    uDebugPrinter::printText("in the save function");
+}
 
 int UiEventDispatcher::getDiagramSize()
 {

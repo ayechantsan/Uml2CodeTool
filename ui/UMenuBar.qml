@@ -16,6 +16,12 @@ MenuBar {
         MenuItem {
             text: "Close"
         }
+        MenuItem {
+            text: "Save"
+            onTriggered: {
+                dispatcher.saveDiagram();
+            }
+        }
     }
 
     Menu {
@@ -45,6 +51,7 @@ MenuBar {
                 win.show();
             }
         }
+
     }
 
     Menu {

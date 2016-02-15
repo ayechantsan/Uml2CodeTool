@@ -81,9 +81,28 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
     myfile << getFileHeader(name, author, date, lineComment);
     myfile << content;
     myfile.close();
+    saveDiagram(name, author, date, content, lineComment, path);
+
     return true;
 }
-
+//method to save the diagram to a file using JSON objects to represent them
+bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
+{
+    ofstream myfile;
+    const string & temp = "/tmp/";
+    myfile.open(temp+name.c_str() + ".uct");
+    if (!myfile.is_open())
+        return false;
+//this will work but i need it do work a bit differently than this because i only want one file.
+    myfile << "\{\"classes\" : [\n";
+    myfile << "{\"name\":\"" +name + "\",\n";
+    myfile << "\"author\":\"" + author + "\",\n";
+    myfile << "\"date\":\"" + date + "\",\n";
+    myfile << "\"content\":\"" + content + "\",\n";
+    myfile << "\"line Comments\":\"" + lineComment + "\"}}";
+    myfile.close();
+    return true;
+}
 string uCodeGenerationVisitor::getFileHeader(std::string const& fileName, std::string const& author, std::string const& date, std::string const& lineComment)
 {
     string header = "";
