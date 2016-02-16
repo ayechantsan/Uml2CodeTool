@@ -40,6 +40,7 @@ public:
     bool hasParent() const;//to check whether it is a childClass or not
 
     virtual void accept(uVisitor * visitor); //Accepts the code generation visitor
+    virtual void acceptSave(uVisitor * visitor); //uses the code generator to create a save file for uCode.
 
     //Overload of some operators
     inline bool operator==(const uInheritable &class1) const;

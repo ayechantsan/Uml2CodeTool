@@ -34,6 +34,10 @@ void uInheritable::accept(uVisitor *visitor)
 
 }
 
+void uInheritable::acceptSave(uVisitor *visitor)
+{
+
+}
 std::vector<uMethod*> uInheritable::getMethods() const
 {
     return mMethods;

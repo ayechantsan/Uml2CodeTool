@@ -89,6 +89,15 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
         (*iter)->accept(visitor);
     }
 }
+void uClassDiagram::applySaveVisitor(uVisitor *visitor)
+{
+    if (visitor == NULL)
+        uDebugPrinter::printText("NUll bro");
+    for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+        uDebugPrinter::printClass(*iter);
+        (*iter)->acceptSave(visitor);
+    }
+}
 
 uInheritable *uClassDiagram::get(int index) const
 {

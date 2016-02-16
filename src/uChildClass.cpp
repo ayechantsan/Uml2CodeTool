@@ -30,3 +30,7 @@ void uChildClass::accept(uVisitor *visitor)
 {
     visitor->visit(this);
 }
+void uChildClass::acceptSave(uVisitor *visitor)
+{
+    visitor->visitSave(this);
+}

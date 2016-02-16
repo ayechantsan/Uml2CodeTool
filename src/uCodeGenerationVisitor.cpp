@@ -70,6 +70,61 @@ void uCodeGenerationVisitor::visit(uInterface *interfaceClass)
     createFile(interfaceClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(interfaceClass), mLanguage->getLineComment());
     cout << "    " << interfaceClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
+string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const& base)
+{
+
+        stringstream fileContent;
+
+        // add imports
+        // TODO
+
+        // class name + inheritance
+        if (base != "")
+            fileContent << getAccessString(aClass->getAccess()) << " class " << aClass->getName() << " implements " << base << "{" << endl << endl;
+        else
+            fileContent << getAccessString(aClass->getAccess()) << " class " << aClass->getName() << " {" << endl << endl;
+
+        // attributes
+        TParameters attributes = aClass->getAttributes();
+        for (TParametersIter iter = attributes.begin(); iter < attributes.end(); ++iter) {
+            //fileContent << "\t" << createAttributeDeclaration(*iter) << endl << endl;
+            cout << *iter << " ";
+        }
+
+        // methods
+        TMethods methods = aClass->getMethods();
+        for (TMethodsIter iter = methods.begin(); iter < methods.end(); ++iter) {
+            //fileContent << "\t" << createMethodDeclaration(*iter) << endl;
+            cout << *iter << " ";
+        }
+
+        fileContent << "};" << endl;
+
+        return fileContent.str();
+
+}
+
+//save visit functions
+void uCodeGenerationVisitor::visitSave(uChildClass *childClass)
+{
+
+    saveDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()));
+    cout << "    " << childClass->getName()  << endl;
+}
+
+void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass)
+{
+
+    saveDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass));
+    cout << "    " << baseClass->getName()  << endl;
+}
+
+void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
+{
+
+    saveDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass));
+    cout << "    " << interfaceClass->getName()  << endl;
+}
 
 bool uCodeGenerationVisitor::createFile(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
 {
@@ -81,12 +136,12 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
     myfile << getFileHeader(name, author, date, lineComment);
     myfile << content;
     myfile.close();
-    saveDiagram(name, author, date, content, lineComment, path);
+    //saveDiagram(name, author, date, content, lineComment, path);
 
     return true;
 }
 //method to save the diagram to a file using JSON objects to represent them
-bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
+bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
 {
     ofstream myfile;
     const string & temp = "/tmp/";
@@ -98,8 +153,7 @@ bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& autho
     myfile << "{\"name\":\"" +name + "\",\n";
     myfile << "\"author\":\"" + author + "\",\n";
     myfile << "\"date\":\"" + date + "\",\n";
-    myfile << "\"content\":\"" + content + "\",\n";
-    myfile << "\"line Comments\":\"" + lineComment + "\"}}";
+    myfile << "\"content\":\"" + content + "\"}}";
     myfile.close();
     return true;
 }

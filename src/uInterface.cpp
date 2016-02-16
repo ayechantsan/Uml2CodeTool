@@ -15,3 +15,7 @@ void uInterface::accept(uVisitor *visitor)
 {
     visitor->visit(this);
 }
+void uInterface::acceptSave(uVisitor *visitor)
+{
+    visitor->visitSave(this);
+}
