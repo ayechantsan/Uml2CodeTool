@@ -9,7 +9,7 @@
 using namespace std;
 
 /**
- * @brief uCodeGenerationVisitor::uCodeGenerationVisitor, the constructor stablishes the Author and the Date. This could be changed with
+ * @brief uCodeGenerationVisitor::uCodeGenerationVisitor, the constructor establishes the Author and the Date. This could be changed with
  * "setFileAttributes" but it is common for all the classes.
  */
 
@@ -70,36 +70,59 @@ void uCodeGenerationVisitor::visit(uInterface *interfaceClass)
     createFile(interfaceClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(interfaceClass), mLanguage->getLineComment());
     cout << "    " << interfaceClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
+string uCodeGenerationVisitor::createAttributeString(uParameter * attribute)
+{
+    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getType() + " " + attribute->getName() + ";";
+    return attributeString;
+}
+std::string uCodeGenerationVisitor::createMethodString(uMethod * method)
+{
+    string methodStr = "{\"method\" : \"";
+    TParameters params = method->getParameters();
+    methodStr += getAccessString(method->getAccess()) + " " + method->getReturnType() + " " + method->getName() + "\"},\n";
+    methodStr += "\t{\"parameters\" : \"";
+    if (params.size() > 0) {
+        for (TParametersIter iter = params.begin(); iter < params.end()-1; ++iter) {
+            methodStr += (*iter)->getType() + " " + (*iter)->getName() + ", ";
+        }
+        methodStr += params[params.size()-1]->getType() + " " + params[params.size()-1]->getName();
+    }
+//    methodStr += ") \n\t{\n\t\t// TODO\n\t}\n\n";
+
+    return methodStr + "}\n";
+}
 string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const& base)
 {
 
         stringstream fileContent;
-
-        // add imports
-        // TODO
-
-        // class name + inheritance
-        if (base != "")
-            fileContent << getAccessString(aClass->getAccess()) << " class " << aClass->getName() << " implements " << base << "{" << endl << endl;
-        else
-            fileContent << getAccessString(aClass->getAccess()) << " class " << aClass->getName() << " {" << endl << endl;
-
-        // attributes
+//iterate through all the attributes associated with the current class and retrun the parameter and methods in a string
         TParameters attributes = aClass->getAttributes();
+        fileContent << "\t{\"attributes\":[" << endl;
         for (TParametersIter iter = attributes.begin(); iter < attributes.end(); ++iter) {
-            //fileContent << "\t" << createAttributeDeclaration(*iter) << endl << endl;
-            cout << *iter << " ";
+            if (iter < attributes.end()-1)
+            {
+                fileContent << "\t\t{\"attribute\" : \"" << createAttributeString(*iter) << "\"}," << endl;
+            }
+            else
+            {
+                fileContent << "\t\t{\"attribute\" : \"" << createAttributeString(*iter) << "\"}" << endl;
+            }
         }
-
+        fileContent << "\t\t]},\n \t{\"methods\" : [" << endl;
         // methods
         TMethods methods = aClass->getMethods();
         for (TMethodsIter iter = methods.begin(); iter < methods.end(); ++iter) {
-            //fileContent << "\t" << createMethodDeclaration(*iter) << endl;
+            if (iter < methods.end()-1)
+            {
+                fileContent << "\t\t" << createMethodString(*iter)  << endl;
+            }
+            else
+            {
+                fileContent << "\t\t" << createMethodString(*iter) << endl;
+            }
             cout << *iter << " ";
         }
-
-        fileContent << "};" << endl;
-
+        fileContent << "\t]}";
         return fileContent.str();
 
 }
@@ -145,15 +168,15 @@ bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& autho
 {
     ofstream myfile;
     const string & temp = "/tmp/";
-    myfile.open(temp+name.c_str() + ".uct");
+    myfile.open(temp+name.c_str() + ".uct", ios::app);
     if (!myfile.is_open())
         return false;
 //this will work but i need it do work a bit differently than this because i only want one file.
     myfile << "\{\"classes\" : [\n";
-    myfile << "{\"name\":\"" +name + "\",\n";
-    myfile << "\"author\":\"" + author + "\",\n";
-    myfile << "\"date\":\"" + date + "\",\n";
-    myfile << "\"content\":\"" + content + "\"}}";
+    myfile << "\t{\"name\":\"" +name + "\"},\n";
+    myfile << "\t{\"author\":\"" + author + "\"},\n";
+    myfile << "\t{\"date\":\"" + date + "\"},\n";
+    myfile << "\t{\"content\": " + content + "}\n";
     myfile.close();
     return true;
 }
