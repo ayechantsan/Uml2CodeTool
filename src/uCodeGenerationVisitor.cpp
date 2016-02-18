@@ -127,7 +127,7 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
 
 }
 
-//save visit functions
+//save visit functions one for each type of class that could be visited.
 void uCodeGenerationVisitor::visitSave(uChildClass *childClass)
 {
 
@@ -168,7 +168,9 @@ bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& autho
 {
     ofstream myfile;
     const string & temp = "/tmp/";
-    myfile.open(temp+name.c_str() + ".uct", ios::app);
+//    myfile.open(temp+name.c_str() + ".uct", ios::app);
+    myfile.open("/tmp/current.uct", ios::app);
+
     if (!myfile.is_open())
         return false;
 //this will work but i need it do work a bit differently than this because i only want one file.
