@@ -94,6 +94,8 @@ void UiEventDispatcher::generateCode()
     mClassDiagram->applyVisitor(mCodeGenerator);
     uDebugPrinter::printText("done generating code");
 }
+//this is the function called by the eventDispatcher to call the mClassDiagram->applySaveVisitor to save the
+//diagram to a text file in json format.
 void UiEventDispatcher::saveDiagram()
 {
     uDebugPrinter::printText("in the save function");

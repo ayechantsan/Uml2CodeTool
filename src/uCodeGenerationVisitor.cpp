@@ -159,7 +159,6 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
     myfile << getFileHeader(name, author, date, lineComment);
     myfile << content;
     myfile.close();
-    //saveDiagram(name, author, date, content, lineComment, path);
 
     return true;
 }
