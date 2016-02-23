@@ -168,7 +168,7 @@ bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& autho
     ofstream myfile;
     const string & temp = "/tmp/";
 //    myfile.open(temp+name.c_str() + ".uct", ios::app);
-    myfile.open("/tmp/current.uct", ios::app);
+    myfile.open("/tmp/current.uct", ios::trunc);
 
     if (!myfile.is_open())
         return false;

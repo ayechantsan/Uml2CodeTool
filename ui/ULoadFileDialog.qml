@@ -19,10 +19,26 @@ ApplicationWindow {
             tooltip: "load file"
             onClicked:
             {
-
+                close()
             }
         }
 
+
+        FileDialog {
+            id: fileDialog
+            title: "Please choose a file"
+            folder: shortcuts.home
+            onAccepted: {
+                console.log("You chose: " + fileDialog.fileUrls)
+                dispatcher.loadDiagram(fileDialog.fileUrl);
+                close()
+            }
+            onRejected: {
+                console.log("Canceled")
+               close()
+            }
+            Component.onCompleted: visible = true
+        }
         Label {
             id: label
             x: 36

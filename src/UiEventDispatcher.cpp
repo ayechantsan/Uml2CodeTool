@@ -5,8 +5,10 @@
 #include "uInterfaceButton.h"
 #include "uChildButton.h"
 #include "uStringConverter.h"
-
-
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <regex>
 
 using namespace std;
 
@@ -101,6 +103,55 @@ void UiEventDispatcher::saveDiagram()
     uDebugPrinter::printText("in the save function");
     mCodeGenerator->setFileAttributes("","");
     mClassDiagram->applySaveVisitor(mCodeGenerator);
+}
+//this method will load up one of our .uct files and use the uClassDiagram to add classes to the mClasses stack
+void UiEventDispatcher::loadDiagram(QString url)
+{
+    uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
+    string fileLocation = url.toStdString();
+    std::smatch match;
+    std::regex reg ("\\b(file://)([^ ]*)");
+    string location;
+    int i = 0;
+    //this is gross and needs to be fixed, but it does do what i need it to.
+    if (std::regex_search(fileLocation, match, reg))
+    {
+        for (auto x:match)
+        {
+            uDebugPrinter::printText(x);
+       // uDebugPrinter::printText("\n");
+            if (i == 2)
+            {
+                location = x;
+            }
+            i++;
+    }
+           // location = match.str();
+        fileLocation = match.suffix().str();
+
+    }
+    uDebugPrinter::printText("location: " + location);
+     uDebugPrinter::printText("fileLocation: " + fileLocation);
+    ifstream infile;
+      infile.open(location);
+      string line;
+        if (infile.is_open())
+        {
+//TODO this needs to do more than print out but going to commit now.
+            while ( getline (infile, line))
+          {
+            uDebugPrinter::printText( line +'\n');
+
+
+
+          }
+          infile.close();
+        }
+        else
+       uDebugPrinter::printText("Unable to open file");
+
+
+
 }
 
 int UiEventDispatcher::getDiagramSize()
