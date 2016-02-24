@@ -22,6 +22,15 @@ UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 
 void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes)
 {
+    uDebugPrinter::printText("------input text--------");
+
+    uDebugPrinter::printText(name.toStdString());
+    uDebugPrinter::printText(parent.toStdString());
+    uDebugPrinter::printText(methods.toStdString());
+    uDebugPrinter::printText(attributes.toStdString());
+
+
+
     // convert method string to uMethod objects
     TMethods methodObjects = uStringConverter::parseMethods(methods.toStdString());
 
@@ -104,7 +113,7 @@ void UiEventDispatcher::saveDiagram()
     mCodeGenerator->setFileAttributes("","");
     mClassDiagram->applySaveVisitor(mCodeGenerator);
 }
-//this method will load up one of our .uct files and use the uClassDiagram to add classes to the mClasses stack
+//this method will load up one of our .uct files and use the uEventDispatcher::creatClass() to add classes to the mClasses stack
 void UiEventDispatcher::loadDiagram(QString url)
 {
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
@@ -113,23 +122,11 @@ void UiEventDispatcher::loadDiagram(QString url)
     std::smatch match;
     std::regex reg ("\\b(file://)([^ ]*)");
     string location;
-    int i = 0;
-    //this is gross and needs to be fixed, but it does do what i need it to.
+    //this searches for file:/ and returns what follows it which is the path to the file selected.
     if (std::regex_search(fileLocation, match, reg))
     {
-        for (auto x:match)
-        {
-
-        uDebugPrinter::printText("x: " + x.str() + " i: " + to_string(i));
-            if (i == 2)
-            {
-                location = x;
-            }
-            i++;
-        }
-           // location = match.str();
-        fileLocation = match.suffix().str();
-
+        //this gives me the string after what i was looking for which was "file:/".
+        location = match[2];
     }
     uDebugPrinter::printText("location: " + location);
      uDebugPrinter::printText("fileLocation: " + fileLocation);
@@ -143,14 +140,11 @@ void UiEventDispatcher::loadDiagram(QString url)
           {
             //uDebugPrinter::printText( line );
             fileContent += line + "\n";
-            //so i guess here we need to
-            Ui
           }
           infile.close();
         }
         else uDebugPrinter::printText("Unable to open file");
-
-
+        //not sure where to put this function that will
         uDebugPrinter::printText(fileContent);
 }
 
