@@ -118,6 +118,7 @@ void UiEventDispatcher::loadDiagram(QString url)
 {
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
+    QString classInfo[4];
     string fileContent;
     std::smatch match;
     std::regex reg ("\\b(file://)([^ ]*)");
@@ -133,19 +134,25 @@ void UiEventDispatcher::loadDiagram(QString url)
     ifstream infile;
       infile.open(location);
       string line;
+      int i = 0;
         if (infile.is_open())
         {
            //while there is file to read we are going to add to file Content to then parse and get classes
             while ( getline (infile, line))
           {
-            //uDebugPrinter::printText( line );
+
+                classInfo[i] = QString::fromStdString(line);
+                //uDebugPrinter::printText( line );
             fileContent += line + "\n";
+            i++;
           }
           infile.close();
         }
         else uDebugPrinter::printText("Unable to open file");
         //not sure where to put this function that will
         uDebugPrinter::printText(fileContent);
+        UiEventDispatcher::createClass(classInfo[0], "", classInfo[1], classInfo[2]);
+
 }
 
 int UiEventDispatcher::getDiagramSize()

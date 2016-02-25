@@ -3,6 +3,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.0
 
 ColumnLayout {
     id: classPanel
@@ -150,6 +151,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: 10
+
         Button {
             StyledText {
                 text: "Create"
@@ -236,6 +238,49 @@ ColumnLayout {
             }
 
         }
+        Button {
+            id: load
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            text: qsTr("load")
+            tooltip: "click to load file"
+            onClicked:
+            {
+
+                fileDialog.visible = true
+
+            }
+
+            FileDialog {
+                id: fileDialog
+                title: "Please choose a file"
+                folder: shortcuts.home
+                onAccepted: {
+                    console.log("You chose: " + fileDialog.fileUrls)
+                    dispatcher.loadDiagram(fileDialog.fileUrl)
+                    gridLayout.addClass(0,0, "dude")
+                    close()
+                }
+                onRejected: {
+                    console.log("Canceled")
+                   close()
+                }
+                Component.onCompleted: visible = false
+            }
+        }
+        Button {
+            id: repaint
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            text: qsTr("draw")
+            tooltip: "click to draw"
+            onClicked:
+            {
+
+                drawingCanvas.requestPaint()
+
+            }
+}
     }
 
     function clearTextFields() {

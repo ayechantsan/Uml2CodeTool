@@ -15,30 +15,33 @@ ApplicationWindow {
             id: load
             x: 28
             y: 307
-            text: qsTr("Button")
+            text: qsTr("Click to draw")
             tooltip: "load file"
             onClicked:
             {
-                close()
+
+                fileDialog.visible = true
+                drawingCanvas.requestPaint()
+            }
+
+            FileDialog {
+                id: fileDialog
+                title: "Please choose a file"
+                folder: shortcuts.home
+                onAccepted: {
+                    console.log("You chose: " + fileDialog.fileUrls)
+                    dispatcher.loadDiagram(fileDialog.fileUrl);
+                    close()
+                }
+                onRejected: {
+                    console.log("Canceled")
+                   close()
+                }
+                Component.onCompleted: visible = false
             }
         }
 
 
-        FileDialog {
-            id: fileDialog
-            title: "Please choose a file"
-            folder: shortcuts.home
-            onAccepted: {
-                console.log("You chose: " + fileDialog.fileUrls)
-                dispatcher.loadDiagram(fileDialog.fileUrl);
-                close()
-            }
-            onRejected: {
-                console.log("Canceled")
-               close()
-            }
-            Component.onCompleted: visible = true
-        }
         Label {
             id: label
             x: 36

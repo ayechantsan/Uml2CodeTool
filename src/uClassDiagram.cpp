@@ -22,6 +22,8 @@ void uClassDiagram::addClass(uInheritable *uClass)
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
     mClasses.push_back(uClass);
+    uDebugPrinter::printText("class loaded from text");
+    uDebugPrinter::printClass(uClass);
 }
 
 void uClassDiagram::removeClass(uInheritable *uClass)
