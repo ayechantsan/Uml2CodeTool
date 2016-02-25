@@ -257,8 +257,9 @@ ColumnLayout {
                 folder: shortcuts.home
                 onAccepted: {
                     console.log("You chose: " + fileDialog.fileUrls)
-                    dispatcher.loadDiagram(fileDialog.fileUrl)
-                    gridLayout.addClass(0,0, "dude")
+                   var words =  dispatcher.loadDiagram(fileDialog.fileUrl)
+                    console.log("words: "+ words)
+                    gridLayout.addClass(0,0, words)
                     close()
                 }
                 onRejected: {

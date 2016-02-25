@@ -22,12 +22,12 @@ UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 
 void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes)
 {
-    uDebugPrinter::printText("------input text--------");
+//    uDebugPrinter::printText("------input text--------");
 
-    uDebugPrinter::printText(name.toStdString());
-    uDebugPrinter::printText(parent.toStdString());
-    uDebugPrinter::printText(methods.toStdString());
-    uDebugPrinter::printText(attributes.toStdString());
+//    uDebugPrinter::printText(name.toStdString());
+//    uDebugPrinter::printText(parent.toStdString());
+//    uDebugPrinter::printText(methods.toStdString());
+//    uDebugPrinter::printText(attributes.toStdString());
 
 
 
@@ -114,7 +114,7 @@ void UiEventDispatcher::saveDiagram()
     mClassDiagram->applySaveVisitor(mCodeGenerator);
 }
 //this method will load up one of our .uct files and use the uEventDispatcher::creatClass() to add classes to the mClasses stack
-void UiEventDispatcher::loadDiagram(QString url)
+QString UiEventDispatcher::loadDiagram(QString url)
 {
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
@@ -129,8 +129,8 @@ void UiEventDispatcher::loadDiagram(QString url)
         //this gives me the string after what i was looking for which was "file:/".
         location = match[2];
     }
-    uDebugPrinter::printText("location: " + location);
-     uDebugPrinter::printText("fileLocation: " + fileLocation);
+//    uDebugPrinter::printText("location: " + location);
+//     uDebugPrinter::printText("fileLocation: " + fileLocation);
     ifstream infile;
       infile.open(location);
       string line;
@@ -150,9 +150,9 @@ void UiEventDispatcher::loadDiagram(QString url)
         }
         else uDebugPrinter::printText("Unable to open file");
         //not sure where to put this function that will
-        uDebugPrinter::printText(fileContent);
+        //uDebugPrinter::printText(fileContent);
         UiEventDispatcher::createClass(classInfo[0], "", classInfo[1], classInfo[2]);
-
+        return classInfo[0];
 }
 
 int UiEventDispatcher::getDiagramSize()
