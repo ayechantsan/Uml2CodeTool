@@ -11,7 +11,7 @@
 #include <regex>
 #include "json.hpp"
 using namespace std;
-using json = nlohmann::json;
+
 
 UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 {
