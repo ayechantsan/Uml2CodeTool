@@ -242,7 +242,9 @@ ColumnLayout {
             id: load
             Layout.fillHeight: true
             Layout.fillWidth: true
-            text: qsTr("load")
+            StyledText {
+                text: "Load"
+            }
             tooltip: "click to load file"
             onClicked:
             {
@@ -260,6 +262,7 @@ ColumnLayout {
                    var words =  dispatcher.loadDiagram(fileDialog.fileUrl)
                     console.log("words: "+ words)
                     gridLayout.addClass(0,0, words)
+                    gridLayout.addClass(0,1, "time")
                     close()
                 }
                 onRejected: {
@@ -273,7 +276,9 @@ ColumnLayout {
             id: repaint
             Layout.fillHeight: true
             Layout.fillWidth: true
-            text: qsTr("draw")
+            StyledText {
+                text: "ReDraw"
+            }
             tooltip: "click to draw"
             onClicked:
             {

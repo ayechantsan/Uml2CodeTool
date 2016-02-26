@@ -9,9 +9,9 @@
 #include <fstream>
 #include <string>
 #include <regex>
-
+#include "json.hpp"
 using namespace std;
-
+using json = nlohmann::json;
 
 UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 {
@@ -118,9 +118,10 @@ QString UiEventDispatcher::loadDiagram(QString url)
 {
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
-    QString classInfo[4];
+    QString classInfo[10][4];
     string fileContent;
     std::smatch match;
+    std::smatch ifMatch;
     std::regex reg ("\\b(file://)([^ ]*)");
     string location;
     //this searches for file:/ and returns what follows it which is the path to the file selected.
@@ -131,28 +132,66 @@ QString UiEventDispatcher::loadDiagram(QString url)
     }
 //    uDebugPrinter::printText("location: " + location);
 //     uDebugPrinter::printText("fileLocation: " + fileLocation);
+
+    regex nameReg("\"name\"\\s*:");
+    regex methodsReg("\"methods\"\\s*:");
+    regex methodReg("\"method\"\\s*:");
+    regex wordsReg("\"([a-z]+)\"");
+
+    regex anyReg("\"([\S]+)\"");
     ifstream infile;
       infile.open(location);
       string line;
       int i = 0;
+      int j = 0;
         if (infile.is_open())
         {
            //while there is file to read we are going to add to file Content to then parse and get classes
             while ( getline (infile, line))
           {
-
-                classInfo[i] = QString::fromStdString(line);
-                //uDebugPrinter::printText( line );
-            fileContent += line + "\n";
-            i++;
+                if (line == "")
+                {
+                    i = 0;
+                    j++;
+                }
+                else
+                {
+                    classInfo[j][i] = QString::fromStdString(line);
+                    //uDebugPrinter::printText( line );
+                    fileContent += line + "\n";
+                    i++;
+                }
           }
           infile.close();
         }
         else uDebugPrinter::printText("Unable to open file");
+        string nameMatchStr;
+        if (std::regex_search(fileContent, match, nameReg))
+        {
+            uDebugPrinter::printText("yo mang : " + match.suffix().str());
+
+            nameMatchStr = match.suffix().str();
+        }
+
+
+        string methodMatchStr;
+        if (std::regex_search(nameMatchStr, ifMatch, wordsReg))
+        {
+            uDebugPrinter::printText("name: " + ifMatch.str());
+            classInfo[0][0] = QString::fromStdString(ifMatch.str());
+            methodMatchStr = ifMatch.str();
+        }
+        string paraMatchStr;
+        if (regex_search(methodMatchStr, match, anyReg))
+        {
+            uDebugPrinter::printText("one more: " + match.str());
+        }
+
         //not sure where to put this function that will
         //uDebugPrinter::printText(fileContent);
-        UiEventDispatcher::createClass(classInfo[0], "", classInfo[1], classInfo[2]);
-        return classInfo[0];
+        UiEventDispatcher::createClass(classInfo[0][0], "", classInfo[0][1], classInfo[0][2]);
+        UiEventDispatcher::createClass(classInfo[1][0], "", classInfo[1][1], classInfo[1][2]);
+        return classInfo[0][0];
 }
 
 int UiEventDispatcher::getDiagramSize()
