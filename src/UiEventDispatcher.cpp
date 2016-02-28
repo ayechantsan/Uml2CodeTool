@@ -117,10 +117,8 @@ QString UiEventDispatcher::loadDiagram(QString url)
 
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
-    QString classInfo[10][4];
     string fileContent;
     std::smatch match;
-
     std::regex reg ("\\b(file://)([^ ]*)");
     string location;
     //this searches for file:/ and returns what follows it which is the path to the file selected.
@@ -130,8 +128,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
         location = match[2];
     }
     //regular exprestion to search for things in the file taht wa
-
-
     regex anyReg("\"(.*?)\"");
 
     ifstream infile;
@@ -144,18 +140,7 @@ QString UiEventDispatcher::loadDiagram(QString url)
            //while there is file to read we are going to add to file Content to then parse and get classes
             while ( getline (infile, line))
           {
-                if (line == "")
-                {
-                    i = 0;
-                    j++;
-                }
-                else
-                {
-                    classInfo[j][i] = QString::fromStdString(line);
-                    //uDebugPrinter::printText( line );
                     fileContent += line + "\n";
-                    i++;
-                }
           }
           infile.close();
         }
@@ -178,7 +163,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
             if (match.str() == "\"name\"")
             {
                 classCount++;
-                uDebugPrinter::printText("classCount: " + to_string(classCount));
             }
         }
         //this array represents a class
@@ -190,7 +174,7 @@ QString UiEventDispatcher::loadDiagram(QString url)
         }
         //
         classCount = 0;
-
+        //for each item that was found we want to check what the value is and then grab the string after it in the array
         for (int u = 0; u < leng-1; u++ )
         {
             string word = foundArray[u];
@@ -231,8 +215,37 @@ QString UiEventDispatcher::loadDiagram(QString url)
 
 //        UiEventDispatcher::createClass(classInfo[0][0], "", classInfo[0][1], classInfo[0][2]);
 //        UiEventDispatcher::createClass(classInfo[1][0], "", classInfo[1][1], classInfo[1][2]);
-        QString woop = "each shit" ;//QString::fromStdString(classArray[0][0]);
-        return woop;
+        string woop ="";//QString::fromStdString(classArray[0][0]);
+        for (int i = 0; i < classCount; i++)
+        {
+            UiEventDispatcher::createClass(QString::fromStdString(classArray[i][0]),
+                    QString::fromStdString(classArray[i][3]),
+                    QString::fromStdString(classArray[i][1]),
+                    QString::fromStdString(classArray[i][2]));
+            woop += " " + classArray[i][0];
+            uDebugPrinter::printText(woop);
+        }
+
+
+
+
+//        int** ary = new int[sizeY][sizeX]
+
+//        should be:
+
+//        int **ary = new int*[sizeY];
+//        for(int i = 0; i < sizeY; ++i) {
+//            ary[i] = new int[sizeX];
+//        }
+
+//        and then clean up would be:
+
+        for(int i = 0; i < classCount; ++i) {
+            delete [] classArray[i];
+        }
+        delete [] classArray;
+        QString returnWords = QString::fromStdString(woop);
+        return returnWords;
 }
 
 int UiEventDispatcher::getDiagramSize()

@@ -151,8 +151,9 @@ void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
 
 bool uCodeGenerationVisitor::createFile(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
 {
+    const string & temp = "~/Users/chrismurphy/documents";
     ofstream myfile;
-    myfile.open(path+name.c_str());
+    myfile.open(temp+name.c_str());
     if (!myfile.is_open())
         return false;
 
