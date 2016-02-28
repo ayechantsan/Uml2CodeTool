@@ -163,6 +163,13 @@ QString UiEventDispatcher::loadDiagram(QString url)
             if (match.str() == "\"name\"")
             {
                 classCount++;
+                string testString = match.str();
+                string addString;
+                for (int i = 1; i< testString.length()-1; i++)
+                {
+                    addString += testString[i];
+                    uDebugPrinter::printText("addString: " + addString);
+                }
             }
         }
         //this array represents a class
@@ -181,33 +188,52 @@ QString UiEventDispatcher::loadDiagram(QString url)
             if (word =="\"name\"")
             {
                 classCount++;
-                classArray[classCount-1][0] = foundArray[u+1];
-                 uDebugPrinter::printText("name if: " + classArray[classCount-1][0]);
+                string foundString = foundArray[u+1];
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][0] = subString;
+                uDebugPrinter::printText("name if: " + classArray[classCount-1][0]);
 
             }
             else if (word ==  "\"method\"")
             {
-                classArray[classCount-1][1] += foundArray[u+1];
+                string foundString = foundArray[u+1];
+               const auto lastOfNot = foundString.find_last_not_of(" ");
+               string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][1] += " " + subString;
                 uDebugPrinter::printText("method if: " + classArray[classCount-1][1]);
             }
             else if (word == "\"attribute\"")
             {
-                classArray[classCount-1][2] += foundArray[u+1];
+                string foundString = foundArray[u+1];
+               const auto lastOfNot = foundString.find_last_not_of(" ");
+               string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][2] += " " + subString;
                 uDebugPrinter::printText("attribute if: " + classArray[classCount-1][2]);
             }
             else if (word =="\"parent\"")
             {
-                classArray[classCount-1][3] += foundArray[u+1];
+
+                string foundString = foundArray[u+1];
+               const auto lastOfNot = foundString.find_last_not_of(" ");
+               string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][3] += " " + subString;
                  uDebugPrinter::printText("parent if: " + classArray[classCount-1][3]);
             }
             else if (word =="\"interface\"")
             {
-                classArray[classCount-1][4] += foundArray[u+1];
+                string foundString = foundArray[u+1];
+               const auto lastOfNot = foundString.find_last_not_of(" ");
+               string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][4] += " " + subString;
                  uDebugPrinter::printText("interface if: " + classArray[classCount-1][4]);
             }
             else if (word =="\"abstract\"")
             {
-                classArray[classCount-1][5] += foundArray[u+1];
+                string foundString = foundArray[u+1];
+               const auto lastOfNot = foundString.find_last_not_of(" ");
+               string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][5] += " " + subString;
                  uDebugPrinter::printText("abstract if: " + classArray[classCount-1][5]);
             }
         }
