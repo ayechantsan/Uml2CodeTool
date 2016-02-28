@@ -11,7 +11,7 @@
 #include <regex>
 #include "json.hpp"
 using namespace std;
-
+using json = nlohmann::json;
 
 UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 {
@@ -23,13 +23,10 @@ UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes)
 {
 //    uDebugPrinter::printText("------input text--------");
-
 //    uDebugPrinter::printText(name.toStdString());
 //    uDebugPrinter::printText(parent.toStdString());
 //    uDebugPrinter::printText(methods.toStdString());
 //    uDebugPrinter::printText(attributes.toStdString());
-
-
 
     // convert method string to uMethod objects
     TMethods methodObjects = uStringConverter::parseMethods(methods.toStdString());
@@ -116,12 +113,14 @@ void UiEventDispatcher::saveDiagram()
 //this method will load up one of our .uct files and use the uEventDispatcher::creatClass() to add classes to the mClasses stack
 QString UiEventDispatcher::loadDiagram(QString url)
 {
+
+
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
     QString classInfo[10][4];
     string fileContent;
     std::smatch match;
-    std::smatch ifMatch;
+
     std::regex reg ("\\b(file://)([^ ]*)");
     string location;
     //this searches for file:/ and returns what follows it which is the path to the file selected.
@@ -130,15 +129,11 @@ QString UiEventDispatcher::loadDiagram(QString url)
         //this gives me the string after what i was looking for which was "file:/".
         location = match[2];
     }
-//    uDebugPrinter::printText("location: " + location);
-//     uDebugPrinter::printText("fileLocation: " + fileLocation);
+    //regular exprestion to search for things in the file taht wa
 
-    regex nameReg("\"name\"\\s*:");
-    regex methodsReg("\"methods\"\\s*:");
-    regex methodReg("\"method\"\\s*:");
-    regex wordsReg("\"([a-z]+)\"");
 
-    regex anyReg("\"([\S]+)\"");
+    regex anyReg("\"(.*?)\"");
+
     ifstream infile;
       infile.open(location);
       string line;
@@ -165,33 +160,79 @@ QString UiEventDispatcher::loadDiagram(QString url)
           infile.close();
         }
         else uDebugPrinter::printText("Unable to open file");
-        string nameMatchStr;
-        if (std::regex_search(fileContent, match, nameReg))
+
+        int classCount = 0;
+
+        auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
+        auto words_end = sregex_iterator();
+        int leng = distance(words_begain, words_end);
+        string *foundArray = new string[leng];
+        int myi = 0;
+        for (sregex_iterator i = words_begain; i != words_end; ++i)
         {
-            uDebugPrinter::printText("yo mang : " + match.suffix().str());
-
-            nameMatchStr = match.suffix().str();
+            smatch match = *i;
+            string match_str = match.str();
+            uDebugPrinter::printText(match_str);
+            foundArray[myi] = match.str();
+            myi++;
+            if (match.str() == "\"name\"")
+            {
+                classCount++;
+                uDebugPrinter::printText("classCount: " + to_string(classCount));
+            }
         }
-
-
-        string methodMatchStr;
-        if (std::regex_search(nameMatchStr, ifMatch, wordsReg))
+        //this array represents a class
+        //{name, methodsString, attributesString, parent, interface, abstract}
+        string **classArray = new string*[classCount];
+        for (int i = 0; i < classCount; i ++)
         {
-            uDebugPrinter::printText("name: " + ifMatch.str());
-            classInfo[0][0] = QString::fromStdString(ifMatch.str());
-            methodMatchStr = ifMatch.str();
+            classArray[i] = new string[6];
         }
-        string paraMatchStr;
-        if (regex_search(methodMatchStr, match, anyReg))
-        {
-            uDebugPrinter::printText("one more: " + match.str());
-        }
+        //
+        classCount = 0;
 
-        //not sure where to put this function that will
-        //uDebugPrinter::printText(fileContent);
-        UiEventDispatcher::createClass(classInfo[0][0], "", classInfo[0][1], classInfo[0][2]);
-        UiEventDispatcher::createClass(classInfo[1][0], "", classInfo[1][1], classInfo[1][2]);
-        return classInfo[0][0];
+        for (int u = 0; u < leng-1; u++ )
+        {
+            string word = foundArray[u];
+            if (word =="\"name\"")
+            {
+                classCount++;
+                classArray[classCount-1][0] = foundArray[u+1];
+                 uDebugPrinter::printText("name if: " + classArray[classCount-1][0]);
+
+            }
+            else if (word ==  "\"method\"")
+            {
+                classArray[classCount-1][1] += foundArray[u+1];
+                uDebugPrinter::printText("method if: " + classArray[classCount-1][1]);
+            }
+            else if (word == "\"attribute\"")
+            {
+                classArray[classCount-1][2] += foundArray[u+1];
+                uDebugPrinter::printText("attribute if: " + classArray[classCount-1][2]);
+            }
+            else if (word =="\"parent\"")
+            {
+                classArray[classCount-1][3] += foundArray[u+1];
+                 uDebugPrinter::printText("parent if: " + classArray[classCount-1][3]);
+            }
+            else if (word =="\"interface\"")
+            {
+                classArray[classCount-1][4] += foundArray[u+1];
+                 uDebugPrinter::printText("interface if: " + classArray[classCount-1][4]);
+            }
+            else if (word =="\"abstract\"")
+            {
+                classArray[classCount-1][5] += foundArray[u+1];
+                 uDebugPrinter::printText("abstract if: " + classArray[classCount-1][5]);
+            }
+        }
+        delete [] foundArray;
+
+//        UiEventDispatcher::createClass(classInfo[0][0], "", classInfo[0][1], classInfo[0][2]);
+//        UiEventDispatcher::createClass(classInfo[1][0], "", classInfo[1][1], classInfo[1][2]);
+        QString woop = "each shit" ;//QString::fromStdString(classArray[0][0]);
+        return woop;
 }
 
 int UiEventDispatcher::getDiagramSize()
