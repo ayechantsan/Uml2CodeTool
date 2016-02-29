@@ -151,8 +151,10 @@ QString UiEventDispatcher::loadDiagram(QString url)
         auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
         auto words_end = sregex_iterator();
         int leng = distance(words_begain, words_end);
+        //array to keep all the strings found between ""s
         string *foundArray = new string[leng];
         int myi = 0;
+        //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
         for (sregex_iterator i = words_begain; i != words_end; ++i)
         {
             smatch match = *i;
@@ -163,13 +165,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
             if (match.str() == "\"name\"")
             {
                 classCount++;
-                string testString = match.str();
-                string addString;
-                for (int i = 1; i< testString.length()-1; i++)
-                {
-                    addString += testString[i];
-                    uDebugPrinter::printText("addString: " + addString);
-                }
             }
         }
         //this array represents a class
@@ -198,16 +193,16 @@ QString UiEventDispatcher::loadDiagram(QString url)
             else if (word ==  "\"method\"")
             {
                 string foundString = foundArray[u+1];
-               const auto lastOfNot = foundString.find_last_not_of(" ");
-               string subString = foundString.substr(1, lastOfNot-1);
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
                 classArray[classCount-1][1] += " " + subString;
                 uDebugPrinter::printText("method if: " + classArray[classCount-1][1]);
             }
             else if (word == "\"attribute\"")
             {
                 string foundString = foundArray[u+1];
-               const auto lastOfNot = foundString.find_last_not_of(" ");
-               string subString = foundString.substr(1, lastOfNot-1);
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
                 classArray[classCount-1][2] += " " + subString;
                 uDebugPrinter::printText("attribute if: " + classArray[classCount-1][2]);
             }
@@ -215,62 +210,48 @@ QString UiEventDispatcher::loadDiagram(QString url)
             {
 
                 string foundString = foundArray[u+1];
-               const auto lastOfNot = foundString.find_last_not_of(" ");
-               string subString = foundString.substr(1, lastOfNot-1);
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
                 classArray[classCount-1][3] += " " + subString;
-                 uDebugPrinter::printText("parent if: " + classArray[classCount-1][3]);
+                uDebugPrinter::printText("parent if: " + classArray[classCount-1][3]);
             }
             else if (word =="\"interface\"")
             {
                 string foundString = foundArray[u+1];
-               const auto lastOfNot = foundString.find_last_not_of(" ");
-               string subString = foundString.substr(1, lastOfNot-1);
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
                 classArray[classCount-1][4] += " " + subString;
-                 uDebugPrinter::printText("interface if: " + classArray[classCount-1][4]);
+                uDebugPrinter::printText("interface if: " + classArray[classCount-1][4]);
             }
             else if (word =="\"abstract\"")
             {
                 string foundString = foundArray[u+1];
-               const auto lastOfNot = foundString.find_last_not_of(" ");
-               string subString = foundString.substr(1, lastOfNot-1);
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
                 classArray[classCount-1][5] += " " + subString;
-                 uDebugPrinter::printText("abstract if: " + classArray[classCount-1][5]);
+                uDebugPrinter::printText("abstract if: " + classArray[classCount-1][5]);
             }
         }
-        delete [] foundArray;
-
-//        UiEventDispatcher::createClass(classInfo[0][0], "", classInfo[0][1], classInfo[0][2]);
-//        UiEventDispatcher::createClass(classInfo[1][0], "", classInfo[1][1], classInfo[1][2]);
-        string woop ="";//QString::fromStdString(classArray[0][0]);
+        //loop to add each of the classes collected to the class array
+        string classNamesString ="";
         for (int i = 0; i < classCount; i++)
         {
-            UiEventDispatcher::createClass(QString::fromStdString(classArray[i][0]),
-                    QString::fromStdString(classArray[i][3]),
-                    QString::fromStdString(classArray[i][1]),
-                    QString::fromStdString(classArray[i][2]));
-            woop += " " + classArray[i][0];
-            uDebugPrinter::printText(woop);
+            UiEventDispatcher::createClass(
+                        QString::fromStdString(classArray[i][0]),
+                        QString::fromStdString(classArray[i][3]),
+                        QString::fromStdString(classArray[i][1]),
+                        QString::fromStdString(classArray[i][2]));
+            classNamesString += " " + classArray[i][0];
+            uDebugPrinter::printText(classNamesString);
         }
-
-
-
-
-//        int** ary = new int[sizeY][sizeX]
-
-//        should be:
-
-//        int **ary = new int*[sizeY];
-//        for(int i = 0; i < sizeY; ++i) {
-//            ary[i] = new int[sizeX];
-//        }
-
-//        and then clean up would be:
-
+        //clean up things i've added to the heap.
         for(int i = 0; i < classCount; ++i) {
             delete [] classArray[i];
         }
+        delete [] foundArray;
         delete [] classArray;
-        QString returnWords = QString::fromStdString(woop);
+        //final conversion from std::string to QString for the QML javascript function to consume.
+        QString returnWords = QString::fromStdString(classNamesString);
         return returnWords;
 }
 
