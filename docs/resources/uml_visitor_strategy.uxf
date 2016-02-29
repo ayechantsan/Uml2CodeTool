@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="13.3">
+<diagram program="umlet" version="14.1.1">
   <zoom_level>10</zoom_level>
   <element>
     <id>UMLClass</id>
@@ -36,7 +36,11 @@
 + visit(uChildClass*)
 + visit(uInterface*)
 + visit(uBaseClass*)
-+ createFile(string, string)</panel_attributes>
++ visitSave(uChildClass*)
++ visitSave(uInterface*)
++ visitSave(uBaseClass*)
++ createFile(string, string)
++ saveDiagram(string, string)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

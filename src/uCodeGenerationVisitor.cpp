@@ -151,7 +151,8 @@ void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
 
 bool uCodeGenerationVisitor::createFile(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
 {
-    const string & temp = "~/Users/chrismurphy/documents";
+    //this is clearly not ok for the main branch
+    const string & temp = "/Users/chrismurphy/Documents/";
     ofstream myfile;
     myfile.open(temp+name.c_str());
     if (!myfile.is_open())
@@ -169,7 +170,7 @@ bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& autho
     ofstream myfile;
     const string & temp = "/tmp/";
 //    myfile.open(temp+name.c_str() + ".uct", ios::app);
-    myfile.open("/tmp/current.uct", ios::trunc);
+   myfile.open("/tmp/current.uct", ios::app);
 
     if (!myfile.is_open())
         return false;

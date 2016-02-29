@@ -133,7 +133,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
     ifstream infile;
       infile.open(location);
       string line;
-      int i = 0;
       int j = 0;
         if (infile.is_open())
         {
