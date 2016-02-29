@@ -11,10 +11,21 @@ MenuBar {
 
         MenuItem {
             text: "Open..."
+            onTriggered: {
+                var component = Qt.createComponent("ULoadFileDialog.qml");
+                var win = component.createObject(root);
+                win.show();
+            }
         }
 
         MenuItem {
             text: "Close"
+        }
+        MenuItem {
+            text: "Save"
+            onTriggered: {
+                dispatcher.saveDiagram();
+            }
         }
     }
 
@@ -45,6 +56,7 @@ MenuBar {
                 win.show();
             }
         }
+
     }
 
     Menu {

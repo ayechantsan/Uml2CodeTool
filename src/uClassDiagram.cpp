@@ -22,6 +22,8 @@ void uClassDiagram::addClass(uInheritable *uClass)
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
     mClasses.push_back(uClass);
+    uDebugPrinter::printText("class loaded from text");
+    uDebugPrinter::printClass(uClass);
 }
 
 void uClassDiagram::removeClass(uInheritable *uClass)
@@ -87,6 +89,15 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
     for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
         uDebugPrinter::printClass(*iter);
         (*iter)->accept(visitor);
+    }
+}
+void uClassDiagram::applySaveVisitor(uVisitor *visitor)
+{
+    if (visitor == NULL)
+        uDebugPrinter::printText("NUll bro");
+    for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+        uDebugPrinter::printClass(*iter);
+        (*iter)->acceptSave(visitor);
     }
 }
 

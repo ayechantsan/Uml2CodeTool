@@ -3,6 +3,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.0
 
 ColumnLayout {
     id: classPanel
@@ -150,6 +151,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: 10
+
         Button {
             StyledText {
                 text: "Create"
@@ -254,6 +256,73 @@ ColumnLayout {
             }
 
         }
+        Button {
+            id: load
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            StyledText {
+                text: "Load"
+            }
+            tooltip: "click to load file"
+            onClicked:
+            {
+
+                fileDialog.visible = true
+
+            }
+
+            FileDialog {
+                id: fileDialog
+                title: "Please choose a file"
+                folder: shortcuts.home
+                onAccepted: {
+                   var words =  dispatcher.loadDiagram(fileDialog.fileUrl)
+                    console.log("words: "+ words);
+
+                    var splitWords = words.split(" ");
+                    var j= 0;
+                    var k = 0;
+                    for (var i = 0; i< splitWords.length; i++)
+                    {
+                        if (i > 7)
+                        {
+                            k = i - 7;
+                            j++;
+                        }
+                        else
+                        {
+                            k = i
+                        }
+            console.log("namd added to gridlayout");
+                        gridLayout.addClass(k,j, splitWords[i])
+                        k++;
+                    }
+
+
+                    close()
+                }
+                onRejected: {
+                    console.log("Canceled")
+                   close()
+                }
+                Component.onCompleted: visible = false
+            }
+        }
+        Button {
+            id: repaint
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            StyledText {
+                text: "ReDraw"
+            }
+            tooltip: "click to draw"
+            onClicked:
+            {
+
+                drawingCanvas.requestPaint()
+
+            }
+}
     }
 
     function clearTextFields() {

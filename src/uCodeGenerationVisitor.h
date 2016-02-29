@@ -20,9 +20,16 @@ public:
     virtual void visit(uChildClass * childClass);
     virtual void visit(uBaseClass * baseClass);
     virtual void visit(uInterface * interfaceClass);
+    virtual void visitSave(uChildClass * childClass);
+    virtual void visitSave(uBaseClass * baseClass);
+    virtual void visitSave(uInterface * interfaceClass);
 
     bool createFile(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& lineComment, std::string const& path="");
+    bool saveDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="");
+    std::string createAttributeString(uParameter * attribute);
+    std::string createMethodString(uMethod * method);
 
+    std::string createContent(uInheritable * aClass, std::string const& base = "");
 
 private:
     uCodeGenerationVisitor();
