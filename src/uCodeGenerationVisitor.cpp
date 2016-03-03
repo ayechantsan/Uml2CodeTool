@@ -131,21 +131,21 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
 void uCodeGenerationVisitor::visitSave(uChildClass *childClass)
 {
 
-    saveDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()));
+    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()));
     cout << "    " << childClass->getName()  << endl;
 }
 
 void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass)
 {
 
-    saveDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass));
+    saveClassInDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass));
     cout << "    " << baseClass->getName()  << endl;
 }
 
 void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
 {
 
-    saveDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass));
+    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass));
     cout << "    " << interfaceClass->getName()  << endl;
 }
 
@@ -153,6 +153,7 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 {
     //this is clearly not ok for the main branch
     const string & temp = "/Users/chrismurphy/Documents/";
+    const string thisPath = path;
     ofstream myfile;
     myfile.open(temp+name.c_str());
     if (!myfile.is_open())
@@ -165,7 +166,7 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
     return true;
 }
 //method to save the diagram to a file using JSON objects to represent them
-bool uCodeGenerationVisitor::saveDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
+bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
 {
     ofstream myfile;
     const string & temp = "/tmp/";

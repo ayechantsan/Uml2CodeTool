@@ -293,12 +293,10 @@ ColumnLayout {
                         {
                             k = i
                         }
-            console.log("namd added to gridlayout");
+                        console.log("namd added to gridlayout");
                         gridLayout.addClass(k,j, splitWords[i])
                         k++;
                     }
-
-
                     close()
                 }
                 onRejected: {
@@ -322,7 +320,7 @@ ColumnLayout {
                 drawingCanvas.requestPaint()
 
             }
-}
+        }
     }
 
     function clearTextFields() {

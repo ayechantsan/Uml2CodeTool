@@ -11,7 +11,7 @@ FileDialog {
     selectFolder: true
     onAccepted: {
         console.log("Accepted "+fileUrl);
-
+        dispatcher.url = fileUrl;
     }
     onRejected: {
 

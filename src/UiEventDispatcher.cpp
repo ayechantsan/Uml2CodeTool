@@ -9,10 +9,10 @@
 #include <fstream>
 #include <string>
 #include <regex>
-#include "json.hpp"
-using namespace std;
-using json = nlohmann::json;
 
+using namespace std;
+
+QString url = "";
 UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 {
     mCodeGenerator = &uCodeGenerationVisitor::getInstance();
@@ -22,11 +22,6 @@ UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 
 void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes)
 {
-//    uDebugPrinter::printText("------input text--------");
-//    uDebugPrinter::printText(name.toStdString());
-//    uDebugPrinter::printText(parent.toStdString());
-//    uDebugPrinter::printText(methods.toStdString());
-//    uDebugPrinter::printText(attributes.toStdString());
 
     // convert method string to uMethod objects
     TMethods methodObjects = uStringConverter::parseMethods(methods.toStdString());
@@ -252,6 +247,16 @@ QString UiEventDispatcher::loadDiagram(QString url)
         //final conversion from std::string to QString for the QML javascript function to consume.
         QString returnWords = QString::fromStdString(classNamesString);
         return returnWords;
+}
+//getter and setter for the current url sting for the path of either the generated code
+//or the saved diagram json.
+void UiEventDispatcher::setUrl(QString string)
+{
+    UiEventDispatcher::url = string;
+}
+QString UiEventDispatcher::getUrl()
+{
+    return UiEventDispatcher::url;
 }
 
 int UiEventDispatcher::getDiagramSize()

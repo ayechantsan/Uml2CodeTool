@@ -55,9 +55,24 @@ ApplicationWindow {
                     text: "Choose Folder"
                 }
                 onClicked: {
-                    var component = Qt.createComponent("UFileDialog.qml");
-                    var win2 = component.createObject(generationDialog);
-                    win2.show();
+//                    var component = Qt.createComponent("UFileDialog.qml");
+//                    var win2 = component.createObject(generationDialog);
+//                    win2.show();
+                    fileDialog.visible = true;
+                }
+                FileDialog {
+                    id: fileDialog
+                    title: "Please choose a folder"
+                    folder: shortcuts.home
+                    selectFolder: true
+                    onAccepted: {
+                        console.log("Accepted "+fileUrl);
+                        dispatcher.url = fileUrl;
+                    }
+                    onRejected: {
+
+                    }
+                    Component.onCompleted: visible = false
                 }
             }
         }
