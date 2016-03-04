@@ -43,6 +43,7 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Label {
+                id: fileLocationLbl
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 StyledText {
@@ -67,7 +68,8 @@ ApplicationWindow {
                     selectFolder: true
                     onAccepted: {
                         console.log("Accepted "+fileUrl);
-                        dispatcher.url = fileUrl;
+                        dispatcher.setUrl(fileUrl);
+                        fileLocationLbl.text = fileUrl;
                     }
                     onRejected: {
 

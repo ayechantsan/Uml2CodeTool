@@ -93,7 +93,7 @@ void UiEventDispatcher::generateCode()
 
     // TODO
     mCodeGenerator->setFileAttributes("", "");
-
+    mCodeGenerator->setUrl(UiEventDispatcher::url.toStdString());
     mClassDiagram->applyVisitor(mCodeGenerator);
     uDebugPrinter::printText("done generating code");
 }
@@ -250,8 +250,12 @@ QString UiEventDispatcher::loadDiagram(QString url)
 }
 //getter and setter for the current url sting for the path of either the generated code
 //or the saved diagram json.
+//these methods are needed to pass the selection from a choice in the view to event dispatcher
+//which will pass it to a controller to consume.
 void UiEventDispatcher::setUrl(QString string)
 {
+    std::string words = string.toStdString();
+    uDebugPrinter::printText("url: set from QML: " + words.substr(7,words.length()));
     UiEventDispatcher::url = string;
 }
 QString UiEventDispatcher::getUrl()

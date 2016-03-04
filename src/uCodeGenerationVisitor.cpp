@@ -40,6 +40,11 @@ void uCodeGenerationVisitor::setFileAttributes(const string &author, const strin
     mAuthor = author;
     mDate = date;
 }
+void uCodeGenerationVisitor::setUrl(std::string url)
+{
+    url = url;
+    cout << "url set in visitor: " << url << endl;
+}
 
 void uCodeGenerationVisitor::visit(uChildClass *childClass)
 {
@@ -54,10 +59,10 @@ void uCodeGenerationVisitor::visit(uChildClass *childClass)
 void uCodeGenerationVisitor::visit(uBaseClass *baseClass)
 {
     if (mLanguage->hasSeparateFiles()) {
-        createFile(baseClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(baseClass), mLanguage->getLineComment());
-        cout << "    " << baseClass->getName() + mLanguage->getImplementationFileExtension() << endl;
+        createFile(baseClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(baseClass), mLanguage->getLineComment(), url);
+        cout << "    " << baseClass->getName() + mLanguage->getImplementationFileExtension() << " url: " << url << endl;
     }
-    createFile(baseClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(baseClass), mLanguage->getLineComment());
+    createFile(baseClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(baseClass), mLanguage->getLineComment(), url);
     cout << "    " << baseClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
 

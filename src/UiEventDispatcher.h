@@ -46,7 +46,7 @@ public:
     Q_INVOKABLE bool getClassIsAbstract(int index);
     Q_INVOKABLE int getClassReferenceCount(QString name);
     Q_INVOKABLE QString getClassReference(QString name, int index);
-    Q_INVOKABLE QString url;
+
     Q_INVOKABLE void setUrl(QString string);
     Q_INVOKABLE QString getUrl();
 signals:
@@ -54,7 +54,7 @@ signals:
 public slots:
 
 private:
-
+    QString url;
     // link application logic with GUI
     bool mCreateDoxyGenComments;
     std::string folderName;

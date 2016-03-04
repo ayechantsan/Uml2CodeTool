@@ -12,11 +12,12 @@
 class uCodeGenerationVisitor : public uVisitor
 {
 public:
+
     static uCodeGenerationVisitor& getInstance();
     void setLanguage(uLanguageStrategy * language);
     uLanguageStrategy * getLanguage() const;
     void setFileAttributes(std::string const& author, std::string const& date);
-
+    void setUrl(std::string url);
     virtual void visit(uChildClass * childClass);
     virtual void visit(uBaseClass * baseClass);
     virtual void visit(uInterface * interfaceClass);
@@ -32,6 +33,7 @@ public:
     std::string createContent(uInheritable * aClass, std::string const& base = "");
 
 private:
+    std::string url;
     uCodeGenerationVisitor();
     uCodeGenerationVisitor(const uCodeGenerationVisitor&);
     void operator=(uCodeGenerationVisitor const&);
