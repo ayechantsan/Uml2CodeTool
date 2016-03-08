@@ -20,5 +20,7 @@ void uClassButton::update(const std::string &oldName, uAccess access, const std:
 
 void uClassButton::create(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, uInheritable *base)
 {
+    uDebugPrinter::printText("in uClassButton.create(): ");
+    uDebugPrinter::printText("base: " + base->getName());
     uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eBaseClass ,access, name, attributes, methods, references, base));
 }

@@ -276,9 +276,7 @@ ColumnLayout {
                 title: "Please choose a file"
                 folder: shortcuts.home
                 onAccepted: {
-                   var words =  dispatcher.loadDiagram(fileDialog.fileUrl)
-                    console.log("words: "+ words);
-
+                   var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
                     var splitWords = words.split(" ");
                     var j= 0;
                     var k = 0;
@@ -293,7 +291,6 @@ ColumnLayout {
                         {
                             k = i
                         }
-                        console.log("namd added to gridlayout");
                         gridLayout.addClass(k,j, splitWords[i])
                         k++;
                     }

@@ -8,48 +8,33 @@ ApplicationWindow {
     visible: true
     width: 700
     height: 500
-    title: "Select File"
+    title: "Select Folder"
     color:  "white"
 
-        Button {
-            id: load
-            x: 28
-            y: 307
-            text: qsTr("Click to draw")
-            tooltip: "load file"
-            onClicked:
-            {
 
-                fileDialog.visible = true
-                drawingCanvas.requestPaint()
-            }
 
             FileDialog {
                 id: fileDialog
                 title: "Please choose a file"
                 folder: shortcuts.home
+                selectFolder: true
                 onAccepted: {
                     console.log("You chose: " + fileDialog.fileUrls)
-                    dispatcher.loadDiagram(fileDialog.fileUrl);
+                    dispatcher.saveDiagram(fileDialog.fileUrl);
                     close()
+                    root.close()
                 }
                 onRejected: {
                     console.log("Canceled")
-                   close()
+                    close()
+                    root.close()
                 }
-                Component.onCompleted: visible = false
+                Component.onCompleted: visible = true
             }
-        }
 
 
-        Label {
-            id: label
-            x: 36
-            y: 35
-            width: 67
-            height: 27
-            text: qsTr("Pick a file")
-        }
+
+
 
 
 

@@ -33,7 +33,14 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
     TReferences referenceObjects;
 
     // find parent given name
-    uInheritable * parentObj = mClassDiagram->find(parent);
+    uDebugPrinter::printText("Father: ");
+    uDebugPrinter::qPrintText(parent);
+    uDebugPrinter::qPrintText(name);
+    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+uDebugPrinter::printText("");
+uDebugPrinter::printText("found?");
+    uDebugPrinter::printClass(parentObj);
+    uDebugPrinter::printText("endfind\n");
 
     // call factory to create object
     mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj);
@@ -52,11 +59,12 @@ void UiEventDispatcher::updateClass(QString oldName, QString newName, QString pa
 
     // find parent given name
     uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+    uDebugPrinter::printClass(parentObj);
 
     // call factory to create object
     mClassButton->update(oldName.toStdString(), uPublic, newName.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj);
 }
-
+//this is a weird way to do this but i think i figured out a twisted bug.
 void UiEventDispatcher::setClassState(int type)
 {
     switch (type) {
@@ -69,6 +77,7 @@ void UiEventDispatcher::setClassState(int type)
             break;
         case 2:
             mClassButton = &uChildButton::getInstance();
+            uDebugPrinter::printText("lame im spending so much time catching up after the bus hit that dude");
             break;
         default:
             break;
@@ -99,9 +108,10 @@ void UiEventDispatcher::generateCode()
 }
 //this is the function called by the eventDispatcher to call the mClassDiagram->applySaveVisitor to save the
 //diagram to a text file in json format.
-void UiEventDispatcher::saveDiagram()
+void UiEventDispatcher::saveDiagram(QString url)
 {
-    uDebugPrinter::printText("in the save function");
+    uDebugPrinter::printText("in the save function " + url.toStdString());
+    mCodeGenerator->setUrl(url.toStdString());
     mCodeGenerator->setFileAttributes("","");
     mClassDiagram->applySaveVisitor(mCodeGenerator);
 }
@@ -153,7 +163,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
         {
             smatch match = *i;
             string match_str = match.str();
-            uDebugPrinter::printText(match_str);
             foundArray[myi] = match.str();
             myi++;
             if (match.str() == "\"name\"")
@@ -168,7 +177,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
         {
             classArray[i] = new string[6];
         }
-        //
         classCount = 0;
         //for each item that was found we want to check what the value is and then grab the string after it in the array
         for (int u = 0; u < leng-1; u++ )
@@ -206,15 +214,15 @@ QString UiEventDispatcher::loadDiagram(QString url)
                 string foundString = foundArray[u+1];
                 const auto lastOfNot = foundString.find_last_not_of(" ");
                 string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][3] += " " + subString;
-                uDebugPrinter::printText("parent if: " + classArray[classCount-1][3]);
+                classArray[classCount-1][3] += subString;
+                uDebugPrinter::printText("parent if:" + classArray[classCount-1][3]);
             }
             else if (word =="\"interface\"")
             {
                 string foundString = foundArray[u+1];
                 const auto lastOfNot = foundString.find_last_not_of(" ");
                 string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][4] += " " + subString;
+                classArray[classCount-1][4] += subString;
                 uDebugPrinter::printText("interface if: " + classArray[classCount-1][4]);
             }
             else if (word =="\"abstract\"")
@@ -222,7 +230,7 @@ QString UiEventDispatcher::loadDiagram(QString url)
                 string foundString = foundArray[u+1];
                 const auto lastOfNot = foundString.find_last_not_of(" ");
                 string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][5] += " " + subString;
+                classArray[classCount-1][5] += subString;
                 uDebugPrinter::printText("abstract if: " + classArray[classCount-1][5]);
             }
         }
@@ -230,13 +238,23 @@ QString UiEventDispatcher::loadDiagram(QString url)
         string classNamesString ="";
         for (int i = 0; i < classCount; i++)
         {
+            //need to set setClassState()
+            if (classArray[i][3] != "" )
+            {
+                uDebugPrinter::printText("should be base");
+            }
+            else
+            {
+                uDebugPrinter::printText("should be child");
+                UiEventDispatcher::setClassState(2);
+            }
+
             UiEventDispatcher::createClass(
                         QString::fromStdString(classArray[i][0]),
                         QString::fromStdString(classArray[i][3]),
                         QString::fromStdString(classArray[i][1]),
                         QString::fromStdString(classArray[i][2]));
             classNamesString += " " + classArray[i][0];
-            uDebugPrinter::printText(classNamesString);
         }
         //clean up things i've added to the heap.
         for(int i = 0; i < classCount; ++i) {

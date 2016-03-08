@@ -22,8 +22,6 @@ void uClassDiagram::addClass(uInheritable *uClass)
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
     mClasses.push_back(uClass);
-    uDebugPrinter::printText("class loaded from text");
-    uDebugPrinter::printClass(uClass);
 }
 
 void uClassDiagram::removeClass(uInheritable *uClass)
@@ -64,8 +62,10 @@ uInheritable *uClassDiagram::find(QString const &name) const
     if (name == "") return NULL;
 
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+        uDebugPrinter::printText("iter QString name: " + (*iter)->getName());
         if ((*iter)->getName() == name.toStdString())
             return (*iter);
+
     }
     return NULL;
 }
@@ -75,6 +75,7 @@ uInheritable *uClassDiagram::find(std::string const &name) const
     if (name == "") return NULL;
 
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+        uDebugPrinter::printText("iter std::string name: " + (*iter)->getName());
         if ((*iter)->getName() == name)
             return (*iter);
     }

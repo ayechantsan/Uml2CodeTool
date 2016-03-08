@@ -40,19 +40,20 @@ void uCodeGenerationVisitor::setFileAttributes(const string &author, const strin
     mAuthor = author;
     mDate = date;
 }
-void uCodeGenerationVisitor::setUrl(std::string url)
+void uCodeGenerationVisitor::setUrl(std::string thisurl)
 {
-    url = url;
+    url = thisurl;
+
     cout << "url set in visitor: " << url << endl;
 }
 
 void uCodeGenerationVisitor::visit(uChildClass *childClass)
 {
     if (mLanguage->hasSeparateFiles()) {
-        createFile(childClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment());
+        createFile(childClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment(), url);
         cout << "    " << childClass->getName() + mLanguage->getImplementationFileExtension() << endl;
     }
-    createFile(childClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment());
+    createFile(childClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment(), url);
     cout << "    " << childClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
 
@@ -69,10 +70,10 @@ void uCodeGenerationVisitor::visit(uBaseClass *baseClass)
 void uCodeGenerationVisitor::visit(uInterface *interfaceClass)
 {
     if (mLanguage->hasSeparateFiles()) {
-        createFile(interfaceClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(interfaceClass), mLanguage->getLineComment());
+        createFile(interfaceClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(interfaceClass), mLanguage->getLineComment(), url);
         cout << "    " << interfaceClass->getName() + mLanguage->getImplementationFileExtension() << endl;
     }
-    createFile(interfaceClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(interfaceClass), mLanguage->getLineComment());
+    createFile(interfaceClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(interfaceClass), mLanguage->getLineComment(), url);
     cout << "    " << interfaceClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
 string uCodeGenerationVisitor::createAttributeString(uParameter * attribute)
@@ -136,21 +137,21 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
 void uCodeGenerationVisitor::visitSave(uChildClass *childClass)
 {
 
-    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()));
+    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()), url);
     cout << "    " << childClass->getName()  << endl;
 }
 
 void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass)
 {
 
-    saveClassInDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass));
+    saveClassInDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass), url);
     cout << "    " << baseClass->getName()  << endl;
 }
 
 void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
 {
 
-    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass));
+    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass), url);
     cout << "    " << interfaceClass->getName()  << endl;
 }
 
@@ -158,9 +159,11 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 {
     //this is clearly not ok for the main branch
     const string & temp = "/Users/chrismurphy/Documents/";
-    const string thisPath = path;
+      uDebugPrinter::printText("new path " + path+name.c_str());
+    const string thisPath = path.substr(7, path.length());
+    uDebugPrinter::printText("new path " + thisPath+"/"+name.c_str());
     ofstream myfile;
-    myfile.open(temp+name.c_str());
+    myfile.open(thisPath+"/"+name.c_str());
     if (!myfile.is_open())
         return false;
 
@@ -175,9 +178,11 @@ bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const
 {
     ofstream myfile;
     const string & temp = "/tmp/";
+    const string substring = path.substr(7, path.length());
+    uDebugPrinter::printText(substring);
 //    myfile.open(temp+name.c_str() + ".uct", ios::app);
-   myfile.open("/tmp/current.uct", ios::app);
-
+    myfile.open(substring +"/"+ "current.uct", ios::app);
+    uDebugPrinter::printText(substring +"/"+ "current.uct");
     if (!myfile.is_open())
         return false;
 //this will work but i need it do work a bit differently than this because i only want one file.

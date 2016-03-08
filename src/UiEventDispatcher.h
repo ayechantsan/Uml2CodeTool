@@ -30,7 +30,7 @@ public:
     Q_INVOKABLE void setDevEnv(QString devenv);
     Q_INVOKABLE void generateCode();
     Q_INVOKABLE void generateProjectFile();
-    Q_INVOKABLE void saveDiagram();
+    Q_INVOKABLE void saveDiagram(QString url);
     Q_INVOKABLE QString loadDiagram(QString url);
     Q_INVOKABLE int getDiagramSize();
     Q_INVOKABLE uInheritable * getClass(int index);
