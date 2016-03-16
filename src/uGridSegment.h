@@ -3,6 +3,7 @@
 
 #include "uGridObject.h"
 #include <QString>
+#include <vector>
 
 class uGridSegment: public uGridObject
 {

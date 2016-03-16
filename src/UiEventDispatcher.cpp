@@ -249,7 +249,8 @@ QString UiEventDispatcher::loadDiagram(QString url)
                         QString::fromStdString(classArray[i][0]),
                         QString::fromStdString(classArray[i][3]),
                         QString::fromStdString(classArray[i][1]),
-                        QString::fromStdString(classArray[i][2]));
+                        QString::fromStdString(classArray[i][2]),
+                    false);
             classNamesString += " " + classArray[i][0];
         }
         //clean up things i've added to the heap.

@@ -2,7 +2,7 @@
 #define UGRIDOBJECT_H
 
 #include <QString>
-
+#include <vector>
 
 
 /**
