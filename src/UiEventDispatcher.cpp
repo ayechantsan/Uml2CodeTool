@@ -20,7 +20,7 @@ UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
     mClassButton = &uClassButton::getInstance();
 }
 
-void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes)
+void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract)
 {
 
     // convert method string to uMethod objects
@@ -43,10 +43,10 @@ uDebugPrinter::printText("found?");
     uDebugPrinter::printText("endfind\n");
 
     // call factory to create object
-    mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj);
+    mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj,isAbstract);
 }
 
-void UiEventDispatcher::updateClass(QString oldName, QString newName, QString parent, QString methods, QString attributes)
+void UiEventDispatcher::updateClass(QString oldName, QString newName, QString parent, QString methods, QString attributes, bool isAbstract)
 {
     // convert method string to uMethod objects
     TMethods methodObjects = uStringConverter::parseMethods(methods.toStdString());
@@ -62,7 +62,7 @@ void UiEventDispatcher::updateClass(QString oldName, QString newName, QString pa
     uDebugPrinter::printClass(parentObj);
 
     // call factory to create object
-    mClassButton->update(oldName.toStdString(), uPublic, newName.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj);
+    mClassButton->update(oldName.toStdString(), uPublic, newName.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj, isAbstract);
 }
 //this is a weird way to do this but i think i figured out a twisted bug.
 void UiEventDispatcher::setClassState(int type)
@@ -310,20 +310,20 @@ QString UiEventDispatcher::getClassName(int index)
     return QString::fromStdString(obj->getName());
 }
 
-QString UiEventDispatcher::getClassMethods(int index)
+QString UiEventDispatcher::getClassMethods(int index, bool accessSymbol)
 {
     uInheritable * obj = getClass(index);
     if (obj == NULL) return "";
 
-    return uStringConverter::qCreateMethodStringFromClass(obj);
+    return uStringConverter::qCreateMethodStringFromClass(obj, accessSymbol);
 }
 
-QString UiEventDispatcher::getClassAttributes(int index)
+QString UiEventDispatcher::getClassAttributes(int index, bool accessSymbol)
 {
     uInheritable * obj = getClass(index);
     if (obj == NULL) return "";
 
-    return uStringConverter::qCreateAttributeStringFromClass(obj);
+    return uStringConverter::qCreateAttributeStringFromClass(obj, accessSymbol);
 }
 
 int UiEventDispatcher::getClassIndex(QString name)
