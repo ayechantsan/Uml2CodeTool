@@ -62,7 +62,7 @@ uInheritable *uClassDiagram::find(QString const &name) const
     if (name == "") return NULL;
 
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
-        uDebugPrinter::printText("iter QString name: " + (*iter)->getName());
+
         if ((*iter)->getName() == name.toStdString())
             return (*iter);
 
@@ -75,7 +75,6 @@ uInheritable *uClassDiagram::find(std::string const &name) const
     if (name == "") return NULL;
 
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
-        uDebugPrinter::printText("iter std::string name: " + (*iter)->getName());
         if ((*iter)->getName() == name)
             return (*iter);
     }
@@ -95,7 +94,7 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
 void uClassDiagram::applySaveVisitor(uVisitor *visitor)
 {
     if (visitor == NULL)
-        uDebugPrinter::printText("NUll bro");
+        uDebugPrinter::printText("NUll POINTER");
     for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
         uDebugPrinter::printClass(*iter);
         (*iter)->acceptSave(visitor);

@@ -54,6 +54,15 @@ signals:
 public slots:
 
 private:
+    //enums to let words represtent indecies in an array
+    enum loadAttribute {
+        name,
+        methods,
+        attributes,
+        parent,
+        interface,
+        abstract
+    };
     QString url;
     // link application logic with GUI
     bool mCreateDoxyGenComments;
