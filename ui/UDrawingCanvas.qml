@@ -550,6 +550,7 @@ Canvas {
 
             //Get information from the logic background via uDispatcher
             var idx = dispatcher.getClassIndex(name);
+
             var methods = dispatcher.getClassMethods(idx, false); //False implies "access" specified with letters (public, private...)
             var attributes = dispatcher.getClassAttributes(idx, false); //False implies "access" specified with letters
             var parent = dispatcher.getClassParent(idx)

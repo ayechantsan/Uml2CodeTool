@@ -1,6 +1,6 @@
 
 #include <sstream>
-
+#include <iostream>
 #include "uStringConverter.h"
 #include "uLanguageCpp.h"
 #include "uLanguageJava.h"
@@ -28,12 +28,13 @@ TMethods uStringConverter::parseMethods(const std::string &text)
 {
     TMethods methods;
     if (text.size() == 0) return methods;
-
+    
     //split the string
     vector<string> methodStrings = splitString(text);
 
     for (vector<string>::iterator iter = methodStrings.begin(); iter < methodStrings.end(); ++iter) {
         string method = (*iter);
+
         uAccess access;
         string name;
         TParameters parameters;
@@ -44,6 +45,7 @@ TMethods uStringConverter::parseMethods(const std::string &text)
         while (!isAccessChar(method[i]) && i<method.size()) {i++; }
         access = getAccessFromChar(method[i]);
         // if no char is found, assign defualt
+
         if(i >= method.size()-1){
             i=0;
             access = dAccess;
@@ -105,6 +107,7 @@ TMethods uStringConverter::parseMethods(const std::string &text)
         }
 
         methods.push_back(new uMethod(access, returnType, name, parameters));
+
     }
     return methods;
 }
@@ -229,9 +232,12 @@ std::vector<std::string> uStringConverter::splitString(std::string const& text) 
     vector<string> methodStrings;
     string rest = text;
     size_t pos =text.find('\n');
+    std::cout << "text " << text << std::endl;
     while (pos != string::npos) {
+
         methodStrings.push_back(rest.substr(0, pos));
         rest = rest.substr(pos+1, rest.size()-1);
+        std::cout << rest << std::endl;
         pos = rest.find('\n');
     }
     methodStrings.push_back(rest);

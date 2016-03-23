@@ -34,7 +34,9 @@ ApplicationWindow {
                 model: [ "None", "C++", "Java", "Python" ]
                 onCurrentIndexChanged: {
                     dispatcher.setLanguage(languageCB.currentText);
+                   genButton.visible = true
                 }
+
             }
         }
 
@@ -67,6 +69,8 @@ ApplicationWindow {
                     folder: shortcuts.home
                     selectFolder: true
                     onAccepted: {
+
+
                         console.log("Accepted "+fileUrl);
                         dispatcher.setUrl(fileUrl);
                         fileLocationLbl.text = fileUrl;
@@ -131,8 +135,11 @@ ApplicationWindow {
 
             }
             Button {
+                id: genButton
+                visible: false
                 StyledText {
                     text: "Generate"
+
                 }
                 onClicked: {
                     //TODO
@@ -142,8 +149,6 @@ ApplicationWindow {
                 }
             }
         }
-
-
     }
 }
 

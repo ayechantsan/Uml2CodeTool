@@ -17,21 +17,17 @@ uInheritable * uClassFactory::createClass(uClassType type, std::string const& na
 
         case eBaseClass:
             return new uBaseClass(name);
-            uDebugPrinter::printText("shit");
             break;
         case eInterface:
             return new uInterface(name);
-            uDebugPrinter::printText("shit");
 
             break;
         case eChildClass:
             return new uChildClass(name);
-            uDebugPrinter::printText("shit");
 
             break;
         default:
             return NULL;
-            uDebugPrinter::printText("shit");
             break;
     }
 }
@@ -54,7 +50,6 @@ uInheritable * uClassFactory::createClass(uClassType type, uAccess access, const
             break;
         default:
             return NULL;
-            uDebugPrinter::printText("shit factory");
             break;
     }
 

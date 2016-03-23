@@ -178,11 +178,11 @@ ColumnLayout {
                 title: "Please choose a file"
                 folder: shortcuts.home
                 onAccepted: {
-                   var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
+                   var words =  dispatcher.getLoadNames(fileDialog.fileUrl);
                     var splitWords = words.split(" ");
-                    var j= 0;
+                    var j = 0;
                     var k = 0;
-                    for (var i = 0; i< splitWords.length; i++)
+                    for (var i = 1; i< splitWords.length; i++)
                     {
                         if (i > 7)
                         {
@@ -193,8 +193,26 @@ ColumnLayout {
                         {
                             k = i
                         }
-                        gridLayout.addClass(k,j, splitWords[i])
+                        var width = drawingCanvas.getClassWidth();
+                        var height = drawingCanvas.getClassHeight();
                         k++;
+                        gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
+                        words =  dispatcher.loadDiagram(fileDialog.fileUrl);
+                        drawingCanvas.requestPaint()
+
+//                        //Check if the class has a parent
+//                        if(parent != "")
+//                            dispatcher.setClassState(2)
+
+//                        //Create the class
+//                        dispatcher.createClass(name, parent, methods, attributes, isAbstract)
+
+//                        //Repaint the canvas
+
+//                        clearTextFields()
+//                        drawingCanvas.selectedClass = ""
+
+
                     }
                     close()
                 }
@@ -209,6 +227,7 @@ ColumnLayout {
             id: repaint
             Layout.fillHeight: true
             Layout.fillWidth: true
+            visible: false
             StyledText {
                 text: "ReDraw"
             }
