@@ -97,6 +97,45 @@ std::string uCodeGenerationVisitor::createMethodString(uMethod * method)
 
     return methodStr + "}\n";
 }
+//create an inheritance string for a child class
+std::string uCodeGenerationVisitor::createChildInheritanceString(string const& base)
+{
+    std::string baseWords = "\"parent\" : \"" + base + "\",";
+    cout << "wee " << baseWords << endl;
+    baseWords += "\"interface\": \"false\",";
+    baseWords += "\"abstract\": \"false\",";
+    return baseWords;
+}
+//create a inheritance string for  a base class
+std::string uCodeGenerationVisitor::createBaseInheritanceString(uInheritable * aClass)
+{
+    std::string baseWords = "\"parent\" : \"\"," + endl;
+    cout << "wee " << baseWords << endl;
+    if (aClass->isInterface())
+    {
+        baseWords += "\"interface\": \"true\"," + endl;
+    }
+    else
+    {
+        baseWords += "\"interface\": \"false\"," + endl;
+    }
+    if (aClass->isAbstract())
+    {
+        baseWords += "\"abstract\": \"true\"," + endl;
+    }
+    else
+    {
+         baseWords += "\"abstract\": \"false\"," + endl;
+    }
+
+//    "interface": "",
+//    "abstract" : ""
+
+    return baseWords;
+}
+
+
+
 string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const& base)
 {
 
@@ -128,7 +167,24 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
             }
             cout << *iter << " ";
         }
+
+        //need parent info here
         fileContent << "\t]}";
+        //now we need some cheking to see what kind of class we have
+        bool hasParent = aClass->hasParent();
+        if (hasParent)
+        {
+            fileContent << createChildInheritanceString(base);
+        }
+        else
+        {
+            fileContent << createBaseInheritanceString(aClass);
+        }
+
+
+
+
+
         return fileContent.str();
 
 }

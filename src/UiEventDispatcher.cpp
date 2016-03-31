@@ -171,7 +171,7 @@ QString UiEventDispatcher::getLoadNames(QString url)
             classArray[i] = new string[6];
         }
         classCount = 0;
-        //for each item that was found we want to check what the value is and then grab the string after it in the array
+        //because of the way the gridlayout works the names need to be added to it first then use the cpp code to add them to the data strucuture.
         for (int u = 0; u < leng-1; u++ )
         {
             string word = foundArray[u];
@@ -184,46 +184,7 @@ QString UiEventDispatcher::getLoadNames(QString url)
                 classArray[classCount-1][name] = subString;
 
             }
-//            else if (word ==  "\"method\"")
-//            {
-//                string foundString = foundArray[u+1];
-//                const auto lastOfNot = foundString.find_last_not_of(" ");
-//                string subString = foundString.substr(1, lastOfNot-1);
-//                classArray[classCount-1][methods] += " " + subString + "\n";
 
-//            }
-//            else if (word == "\"attribute\"")
-//            {
-//                string foundString = foundArray[u+1];
-//                const auto lastOfNot = foundString.find_last_not_of(" ");
-//                string subString = foundString.substr(1, lastOfNot-1);
-//                    classArray[classCount-1][attributes] += " " + subString + "\n";
-
-//            }
-//            else if (word =="\"parent\"")
-//            {
-
-//                string foundString = foundArray[u+1];
-//                const auto lastOfNot = foundString.find_last_not_of(" ");
-//                string subString = foundString.substr(1, lastOfNot-1);
-//                classArray[classCount-1][parent] += subString;
-
-//            }
-//            else if (word =="\"interface\"")
-//            {
-//                string foundString = foundArray[u+1];
-//                const auto lastOfNot = foundString.find_last_not_of(" ");
-//                string subString = foundString.substr(1, lastOfNot-1);
-//                classArray[classCount-1][interface] += subString;
-
-//            }
-//            else if (word =="\"abstract\"")
-//            {
-//                string foundString = foundArray[u+1];
-//                const auto lastOfNot = foundString.find_last_not_of(" ");
-//                string subString = foundString.substr(1, lastOfNot-1);
-//                classArray[classCount-1][abstract] += subString;
-//            }
         }
         //loop to add each of the classes collected to the class array
         string classNamesString ="";

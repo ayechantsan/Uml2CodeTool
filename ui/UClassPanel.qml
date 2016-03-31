@@ -180,7 +180,7 @@ ColumnLayout {
                 onAccepted: {
                    var words =  dispatcher.getLoadNames(fileDialog.fileUrl);
                     var splitWords = words.split(" ");
-                    var j = 0;
+                    var j = 1;
                     var k = 0;
                     for (var i = 1; i< splitWords.length; i++)
                     {

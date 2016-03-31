@@ -1,5 +1,4 @@
 #include "uClassDiagram.h"
-
 #include <algorithm>
 #include "uDebugPrinter.h"
 #include "uBaseClass.h"

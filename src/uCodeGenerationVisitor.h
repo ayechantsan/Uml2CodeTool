@@ -31,6 +31,8 @@ public:
     std::string createMethodString(uMethod * method);
 
     std::string createContent(uInheritable * aClass, std::string const& base = "");
+    std::string createChildInheritanceString(std::string const& base);
+    std::string createBaseInheritanceString(uInheritable * aClass);
 
 private:
     std::string url;
