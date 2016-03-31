@@ -340,11 +340,15 @@ QString UiEventDispatcher::loadDiagram(QString url)
         for (int i = 0; i < classCount; i++)
         {
             //need to set setClassState() by checking if the parent attibute is not blank
-            if (classArray[i][3] != "" )
+            if (classArray[i][parent] == "" )
             {
-
+                UiEventDispatcher::setClassState(0);
             }
-            else
+            if (classArray[i][interface] == "true")
+            {
+                UiEventDispatcher::setClassState(1);
+            }
+            if (classArray[i][parent] != "" && classArray[i][interface] != "true")
             {
                 //uDebugPrinter::printText("should be child");
                 UiEventDispatcher::setClassState(2);
