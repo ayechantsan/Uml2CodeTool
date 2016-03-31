@@ -43,8 +43,6 @@ void uCodeGenerationVisitor::setFileAttributes(const string &author, const strin
 void uCodeGenerationVisitor::setUrl(std::string thisurl)
 {
     url = thisurl;
-
-    cout << "url set in visitor: " << url << endl;
 }
 
 void uCodeGenerationVisitor::visit(uChildClass *childClass)
@@ -76,12 +74,12 @@ void uCodeGenerationVisitor::visit(uInterface *interfaceClass)
     createFile(interfaceClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(interfaceClass), mLanguage->getLineComment(), url);
     cout << "    " << interfaceClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
-string uCodeGenerationVisitor::createAttributeString(uParameter * attribute)
+string uCodeGenerationVisitor::createSaveAttributeString(uParameter * attribute)
 {
-    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getType() + " " + attribute->getName() + ";";
+    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getType() + " " + attribute->getName();
     return attributeString;
 }
-std::string uCodeGenerationVisitor::createMethodString(uMethod * method)
+std::string uCodeGenerationVisitor::createSaveMethodString(uMethod * method)
 {
     string methodStr = "{\"method\" : \"";
     TParameters params = method->getParameters();
@@ -93,43 +91,36 @@ std::string uCodeGenerationVisitor::createMethodString(uMethod * method)
         }
         methodStr += params[params.size()-1]->getType() + " " + params[params.size()-1]->getName();
     }
-//    methodStr += ") \n\t{\n\t\t// TODO\n\t}\n\n";
-
     return methodStr + "}\n";
 }
 //create an inheritance string for a child class
 std::string uCodeGenerationVisitor::createChildInheritanceString(string const& base)
 {
-    std::string baseWords = "\"parent\" : \"" + base + "\",";
-    cout << "wee " << baseWords << endl;
-    baseWords += "\"interface\": \"false\",";
-    baseWords += "\"abstract\": \"false\",";
+    std::string baseWords = "\n\t\"parent\" : \"" + base + "\",\n";
+    baseWords += "\t\"interface\": \"false\",\n";
+    baseWords += "\t\"abstract\": \"false\",\n";
     return baseWords;
 }
 //create a inheritance string for  a base class
 std::string uCodeGenerationVisitor::createBaseInheritanceString(uInheritable * aClass)
 {
-    std::string baseWords = "\"parent\" : \"\"," + endl;
-    cout << "wee " << baseWords << endl;
+    std::string baseWords = "\n\t\"parent\" : \"\",\n";
     if (aClass->isInterface())
     {
-        baseWords += "\"interface\": \"true\"," + endl;
+        baseWords += "\t\"interface\": \"true\",\n";
     }
     else
     {
-        baseWords += "\"interface\": \"false\"," + endl;
+        baseWords += "\t\"interface\": \"false\",\n";
     }
     if (aClass->isAbstract())
     {
-        baseWords += "\"abstract\": \"true\"," + endl;
+        baseWords += "\t\"abstract\": \"true\",\n";
     }
     else
     {
-         baseWords += "\"abstract\": \"false\"," + endl;
+         baseWords += "\t\"abstract\": \"false\",\n";
     }
-
-//    "interface": "",
-//    "abstract" : ""
 
     return baseWords;
 }
@@ -146,11 +137,11 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
         for (TParametersIter iter = attributes.begin(); iter < attributes.end(); ++iter) {
             if (iter < attributes.end()-1)
             {
-                fileContent << "\t\t{\"attribute\" : \"" << createAttributeString(*iter) << "\"}," << endl;
+                fileContent << "\t\t{\"attribute\" : \"" << createSaveAttributeString(*iter) << "\"}," << endl;
             }
             else
             {
-                fileContent << "\t\t{\"attribute\" : \"" << createAttributeString(*iter) << "\"}" << endl;
+                fileContent << "\t\t{\"attribute\" : \"" << createSaveAttributeString(*iter) << "\"}" << endl;
             }
         }
         fileContent << "\t\t]},\n \t{\"methods\" : [" << endl;
@@ -159,11 +150,11 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
         for (TMethodsIter iter = methods.begin(); iter < methods.end(); ++iter) {
             if (iter < methods.end()-1)
             {
-                fileContent << "\t\t" << createMethodString(*iter)  << endl;
+                fileContent << "\t\t" << createSaveMethodString(*iter)  << endl;
             }
             else
             {
-                fileContent << "\t\t" << createMethodString(*iter) << endl;
+                fileContent << "\t\t" << createSaveMethodString(*iter) << endl;
             }
             cout << *iter << " ";
         }
@@ -180,11 +171,6 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
         {
             fileContent << createBaseInheritanceString(aClass);
         }
-
-
-
-
-
         return fileContent.str();
 
 }
@@ -214,7 +200,6 @@ void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
 bool uCodeGenerationVisitor::createFile(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
 {
     //this is clearly not ok for the main branch
-    const string & temp = "/Users/chrismurphy/Documents/";
       uDebugPrinter::printText("new path " + path+name.c_str());
     const string thisPath = path.substr(7, path.length());
     uDebugPrinter::printText("new path " + thisPath+"/"+name.c_str());
@@ -233,7 +218,6 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
 {
     ofstream myfile;
-    const string & temp = "/tmp/";
     const string substring = path.substr(7, path.length());
     uDebugPrinter::printText(substring);
 //    myfile.open(temp+name.c_str() + ".uct", ios::app);

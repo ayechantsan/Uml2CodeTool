@@ -27,8 +27,8 @@ public:
 
     bool createFile(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& lineComment, std::string const& path="");
     bool saveClassInDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="");
-    std::string createAttributeString(uParameter * attribute);
-    std::string createMethodString(uMethod * method);
+    std::string createSaveAttributeString(uParameter * attribute);
+    std::string createSaveMethodString(uMethod * method);
 
     std::string createContent(uInheritable * aClass, std::string const& base = "");
     std::string createChildInheritanceString(std::string const& base);

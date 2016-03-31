@@ -350,13 +350,20 @@ QString UiEventDispatcher::loadDiagram(QString url)
                 UiEventDispatcher::setClassState(2);
             }
 
+            bool isAbstract = false;
+            if (classArray[i][abstract] == "true")
+            {
+                isAbstract = true;
+            }
+
+
             UiEventDispatcher::createClass(
-                        QString::fromStdString(classArray[i][0]),
-                        QString::fromStdString(classArray[i][3]),
-                        QString::fromStdString(classArray[i][1]),
-                        QString::fromStdString(classArray[i][2]),
-                    false);
-            classNamesString += " " + classArray[i][0];
+                        QString::fromStdString(classArray[i][name]),
+                        QString::fromStdString(classArray[i][parent]),
+                        QString::fromStdString(classArray[i][methods]),
+                        QString::fromStdString(classArray[i][attributes]),
+                    isAbstract);
+            classNamesString += " " + classArray[i][name];
         }
         //clean up things i've added to the heap.
         for(int i = 0; i < classCount; ++i) {
@@ -496,7 +503,6 @@ std::vector<QString> UiEventDispatcher::generateReferences(uInheritable * obj)
     }
     return references;
 }
-
 
 void UiEventDispatcher::generateProjectFile()
 {
