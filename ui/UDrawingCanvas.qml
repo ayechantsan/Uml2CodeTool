@@ -4,8 +4,6 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.LocalStorage 2.0
 
-
-
 Canvas {
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -13,6 +11,7 @@ Canvas {
 
     property string selectedClass: ""
     property bool selectingParent: false
+    property bool dropableSite: true
     property int selectedX: 0
     property int selectedY: 0
     property bool selecting: false //this is a flag for avoiding uClassPanel.updateMethod() to be call when a class is clicked
@@ -36,6 +35,7 @@ Canvas {
         context.strokeRect(0,0, width, height)
 
         //context.fill();
+
 
         //draw each class from the uClassDiagram and checking position with the
         drawClasses()
@@ -114,6 +114,7 @@ Canvas {
 
         var context = getContext("2d");
         context.strokeStyle = "black"
+        context.lineWidth = 1
         var letterFont = width < height ? Number(width)/90: Number(height)/60;
         //console.log("LetterFont: " + letterFont)
         if(isAbstract)
@@ -134,6 +135,16 @@ Canvas {
         context.moveTo(x, y+secondDelimiter);
         context.lineTo(x+classWidth, y+secondDelimiter);
         context.stroke();
+
+        if(name == selectedClass)
+        {
+            context.beginPath();
+            context.rect(x-1, y-1, classWidth+2, classHeight+2);
+            context.strokeStyle = "#66ff33"
+            context.stroke()
+            context.strokeStyle = "black"
+        }
+
 
         // draw class name
         context.moveTo(x+textOffset, y+nameOffset);
@@ -216,6 +227,7 @@ Canvas {
     }
 
     function drawInheritance(name, parent) {
+        dropableSite = true
 
         var objI = gridLayout.getClassX(name)
         var objJ = gridLayout.getClassY(name)
@@ -247,6 +259,7 @@ Canvas {
 
     function autoGenerateInheritanceArrow(name, parent)
     {
+        dropableSite = true
         var x = gridLayout.getClassX(name)
         var y = gridLayout.getClassY(name)
 
@@ -288,6 +301,7 @@ Canvas {
     }
 
     function drawInheritanceArrow(x, y, x_to, y_to) {
+        dropableSite = true
 
         var paddingX = Number(offsetX()) - Number(getClassWidth())
         var paddingY = Number(offsetY()) - Number(getClassHeight())
@@ -593,20 +607,45 @@ Canvas {
     {
         var movX = x - selectedX
         var movY = y - selectedY
+
         if(selectedClass != "")
         {
-            //uDebugger.qPrintText("Move class: " + selectedClass)
+            var name = gridLayout.getString(parseInt(x), parseInt(y))
+            if (selectedClass != name)
+            {
+                dropableSite = false
+            }
+            else
+            {
+                dropableSite = true
+            }
+
             gridLayout.moveObject(selectedClass, Number(movX), Number(movY))
+
             requestPaint()
         }
         else
         {
             //test for arrow movement
-            if(arrowSelected){
+            if(arrowSelected)
+            {
+                var ctx = getContext("2d");
+
+                ctx.beginPath();
+                ctx.strokeStyle = "red"
+                ctx.moveTo(x+20, y);
+                ctx.arc(x, y, 20, 0, 2*Math.PI, true)
+                ctx.fill();
+                ctx.stroke();
                 gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
                 requestPaint()
                 selectedArrowX = x
                 selectedArrowY = y
+            }
+            else
+            {
+                requestPaint()
+
             }
         }
 
@@ -617,6 +656,13 @@ Canvas {
     function releasedMouse(x, y)
     {
         uDebugger.qPrintText("Mouse RELEASED in (" + x +"," + y + ")")
+        if (dropableSite == false)
+        {
+            uDebugger.qPrintText("CUPCAKES")
+            gridLayout.moveObject(selectedClass, 150, 0)
+            requestPaint()
+        }
+
         arrowSelected = false;
         arrowSelectedIndex = -1;
 //        //test for arrow movement
