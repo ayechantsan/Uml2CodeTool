@@ -27,11 +27,15 @@ Canvas {
         // Get drawing context
         var context = getContext("2d");
         //context.fillStyle = "white"
-        context.strokeStyle = "black"
+        context.strokeStyle = "#999999"
+        context.lineWidth = 3
+
         // Make canvas all white
-        context.beginPath();
+        //context.beginPath();
         context.clearRect(0, 0, width, height);
-        context.fill();
+        context.strokeRect(0,0, width, height)
+
+        //context.fill();
 
         //draw each class from the uClassDiagram and checking position with the
         drawClasses()
