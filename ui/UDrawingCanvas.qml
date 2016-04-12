@@ -4,6 +4,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.LocalStorage 2.0
 
+
+
 Canvas {
     Layout.fillHeight: true
     Layout.fillWidth: true
