@@ -44,7 +44,7 @@ void uClassDiagram::removeClass(uInheritable *uClass)
         }
     }
 
-    mClasses.erase(std::remove(mClasses.begin(), mClasses.end(), uClass), mClasses.end());
+    removeClass(QString::fromStdString(uClass->getName()));
 }
 
 
