@@ -30,7 +30,7 @@ Canvas {
         context.lineWidth = 3
 
         // Make canvas all white
-        //context.beginPath();
+        context.beginPath();
         context.clearRect(0, 0, width, height);
         context.strokeRect(0,0, width, height)
 
@@ -40,6 +40,18 @@ Canvas {
         //draw each class from the uClassDiagram and checking position with the
         drawClasses()
         drawSegments()
+
+        //draw circle around selected arrow point
+        if(arrowSelected)
+        {
+            //Draw circle around point selected in arrow
+            context.beginPath();
+            context.moveTo(selectedArrowX+20, selectedArrowY);
+            context.arc(selectedArrowX, selectedArrowY, 20, 0, 2*Math.PI, true)
+            context.strokeStyle = "red"
+            context.stroke();
+        }
+
     }
 
     function drawClasses()
@@ -660,17 +672,6 @@ Canvas {
             //test for arrow movement
             if(arrowSelected)
             {
-                var ctx = getContext("2d");
-
-                //Draw circle around point selected in arrow
-                ctx.beginPath();
-                ctx.strokeStyle = "red"
-                ctx.moveTo(x+20, y);
-                ctx.arc(x, y, 20, 0, 2*Math.PI, true)
-                ctx.fill();
-                ctx.stroke();
-                //End draw circle
-
                 gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
                 requestPaint()
                 selectedArrowX = x
