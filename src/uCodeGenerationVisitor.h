@@ -26,7 +26,7 @@ public:
     virtual void visitSave(uInterface * interfaceClass);
 
     bool createFile(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& lineComment, std::string const& path="");
-    bool saveClassInDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="");
+    bool saveClassInDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="", double const& x = 0.0, double const& y = 0.0);
     std::string createSaveAttributeString(uParameter * attribute);
     std::string createSaveMethodString(uMethod * method);
 

@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QString>
+#include<QList>
 #include <string>
+#include <vector>
 #include "uStringConverter.h"
 #include "uClassType.h"
 #include "uLanguageStrategy.h"
@@ -21,6 +23,8 @@ class UiEventDispatcher : public QObject
     Q_OBJECT
 public:
     explicit UiEventDispatcher(QObject *parent = 0);
+
+
     Q_INVOKABLE void createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract);
     Q_INVOKABLE void updateClass(QString oldName, QString newName, QString parent, QString methods, QString attributes, bool isAbstract);
 
@@ -31,7 +35,7 @@ public:
     Q_INVOKABLE void setDevEnv(QString devenv);
     Q_INVOKABLE void generateCode();
     Q_INVOKABLE void generateProjectFile();
-    Q_INVOKABLE void saveDiagram(QString url);
+    Q_INVOKABLE void saveDiagram(QString url, QList<QString> names, QList<double> xLoc, QList<double> yLoc);
     Q_INVOKABLE QString loadDiagram(QString url);
     Q_INVOKABLE QString getLoadNames(QString url);
     Q_INVOKABLE int getDiagramSize();
@@ -51,6 +55,9 @@ public:
 
     Q_INVOKABLE void setUrl(QString string);
     Q_INVOKABLE QString getUrl();
+
+
+
 signals:
 
 public slots:

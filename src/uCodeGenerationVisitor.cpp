@@ -3,7 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-
+#include <sys/stat.h>
+#include <unistd.h>
 #include "uDebugPrinter.h"
 
 using namespace std;
@@ -130,7 +131,7 @@ std::string uCodeGenerationVisitor::createBaseInheritanceString(uInheritable * a
 string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const& base)
 {
 
-        stringstream fileContent;
+    stringstream fileContent;
 //iterate through all the attributes associated with the current class and retrun the parameter and methods in a string
         TParameters attributes = aClass->getAttributes();
         fileContent << "\t{\"attributes\":[" << endl;
@@ -180,21 +181,21 @@ void uCodeGenerationVisitor::visitSave(uChildClass *childClass)
 {
 
     saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()), url);
-    cout << "    " << childClass->getName()  << endl;
+
 }
 
 void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass)
 {
 
     saveClassInDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass), url);
-    cout << "    " << baseClass->getName()  << endl;
+
 }
 
 void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
 {
 
     saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass), url);
-    cout << "    " << interfaceClass->getName()  << endl;
+
 }
 
 bool uCodeGenerationVisitor::createFile(string const& name, string const& author, string const& date, string const& content, string const& lineComment, string const& path)
@@ -215,12 +216,24 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
     return true;
 }
 //method to save the diagram to a file using JSON objects to represent them
-bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
+bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path, double const& x, double const& y)
 {
     ofstream myfile;
+    bool isOpen = false;
     const string substring = path.substr(7, path.length());
     uDebugPrinter::printText(substring);
 //    myfile.open(temp+name.c_str() + ".uct", ios::app);
+    ifstream ifile(substring +"/"+ "current.uct");
+
+
+    if (ifile) {
+            isOpen = true;
+            std::cout << "did  exist"<< std::endl;
+        } else {
+            isOpen = false;
+            std::cout << "did not exist"<< std::endl;
+        }
+
     myfile.open(substring +"/"+ "current.uct", ios::app);
     uDebugPrinter::printText(substring +"/"+ "current.uct");
     if (!myfile.is_open())

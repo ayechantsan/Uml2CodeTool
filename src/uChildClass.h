@@ -15,7 +15,7 @@ public:
     uChildClass(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable * base, bool isAbstract);
     virtual ~uChildClass();
     virtual void accept(uVisitor * visitor);
-    virtual void acceptSave(uVisitor * visitor);
+    virtual void acceptSave(uVisitor * visitor, double x, double y);
 };
 
 #endif // UCHILDCLASS_H

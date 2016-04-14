@@ -1,7 +1,8 @@
 #include "uGridLayout.h"
 #include "uDebugPrinter.h"
 #include "uGridObjectFactory.h"
-
+#include <QVector>
+#include <QString>
 #include <string>
 
 using namespace std;
@@ -15,6 +16,16 @@ uGridLayout::uGridLayout(int width, int height) : QObject(0)
 {
     mWidth = width;
     mHeight = height;
+}
+
+QString uGridLayout::getAllNames()
+{
+    QString thisString;
+    for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++) {
+
+            thisString += (*iter)->getName() + " ";
+    }
+    return thisString;
 }
 
 bool uGridLayout::addClass(int i, int j, int width, int height, const QString &name)
@@ -333,6 +344,11 @@ int uGridLayout::getSegmentY(int arrowIndex, int segIndex) const
 {
     return mArrows[arrowIndex]->getSegment(segIndex)->getY();
 }
+
+//int uGridLayout::getClasses() const
+//{
+//    return 56;
+//}
 
 int uGridLayout::getSegmentX_to(int arrowIndex, int segIndex) const
 {

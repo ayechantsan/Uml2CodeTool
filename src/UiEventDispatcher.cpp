@@ -20,6 +20,7 @@ UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
     mClassButton = &uClassButton::getInstance();
 }
 
+
 void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract)
 {
 
@@ -102,11 +103,14 @@ void UiEventDispatcher::generateCode()
 }
 //this is the function called by the eventDispatcher to call the mClassDiagram->applySaveVisitor to save the
 //diagram to a text file in json format.
-void UiEventDispatcher::saveDiagram(QString url)
+void UiEventDispatcher::saveDiagram(QString url, QList<QString> names, QList<double> xLoc, QList<double> yLoc)
 {
-    uDebugPrinter::printText("in the save function " + url.toStdString());
+
+
+    uDebugPrinter::printText("in the save function " + names[0].toStdString() + std::to_string(xLoc[0]));
     mCodeGenerator->setUrl(url.toStdString());
     mCodeGenerator->setFileAttributes("","");
+
     mClassDiagram->applySaveVisitor(mCodeGenerator);
     //this is going to need to to do something
 }

@@ -33,7 +33,7 @@ void uChildClass::accept(uVisitor *visitor)
 {
     visitor->visit(this);
 }
-void uChildClass::acceptSave(uVisitor *visitor)
+void uChildClass::acceptSave(uVisitor *visitor, double x, double y)
 {
     visitor->visitSave(this);
 }
