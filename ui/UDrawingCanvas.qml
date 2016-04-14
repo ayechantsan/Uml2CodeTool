@@ -85,8 +85,8 @@ Canvas {
                 if(j == size -1){ //last segment in the arrow
                     var arrowType = gridLayout.getArrowType(i);
                     var segmentLength = Number(gridLayout.getSegmentLength(i, j));
-                    uDebugger.qPrintText("Last segment length: " + segmentLength)
-                    uDebugger.qPrintText("From: ("+Number(x +(x_to-x)/segmentLength)+","+Number(y + (y_to -y)/segmentLength)+") to ("+x_to+","+y_to+")")
+                    //uDebugger.qPrintText("Last segment length: " + segmentLength)
+                    //uDebugger.qPrintText("From: ("+Number(x +(x_to-x)/segmentLength)+","+Number(y + (y_to -y)/segmentLength)+") to ("+x_to+","+y_to+")")
                     drawReferenceSymbol(Number(x_to - 18*(x_to-x)/segmentLength),Number(y_to - 18*(y_to -y)/segmentLength), x_to, y_to, arrowType);
                 }
             }
@@ -665,20 +665,21 @@ Canvas {
 
             gridLayout.moveObject(selectedClass, Number(movX), Number(movY))
 
-            requestPaint()
+
         }
-        else
+        else if(arrowSelected)
         {
             //test for arrow movement
-            if(arrowSelected)
-            {
-                gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
-                requestPaint()
-                selectedArrowX = x
-                selectedArrowY = y
-            }
-        }
+            gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
 
+            selectedArrowX = x
+            selectedArrowY = y
+        }
+        else //move everything
+        {
+            gridLayout.moveAll(movX, movY)
+        }
+        requestPaint();
         selectedX = x;
         selectedY = y;
     }

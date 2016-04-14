@@ -61,6 +61,8 @@ public:
     Q_INVOKABLE bool isEmpty(int x, int y) const;
     Q_INVOKABLE bool contains(QString const& name) const;
 
+    Q_INVOKABLE void moveAll(int movX, int movY);
+
 signals:
 
 public slots:

@@ -273,9 +273,6 @@ void uGridArrow::mergeSegments()
     TGridSegmentConstIter iter;
     for(iter = mSegments.begin() + 1; iter != mSegments.end(); iter++, iter2++)
     {
-//        double inclination1 = (*iter2)->getInclination();
-//        double inclination2 =
-        uDebugPrinter::printText("Trying segments merge");
         if(similarInclination((*iter2), (*iter)))
         {
             uDebugPrinter::printText("Detected segments merge");
@@ -315,6 +312,14 @@ bool uGridArrow::similarInclination(const uGridSegment * const seg1, const uGrid
     double atan2 = atan((Cy - Ay)/(dev2));
 
     return fabs(atan1 - atan2) < epsilon;
+}
+
+void uGridArrow::moveAllSegments(int movX, int movY)
+{
+    for(TGridSegmentConstIter iter = mSegments.begin(); iter!=mSegments.end(); iter++)
+    {
+        (*iter)->move(movX, movY);
+    }
 }
 
 

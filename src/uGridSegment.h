@@ -19,6 +19,8 @@ public:
 
     double getInclination() const;
 
+    void move(int movX, int movY);
+
 };
 
 typedef std::vector<uGridSegment*> TGridSegment;
