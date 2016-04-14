@@ -311,16 +311,17 @@ ColumnLayout {
             var attributes = attributeField.text
             var isAbstract = abstractField.checked
 
-
-            //Move the class in the grid
-            gridLayout.changeObjectName(drawingCanvas.selectedClass, name)
-
             //Check if the class has a parent
             if(parent != "")
                 dispatcher.setClassState(2)
 
+            //Move the class in the grid and check if the name is used
+            if(!gridLayout.changeObjectName(drawingCanvas.selectedClass, name))
+                name = drawingCanvas.selectedClass; //if class name exists, name keeps the same
+
             //Update the class
             dispatcher.updateClass(drawingCanvas.selectedClass, name, parent, methods, attributes, isAbstract)
+            drawingCanvas.selectedClass = name;
 
             //Repaint the canvas
             drawingCanvas.requestPaint()
@@ -343,7 +344,7 @@ ColumnLayout {
             if (name != "" && !gridLayout.contains(name)) {
 
                 //Add the class to the grid
-                gridLayout.addClass(Number(10),Number(10),drawingCanvas.getClassWidth(),drawingCanvas.getClassHeight(), name)
+                gridLayout.addClass(Number(10),Number(10),drawingCanvas.getClassWidth()+10,drawingCanvas.getClassHeight()+10, name)
 
                 //Check if the class has a parent
                 if(parent != "")

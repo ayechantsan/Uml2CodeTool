@@ -17,9 +17,13 @@ public:
     explicit uGridLayout(QObject *parent = 0);
     uGridLayout(int width, int height);
 
+<<<<<<< HEAD
 
     Q_INVOKABLE QString getAllNames();
     Q_INVOKABLE bool addClass(int i, int j, int width, int height, QString const& name);
+=======
+    Q_INVOKABLE bool addClass(int i, int j, int i_to, int j_to, QString const& name);
+>>>>>>> master
     Q_INVOKABLE bool removeObject(QString const& name);
     Q_INVOKABLE bool removeObject(int i, int j);
     Q_INVOKABLE bool changeObjectName(QString const& name, const QString &newName);
@@ -36,6 +40,7 @@ public:
     Q_INVOKABLE QString getString(int x, int y) const;
     Q_INVOKABLE int getArrowSelected(int x, int y) const;
     Q_INVOKABLE void modifyArrow(int index, int oldX, int oldY, int newX, int newY);
+    Q_INVOKABLE void mergeSegments(int arrowIndex);
 
     Q_INVOKABLE int getWidth() const;
     Q_INVOKABLE int getHeight() const;
@@ -59,11 +64,14 @@ public:
     Q_INVOKABLE int getSegmentY_to(int arrowIndex, int segIndex) const;
     Q_INVOKABLE int getSegmentWidth(int arrowIndex, int segIndex) const;
     Q_INVOKABLE int getSegmentHeight(int arrowIndex, int segIndex) const;
+    Q_INVOKABLE int getSegmentLength(int arrowIndex, int segIndex) const;
 
    // Q_INVOKABLE int getClasses() const;
 
     Q_INVOKABLE bool isEmpty(int x, int y) const;
     Q_INVOKABLE bool contains(QString const& name) const;
+
+    Q_INVOKABLE void moveAll(int movX, int movY);
 
 signals:
 

@@ -16,6 +16,12 @@ public:
 
     bool pivoteMovement(int oldX, int oldY, int newX, int newY);
 
+    int getLength() const;
+
+    double getInclination() const;
+
+    void move(int movX, int movY);
+
 };
 
 typedef std::vector<uGridSegment*> TGridSegment;

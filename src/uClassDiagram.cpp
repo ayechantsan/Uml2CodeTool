@@ -2,6 +2,8 @@
 #include <algorithm>
 #include "uDebugPrinter.h"
 #include "uBaseClass.h"
+#include "uClassFactory.h"
+#include "uClassButton.h"
 
 using namespace std;
 
@@ -27,8 +29,24 @@ void uClassDiagram::removeClass(uInheritable *uClass)
 {
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
-    mClasses.erase(std::remove(mClasses.begin(), mClasses.end(), uClass), mClasses.end());
+
+    //remove parent from classes inheriting from it
+    for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+        if ((*iter)->hasParent() && (*iter)->getParent()->getName() == uClass->getName()){
+            TParameters attributeObjects = (*iter)->getAttributes();
+            TMethods methodObjects = (*iter)->getMethods();
+            TReferences references = (*iter)->getReferences();
+            uInheritable * father = NULL;
+            uClassButton::getInstance().update((*iter)->getName(), (*iter)->getAccess(), (*iter)->getName(), attributeObjects, methodObjects, references, father, (*iter)->isAbstract());
+            removeClass(uClass);
+            return;
+        }
+    }
+
+    removeClass(QString::fromStdString(uClass->getName()));
 }
+
+
 
 bool uClassDiagram::removeClass(QString const &name)
 {
