@@ -90,13 +90,15 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
         (*iter)->accept(visitor);
     }
 }
-void uClassDiagram::applySaveVisitor(uVisitor *visitor)
+void uClassDiagram::applySaveVisitor(uVisitor *visitor, QList<double> x, QList<double> y)
 {
     if (visitor == NULL)
         uDebugPrinter::printText("NUll POINTER");
+    int i = 0;
     for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
         uDebugPrinter::printClass(*iter);
-        (*iter)->acceptSave(visitor);
+        (*iter)->acceptSave(visitor, x[i], y[i]);
+        i++;
     }
 }
 

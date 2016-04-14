@@ -35,7 +35,7 @@ void uInheritable::accept(uVisitor *visitor)
 
 }
 
-void uInheritable::acceptSave(uVisitor *visitor)
+void uInheritable::acceptSave(uVisitor *visitor, double x, double y)
 {
 
 }

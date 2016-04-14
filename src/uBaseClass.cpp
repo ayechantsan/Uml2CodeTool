@@ -35,9 +35,9 @@ void uBaseClass::accept(uVisitor *visitor)
 {
     visitor->visit(this);
 }
-void uBaseClass::acceptSave(uVisitor *visitor)
+void uBaseClass::acceptSave(uVisitor *visitor, double x, double y)
 {
-    visitor->visitSave(this);
+    visitor->visitSave(this, x, y);
 }
 
 

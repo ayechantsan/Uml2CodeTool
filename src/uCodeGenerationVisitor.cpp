@@ -128,9 +128,9 @@ std::string uCodeGenerationVisitor::createBaseInheritanceString(uInheritable * a
 
 
 
-string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const& base)
+string uCodeGenerationVisitor::createContent(uInheritable * aClass, double x, double y, string const& base)
 {
-
+    uDebugPrinter::printText("createing content mehtod" + std::to_string(x));
     stringstream fileContent;
 //iterate through all the attributes associated with the current class and retrun the parameter and methods in a string
         TParameters attributes = aClass->getAttributes();
@@ -162,6 +162,8 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
 
         //need parent info here
         fileContent << "\t]}";
+        fileContent << "\t{\"x\" : " + std::to_string(x) + " }";
+         fileContent << "\t{\"y\" : " + std::to_string(y) + " }";
         //now we need some cheking to see what kind of class we have
         bool hasParent = aClass->hasParent();
         if (hasParent)
@@ -177,24 +179,24 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, string const
 }
 
 //save visit functions one for each type of class that could be visited.
-void uCodeGenerationVisitor::visitSave(uChildClass *childClass)
+void uCodeGenerationVisitor::visitSave(uChildClass *childClass, double x, double y)
 {
 
-    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, childClass->getParent()->getName()), url);
+    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()->getName()), url);
 
 }
 
-void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass)
+void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass, double x, double y)
 {
 
-    saveClassInDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass), url);
+    saveClassInDiagram(baseClass->getName(), mAuthor, mDate, createContent(baseClass, x, y), url);
 
 }
 
-void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass)
+void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass, double x, double y)
 {
 
-    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass), url);
+    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass, x, y)), url;
 
 }
 
@@ -216,7 +218,7 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
     return true;
 }
 //method to save the diagram to a file using JSON objects to represent them
-bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path, double const& x, double const& y)
+bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
 {
     ofstream myfile;
     bool isOpen = false;

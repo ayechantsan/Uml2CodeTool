@@ -14,7 +14,7 @@ public:
     uBaseClass(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, bool isAbstract);
     virtual ~uBaseClass();
     virtual void accept(uVisitor * visitor);
-    virtual void acceptSave(uVisitor *visitor);
+    virtual void acceptSave(uVisitor *visitor, double x, double y);
 protected:
 
 };

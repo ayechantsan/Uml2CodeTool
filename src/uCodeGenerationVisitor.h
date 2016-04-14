@@ -21,16 +21,16 @@ public:
     virtual void visit(uChildClass * childClass);
     virtual void visit(uBaseClass * baseClass);
     virtual void visit(uInterface * interfaceClass);
-    virtual void visitSave(uChildClass * childClass);
-    virtual void visitSave(uBaseClass * baseClass);
-    virtual void visitSave(uInterface * interfaceClass);
+    virtual void visitSave(uChildClass * childClass, double x, double y);
+    virtual void visitSave(uBaseClass * baseClass, double x, double y);
+    virtual void visitSave(uInterface * interfaceClass, double x, double y);
 
     bool createFile(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& lineComment, std::string const& path="");
-    bool saveClassInDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="", double const& x = 0.0, double const& y = 0.0);
+    bool saveClassInDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="");
     std::string createSaveAttributeString(uParameter * attribute);
     std::string createSaveMethodString(uMethod * method);
 
-    std::string createContent(uInheritable * aClass, std::string const& base = "");
+    std::string createContent(uInheritable * aClass, double x, double y, std::string const& base = "");
     std::string createChildInheritanceString(std::string const& base);
     std::string createBaseInheritanceString(uInheritable * aClass);
 

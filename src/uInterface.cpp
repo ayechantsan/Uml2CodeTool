@@ -19,7 +19,7 @@ void uInterface::accept(uVisitor *visitor)
 {
     visitor->visit(this);
 }
-void uInterface::acceptSave(uVisitor *visitor)
+void uInterface::acceptSave(uVisitor *visitor, double x, double y)
 {
-    visitor->visitSave(this);
+    visitor->visitSave(this, x, y);
 }

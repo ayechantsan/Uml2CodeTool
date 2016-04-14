@@ -35,5 +35,5 @@ void uChildClass::accept(uVisitor *visitor)
 }
 void uChildClass::acceptSave(uVisitor *visitor, double x, double y)
 {
-    visitor->visitSave(this);
+    visitor->visitSave(this, x, y);
 }
