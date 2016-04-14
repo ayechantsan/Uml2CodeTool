@@ -72,3 +72,11 @@ double uGridSegment::getInclination() const
 {
     return (double)(mX_to - mX)/(double)(mY_to - mY);
 }
+
+void uGridSegment::move(int movX, int movY)
+{
+    mX += movX;
+    mY += movY;
+    mX_to += movX;
+    mY_to += movY;
+}
