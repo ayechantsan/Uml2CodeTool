@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include<QList>
+#include <QList>
 #include <string>
 #include <vector>
 #include "uStringConverter.h"
@@ -37,7 +37,7 @@ public:
     Q_INVOKABLE void generateProjectFile();
     Q_INVOKABLE void saveDiagram(QString url, QList<QString> names, QList<double> xLoc, QList<double> yLoc);
     Q_INVOKABLE QString loadDiagram(QString url);
-    Q_INVOKABLE QString getLoadNames(QString url);
+
     Q_INVOKABLE int getDiagramSize();
     Q_INVOKABLE uInheritable * getClass(int index);
     Q_INVOKABLE void removeClass(uInheritable * obj);
@@ -70,7 +70,9 @@ private:
         attributes,
         parent,
         interface,
-        abstract
+        abstract,
+        xLoc,
+        yLoc
     };
     QString url;
     // link application logic with GUI

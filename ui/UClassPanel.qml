@@ -178,7 +178,8 @@ ColumnLayout {
                 title: "Please choose a file"
                 folder: shortcuts.home
                 onAccepted: {
-                   var words =  dispatcher.getLoadNames(fileDialog.fileUrl);
+
+                    var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
                     var splitWords = words.split(" ");
                     var j = 1;
                     var k = 0;

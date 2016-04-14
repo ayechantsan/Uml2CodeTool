@@ -13,6 +13,8 @@
 using namespace std;
 
 QString url = "";
+string **classLevelArray;
+int classLevelCount;
 UiEventDispatcher::UiEventDispatcher(QObject *parent) : QObject(0)
 {
     mCodeGenerator = &uCodeGenerationVisitor::getInstance();
@@ -113,115 +115,7 @@ void UiEventDispatcher::saveDiagram(QString url, QList<QString> names, QList<dou
     mClassDiagram->applySaveVisitor(mCodeGenerator, xLoc, yLoc);
     //this is going to need to to do something
 }
-QString UiEventDispatcher::getLoadNames(QString url)
-{
 
-
-    uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
-    string fileLocation = url.toStdString();
-    string fileContent;
-    std::smatch match;
-    std::regex reg ("\\b(file://)([^ ]*)");
-    string location;
-    //this searches for file:/ and returns what follows it which is the path to the file selected.
-    if (std::regex_search(fileLocation, match, reg))
-    {
-        //this gives me the string after what i was looking for which was "file:/".
-        location = match[2];
-    }
-    //regular exprestion to search for things in the file taht wa
-    regex anyReg("\"(.*?)\"");
-
-    ifstream infile;
-      infile.open(location);
-      string line;
-      int j = 0;
-        if (infile.is_open())
-        {
-           //while there is file to read we are going to add to file Content to then parse and get classes
-            while ( getline (infile, line))
-          {
-                fileContent += line + "\n";
-          }
-          infile.close();
-        }
-        else uDebugPrinter::printText("Unable to open file");
-
-        int classCount = 0;
-
-        auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
-        auto words_end = sregex_iterator();
-        int leng = distance(words_begain, words_end);
-        //array to keep all the strings found between ""s
-        string *foundArray = new string[leng];
-        int myi = 0;
-        //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
-        for (sregex_iterator i = words_begain; i != words_end; ++i)
-        {
-            smatch match = *i;
-            foundArray[myi] = match.str();
-            myi++;
-            if (match.str() == "\"name\"")
-            {
-                classCount++;
-            }
-        }
-        //this array represents a class
-        //{name, methodsString, attributesString, parent, interface, abstract}
-        string **classArray = new string*[classCount];
-        for (int i = 0; i < classCount; i ++)
-        {
-            classArray[i] = new string[6];
-        }
-        classCount = 0;
-        //because of the way the gridlayout works the names need to be added to it first then use the cpp code to add them to the data strucuture.
-        for (int u = 0; u < leng-1; u++ )
-        {
-            string word = foundArray[u];
-            if (word =="\"name\"")
-            {
-                classCount++;
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][name] = subString;
-
-            }
-
-        }
-        //loop to add each of the classes collected to the class array
-        string classNamesString ="";
-        for (int i = 0; i < classCount; i++)
-        {
-            //need to set setClassState() by checking if the parent attibute is not blank
-            if (classArray[i][3] != "" )
-            {
-
-            }
-            else
-            {
-                //uDebugPrinter::printText("should be child");
-                UiEventDispatcher::setClassState(2);
-            }
-
-//            UiEventDispatcher::createClass(
-//                        QString::fromStdString(classArray[i][0]),
-//                        QString::fromStdString(classArray[i][3]),
-//                        QString::fromStdString(classArray[i][1]),
-//                        QString::fromStdString(classArray[i][2]),
-//                    false);
-            classNamesString += " " + classArray[i][0];
-        }
-        //clean up things i've added to the heap.
-        for(int i = 0; i < classCount; ++i) {
-            delete [] classArray[i];
-        }
-        delete [] foundArray;
-        delete [] classArray;
-        //final conversion from std::string to QString for the QML javascript function to consume.
-        QString returnWords = QString::fromStdString(classNamesString);
-        return returnWords;
-}
 //this method will load up one of our .uct files and use the uEventDispatcher::creatClass() to add classes to the mClasses stack
 QString UiEventDispatcher::loadDiagram(QString url)
 {
@@ -245,7 +139,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
     ifstream infile;
       infile.open(location);
       string line;
-      int j = 0;
         if (infile.is_open())
         {
            //while there is file to read we are going to add to file Content to then parse and get classes
@@ -277,18 +170,19 @@ QString UiEventDispatcher::loadDiagram(QString url)
             }
         }
         //this array represents a class
-        //{name, methodsString, attributesString, parent, interface, abstract}
+        //{name, methodsString, attributesString, parent, interface, abstract, xLoc, yLoc}
         string **classArray = new string*[classCount];
         for (int i = 0; i < classCount; i ++)
         {
-            classArray[i] = new string[6];
+            classArray[i] = new string[8];
         }
+        classLevelCount = classCount;
         classCount = 0;
         //for each item that was found we want to check what the value is and then grab the string after it in the array
         for (int u = 0; u < leng-1; u++ )
         {
             string word = foundArray[u];
-            if (word =="\"name\"")
+            if (word == "\"name\"")
             {
                 classCount++;
                 string foundString = foundArray[u+1];
@@ -313,7 +207,7 @@ QString UiEventDispatcher::loadDiagram(QString url)
                     classArray[classCount-1][attributes] += " " + subString + "\n";
 
             }
-            else if (word =="\"parent\"")
+            else if (word == "\"parent\"")
             {
 
                 string foundString = foundArray[u+1];
@@ -322,7 +216,7 @@ QString UiEventDispatcher::loadDiagram(QString url)
                 classArray[classCount-1][parent] += subString;
 
             }
-            else if (word =="\"interface\"")
+            else if (word == "\"interface\"")
             {
                 string foundString = foundArray[u+1];
                 const auto lastOfNot = foundString.find_last_not_of(" ");
@@ -330,16 +224,30 @@ QString UiEventDispatcher::loadDiagram(QString url)
                 classArray[classCount-1][interface] += subString;
 
             }
-            else if (word =="\"abstract\"")
+            else if (word == "\"abstract\"")
             {
                 string foundString = foundArray[u+1];
                 const auto lastOfNot = foundString.find_last_not_of(" ");
                 string subString = foundString.substr(1, lastOfNot-1);
                 classArray[classCount-1][abstract] += subString;
             }
+            else if (word == "\"x\"")
+            {
+                string foundString = foundArray[u+1];
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][xLoc] += subString;
+            }
+            else if (word == "\"y\"")
+            {
+                string foundString = foundArray[u+1];
+                const auto lastOfNot = foundString.find_last_not_of(" ");
+                string subString = foundString.substr(1, lastOfNot-1);
+                classArray[classCount-1][yLoc] += subString;
+            }
         }
         //loop to add each of the classes collected to the class array
-        string classNamesString ="";
+        string classNamesString = "";
         for (int i = 0; i < classCount; i++)
         {
             //need to set setClassState() by checking if the parent attibute is not blank
@@ -369,9 +277,11 @@ QString UiEventDispatcher::loadDiagram(QString url)
                         QString::fromStdString(classArray[i][parent]),
                         QString::fromStdString(classArray[i][methods]),
                         QString::fromStdString(classArray[i][attributes]),
-                    isAbstract);
+                        isAbstract);
             classNamesString += " " + classArray[i][name];
         }
+
+        classLevelArray = classArray;
         //clean up things i've added to the heap.
         for(int i = 0; i < classCount; ++i) {
             delete [] classArray[i];

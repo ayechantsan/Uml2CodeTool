@@ -24,7 +24,6 @@ public:
     uInheritable(std::string const& name);
     uInheritable(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, bool isAbstract);
     virtual ~uInheritable();
-
     //Getters and Setters
     std::vector<uMethod *> getMethods() const;
     std::vector<uParameter *> getAttributes() const;

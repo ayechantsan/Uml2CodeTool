@@ -2,6 +2,8 @@
 
 #include "uDebugPrinter.h"
 
+int x=0, y=0;
+
 uInheritable::uInheritable()
 {
 
