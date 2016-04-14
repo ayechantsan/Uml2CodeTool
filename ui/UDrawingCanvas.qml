@@ -11,6 +11,7 @@ Canvas {
 
     property string selectedClass: ""
     property bool selectingParent: false
+    property bool dropableSite: true
     property int selectedX: 0
     property int selectedY: 0
     property bool selecting: false //this is a flag for avoiding uClassPanel.updateMethod() to be call when a class is clicked
@@ -25,15 +26,32 @@ Canvas {
         // Get drawing context
         var context = getContext("2d");
         //context.fillStyle = "white"
-        context.strokeStyle = "black"
+        context.strokeStyle = "#999999"
+        context.lineWidth = 3
+
         // Make canvas all white
         context.beginPath();
         context.clearRect(0, 0, width, height);
-        context.fill();
+        context.strokeRect(0,0, width, height)
+
+        //context.fill();
+
 
         //draw each class from the uClassDiagram and checking position with the
         drawClasses()
         drawSegments()
+
+        //draw circle around selected arrow point
+        if(arrowSelected)
+        {
+            //Draw circle around point selected in arrow
+            context.beginPath();
+            context.moveTo(selectedArrowX+20, selectedArrowY);
+            context.arc(selectedArrowX, selectedArrowY, 20, 0, 2*Math.PI, true)
+            context.strokeStyle = "red"
+            context.stroke();
+        }
+
     }
 
     function drawClasses()
@@ -110,6 +128,7 @@ Canvas {
         var context = getContext("2d");
 
         context.strokeStyle = "black"
+        context.lineWidth = 1
 
         var letterFont = width < height ? Number(width)/90: Number(height)/60;
         //console.log("LetterFont: " + letterFont)
@@ -132,12 +151,12 @@ Canvas {
         context.lineTo(x+classWidth, y+secondDelimiter);
         context.stroke();
 
-        //draw red frame around if the class is selected
+        //draw green frame around if the class is selected
         if(name == selectedClass)
         {
             context.beginPath();
             context.rect(x-1, y-1, classWidth+2, classHeight+2);
-            context.strokeStyle = "red"
+            context.strokeStyle = "#66ff33"
             context.stroke()
             context.strokeStyle = "black"
         }
@@ -223,6 +242,7 @@ Canvas {
     }
 
     function drawInheritance(name, parent) {
+        dropableSite = true
 
         var objI = gridLayout.getClassX(name)
         var objJ = gridLayout.getClassY(name)
@@ -254,6 +274,7 @@ Canvas {
 
     function autoGenerateInheritanceArrow(name, parent)
     {
+        dropableSite = true
         var x = gridLayout.getClassX(name)
         var y = gridLayout.getClassY(name)
 
@@ -295,6 +316,7 @@ Canvas {
     }
 
     function drawInheritanceArrow(x, y, x_to, y_to) {
+        dropableSite = true
 
         var paddingX = Number(offsetX()) - Number(getClassWidth())
         var paddingY = Number(offsetY()) - Number(getClassHeight())
@@ -582,7 +604,8 @@ Canvas {
         //First check class
         var name = gridLayout.getString(parseInt(x), parseInt(y))
 
-        if(name!=selectedClass)
+        //If new selected Class is not the previous one, repaint
+        if(name != selectedClass)
             requestPaint()
 
         if (name != "" && !selectingParent) {
@@ -607,7 +630,8 @@ Canvas {
             selecting = false;//allows uClassPanel.updateMethod() to be called
 
         }
-        else if(selectingParent && name != ""){
+        else if(selectingParent && name != "")
+        {
            uClassPanel.setParentField(name);
         }
         else
@@ -618,7 +642,7 @@ Canvas {
             //if no class selected, check arrows
             arrowSelectedIndex = gridLayout.getArrowSelected(x,y)
             if(arrowSelectedIndex >= 0){
-                uDebugger.qPrintText("Found arrow: " +arrowSelectedIndex)
+                uDebugger.qPrintText("Found arrow: " + arrowSelectedIndex)
                 arrowSelected = true;
                 selectedArrowX = x
                 selectedArrowY = y
@@ -632,16 +656,22 @@ Canvas {
     {
         var movX = x - selectedX
         var movY = y - selectedY
+
         if(selectedClass != "")
         {
-            //uDebugger.qPrintText("Move class: " + selectedClass)
+            var name = gridLayout.getString(parseInt(x), parseInt(y))
+
+            dropableSite = (selectedClass == name);
+
             gridLayout.moveObject(selectedClass, Number(movX), Number(movY))
+
             requestPaint()
         }
         else
         {
             //test for arrow movement
-            if(arrowSelected){
+            if(arrowSelected)
+            {
                 gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
                 requestPaint()
                 selectedArrowX = x
@@ -656,10 +686,19 @@ Canvas {
     function releasedMouse(x, y)
     {
         uDebugger.qPrintText("Mouse RELEASED in (" + x +"," + y + ")")
+
+        //Handle of objects clash - Needs testing
+//        if (dropableSite == false)
+//        {
+//            gridLayout.moveObject(selectedClass, 150, 0)
+//            requestPaint()
+//        }
+
         if(arrowSelected){
             gridLayout.mergeSegments(arrowSelectedIndex);
             requestPaint()
         }
+
         arrowSelected = false;
         arrowSelectedIndex = -1;
 
