@@ -25,6 +25,7 @@ class uGridArrow
 public:
     uGridArrow(const QString &origin, const QString &destination, int type, TGridSegment segments);
     uGridArrow(const QString &origin, const QString &destination, uArrowType type);
+    uGridArrow(const std::string &str);
     //~uGridArrow();
 
     //Getters
@@ -39,6 +40,7 @@ public:
     //Setters
     void addSegment(uGridSegment * segment);
     void setDeleted(bool del);
+    void setType(int type);
     void resizeX(double ratio, int destinationX, int destWidth);
     void resizeY(double ratio, int destinationY, int destHeight);
 
@@ -52,6 +54,8 @@ public:
     void mergeSegments(); //called after each moveSegments to check possible segment merges
     bool similarInclination(const uGridSegment * const seg1, const uGridSegment * const seg2);
     void moveAllSegments(int movX, int movY);
+
+    std::string toString() const;
 
 private:
     uArrowType mType;
