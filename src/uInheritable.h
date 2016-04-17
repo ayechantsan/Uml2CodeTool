@@ -36,6 +36,9 @@ public:
     void addAttribute(uParameter * attribute);
     void addReference(uReference * reference);
 
+    double locX = 0.0;
+    double locY = 0.0;
+
     bool hasParent() const;//to check whether it is a childClass or not
     bool isInterface() const;
     bool isAbstract() const;

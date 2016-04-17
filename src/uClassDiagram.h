@@ -15,6 +15,7 @@ class uClassDiagram
 public:
     static uClassDiagram &getInstance();
     void addClass(uInheritable * uClass);
+    void addClass(uInheritable *uClass, double x, double y);
     void removeClass(uInheritable * uClass);
     bool removeClass(QString const &name);
 

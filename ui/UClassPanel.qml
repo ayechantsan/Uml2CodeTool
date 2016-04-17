@@ -194,10 +194,15 @@ ColumnLayout {
                         {
                             k = i
                         }
+
+                        var x = dispatcher.getClassX(splitWords[i]);
+                        var y = dispatcher.getClassY(splitWords[i]);
                         var width = drawingCanvas.getClassWidth();
                         var height = drawingCanvas.getClassHeight();
                         k++;
-                        gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
+                       // gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
+                        gridLayout.addClass(x, y, drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
+
                         words =  dispatcher.loadDiagram(fileDialog.fileUrl);
                         drawingCanvas.requestPaint()
 

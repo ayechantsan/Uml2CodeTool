@@ -24,7 +24,15 @@ void uClassDiagram::addClass(uInheritable *uClass)
         uDebugPrinter::printText("error: null pointer");
     mClasses.push_back(uClass);
 }
-
+//overloaded method that accepts x and y cordinations.
+void uClassDiagram::addClass(uInheritable *uClass, double x, double y)
+{
+    if (uClass == NULL)
+        uDebugPrinter::printText("error: null pointer");
+    uClass->locX = x;
+    uClass->locY = y;
+    mClasses.push_back(uClass);
+}
 void uClassDiagram::removeClass(uInheritable *uClass)
 {
     if (uClass == NULL)

@@ -9,7 +9,7 @@
 #include <fstream>
 #include <string>
 #include <regex>
-
+#include <stdlib.h>
 using namespace std;
 
 QString url = "";
@@ -42,6 +42,44 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
 
     // call factory to create object
     mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj,isAbstract);
+}
+
+//overloaded crateClass to load in the x
+void UiEventDispatcher::createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract, double x, double y)
+{
+
+    // convert method string to uMethod objects
+    TMethods methodObjects = uStringConverter::parseMethods(methods.toStdString());
+
+    // convert attribute string to uParameter objects
+    TParameters attributeObjects = uStringConverter::parseAttributes(attributes.toStdString());
+
+    // TODO
+    TReferences referenceObjects;
+
+    // find parent given name
+
+    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+
+uDebugPrinter::printText(" create with x" + std::to_string(x));
+    // call factory to create object
+    mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, x, y, parentObj,isAbstract);
+}
+//method to ge the x coridinate of the glass by iterating through the
+//mClassDiagram
+int UiEventDispatcher::getClassX(QString name)
+{
+   uInheritable found = *mClassDiagram->find(name);
+   int foundX = found.locX;
+   return foundX;
+}
+//method to ge the y coridinate of the glass by iterating through the
+//mClassDiagram
+int UiEventDispatcher::getClassY(QString name)
+{
+    uInheritable found = *mClassDiagram->find(name);
+    int foundY = found.locY;
+    return foundY;
 }
 
 void UiEventDispatcher::updateClass(QString oldName, QString newName, QString parent, QString methods, QString attributes, bool isAbstract)
@@ -271,13 +309,20 @@ QString UiEventDispatcher::loadDiagram(QString url)
                 isAbstract = true;
             }
 
+ std::string::size_type sz;
+ double x_loc =  atof( classArray[i][xLoc].c_str());
+ double y_loc = atof( classArray[i][yLoc].c_str());
+
+
 
             UiEventDispatcher::createClass(
                         QString::fromStdString(classArray[i][name]),
                         QString::fromStdString(classArray[i][parent]),
                         QString::fromStdString(classArray[i][methods]),
                         QString::fromStdString(classArray[i][attributes]),
-                        isAbstract);
+                        isAbstract,
+                        x_loc,
+                        y_loc);
             classNamesString += " " + classArray[i][name];
         }
 

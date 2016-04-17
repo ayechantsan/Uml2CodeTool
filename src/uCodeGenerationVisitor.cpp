@@ -162,8 +162,8 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, double x, do
 
         //need parent info here
         fileContent << "\t]}";
-        fileContent << "\t{\"x\" : " + std::to_string(x) + " }\n";
-         fileContent << "\t{\"y\" : " + std::to_string(y) + " }\n";
+        fileContent << "\t{\"x\" : \"" + std::to_string(x) + "\" }\n";
+        fileContent << "\t{\"y\" : \"" + std::to_string(y) + " }\n\"";
         //now we need some cheking to see what kind of class we have
         bool hasParent = aClass->hasParent();
         if (hasParent)

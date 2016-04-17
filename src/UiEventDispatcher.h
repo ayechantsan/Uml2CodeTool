@@ -26,6 +26,10 @@ public:
 
 
     Q_INVOKABLE void createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract);
+    Q_INVOKABLE void createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract, double x, double y);
+
+    Q_INVOKABLE int getClassX(QString name);
+    Q_INVOKABLE int getClassY(QString name);
     Q_INVOKABLE void updateClass(QString oldName, QString newName, QString parent, QString methods, QString attributes, bool isAbstract);
 
     Q_INVOKABLE void setClassState(int type);

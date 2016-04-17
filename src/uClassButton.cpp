@@ -24,3 +24,10 @@ void uClassButton::create(uAccess access, const std::string &name, TParameters &
     uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eBaseClass ,access, name, attributes, methods, references, base, isAbstract));
 
 }
+//overloaded creatw that takes a x and y cordinates.
+void uClassButton::create(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, double x, double y, uInheritable *base, bool isAbstract)
+{
+   uDebugPrinter::printText("create() in class button");
+    uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eBaseClass ,access, name, attributes, methods, references, base, isAbstract, x, y));
+
+}

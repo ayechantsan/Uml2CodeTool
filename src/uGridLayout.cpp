@@ -18,7 +18,7 @@ uGridLayout::uGridLayout(int width, int height) : QObject(0)
     mHeight = height;
 }
 
-<<<<<<< HEAD
+
 QString uGridLayout::getAllNames()
 {
     QString thisString;
@@ -29,10 +29,9 @@ QString uGridLayout::getAllNames()
     return thisString;
 }
 
-bool uGridLayout::addClass(int i, int j, int width, int height, const QString &name)
-=======
+
 bool uGridLayout::addClass(int i, int j, int i_to, int j_to, const QString &name)
->>>>>>> master
+
 {
     uDebugPrinter::printText("adding class: " + name.toStdString() + " index i: " + to_string(i) + " index j: " + to_string(j));
     if (!checkBounds(i,j,i_to, j_to)) return false;

@@ -37,15 +37,43 @@ uInheritable * uClassFactory::createClass(uClassType type, uAccess access, const
     switch (type) {
 
         case eBaseClass:
-            return new uBaseClass(access, name, attributes, methods, references,isAbstract);
+
+        return new uBaseClass(access, name, attributes, methods, references,isAbstract);
+
             break;
         case eInterface:
             return new uInterface(access, name, attributes, methods, references);
-             uDebugPrinter::printText("interface factory");
+
             break;
         case eChildClass:
 
             return new uChildClass(access, name, attributes, methods, references, base, isAbstract);
+
+            break;
+        default:
+            return NULL;
+            break;
+    }
+
+}
+//overloaded to provide the x and y
+uInheritable * uClassFactory::createClass(uClassType type, uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, uInheritable *base, bool isAbstract, double x, double y)
+{
+    switch (type) {
+
+        case eBaseClass:
+        uDebugPrinter::printText("base factory with x");
+        return new uBaseClass(access, name, attributes, methods, references,isAbstract, x, y);
+
+            break;
+        case eInterface:
+          uDebugPrinter::printText("interface factory with x");
+        return new uInterface(access, name, attributes, methods, references, x ,y );
+
+            break;
+        case eChildClass:
+        uDebugPrinter::printText("child factory with x");
+            return new uChildClass(access, name, attributes, methods, references, base, isAbstract, x , y);
 
             break;
         default:
