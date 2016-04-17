@@ -181,25 +181,15 @@ ColumnLayout {
 
                     var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
                     var splitWords = words.split(" ");
-                    var j = 1;
-                    var k = 0;
                     for (var i = 1; i< splitWords.length; i++)
                     {
-                        if (i > 7)
-                        {
-                            k = i - 7;
-                            j++;
-                        }
-                        else
-                        {
-                            k = i
-                        }
+
 
                         var x = dispatcher.getClassX(splitWords[i]);
                         var y = dispatcher.getClassY(splitWords[i]);
                         var width = drawingCanvas.getClassWidth();
                         var height = drawingCanvas.getClassHeight();
-                        k++;
+
                        // gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
                         gridLayout.addClass(x, y, drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
 
