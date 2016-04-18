@@ -35,6 +35,7 @@ ApplicationWindow {
             Layout.preferredHeight: parent.height
             onHeightChanged: gridLayout.setHeight(Number(height));
             onWidthChanged: gridLayout.setWidth(Number(width));
+
             Keys.onDeletePressed: {
                 uClassPanel.deleteMethod();
                 event.accepted = true;
