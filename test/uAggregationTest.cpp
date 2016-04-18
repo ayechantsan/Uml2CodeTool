@@ -13,7 +13,6 @@ void uAggregationTest::initTestCase()
         mObject = new uAggregation(reference, uAccess::uPublic);
 }
 
-
 void uAggregationTest::cleanupTestCase()
 {
     delete(mObject); mObject = NULL;

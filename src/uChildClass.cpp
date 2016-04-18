@@ -24,6 +24,16 @@ uChildClass::uChildClass(uAccess access, const std::string &name, TParameters &a
     mIsInterface = false;
 }
 
+uChildClass::uChildClass(uAccess access, const std::string & name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable * base, bool isAbstract, double x, double y) : uInheritable(access, name, attributes, methods, references, isAbstract)
+{
+
+    mHasParent = true;
+    mBaseClass = base;
+    mIsInterface = false;
+    uChildClass::locX = x;
+    uChildClass::locY = y;
+
+}
 uChildClass::~uChildClass()
 {
     uDebugPrinter::printText("UChildClass DTor called");
@@ -32,4 +42,8 @@ uChildClass::~uChildClass()
 void uChildClass::accept(uVisitor *visitor)
 {
     visitor->visit(this);
+}
+void uChildClass::acceptSave(uVisitor *visitor, double x, double y)
+{
+    visitor->visitSave(this, x, y);
 }

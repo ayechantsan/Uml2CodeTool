@@ -34,7 +34,9 @@ ApplicationWindow {
                 model: [ "None", "C++", "Java", "Python" ]
                 onCurrentIndexChanged: {
                     dispatcher.setLanguage(languageCB.currentText);
+                   genButton.visible = true
                 }
+
             }
         }
 
@@ -43,6 +45,7 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Label {
+                id: fileLocationLbl
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 StyledText {
@@ -55,9 +58,27 @@ ApplicationWindow {
                     text: "Choose Folder"
                 }
                 onClicked: {
-                    var component = Qt.createComponent("UFileDialog.qml");
-                    var win2 = component.createObject(generationDialog);
-                    win2.show();
+//                    var component = Qt.createComponent("UFileDialog.qml");
+//                    var win2 = component.createObject(generationDialog);
+//                    win2.show();
+                    fileDialog.visible = true;
+                }
+                FileDialog {
+                    id: fileDialog
+                    title: "Please choose a folder"
+                    folder: shortcuts.home
+                    selectFolder: true
+                    onAccepted: {
+
+
+                        console.log("Accepted "+fileUrl);
+                        dispatcher.setUrl(fileUrl);
+                        fileLocationLbl.text = fileUrl;
+                    }
+                    onRejected: {
+
+                    }
+                    Component.onCompleted: visible = false
                 }
             }
         }
@@ -114,8 +135,11 @@ ApplicationWindow {
 
             }
             Button {
+                id: genButton
+                visible: false
                 StyledText {
                     text: "Generate"
+
                 }
                 onClicked: {
                     //TODO
@@ -125,8 +149,6 @@ ApplicationWindow {
                 }
             }
         }
-
-
     }
 }
 

@@ -15,7 +15,21 @@ uInterface::uInterface(uAccess access, const std::string &name, TParameters &att
     mIsAbstract = false;
 }
 
+uInterface::uInterface(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, double x, double y) : uInheritable(access, name, attributes, methods, references, false)
+{
+    mHasParent = false;
+    mIsInterface = true;
+    mIsAbstract = false;
+    uInterface::locX = x;
+    uInterface::locY = y;
+}
+
+
 void uInterface::accept(uVisitor *visitor)
 {
     visitor->visit(this);
+}
+void uInterface::acceptSave(uVisitor *visitor, double x, double y)
+{
+    visitor->visitSave(this, x, y);
 }

@@ -1,7 +1,8 @@
 #include "uGridLayout.h"
 #include "uDebugPrinter.h"
 #include "uGridObjectFactory.h"
-
+#include <QVector>
+#include <QString>
 #include <string>
 
 using namespace std;
@@ -17,12 +18,25 @@ uGridLayout::uGridLayout(int width, int height) : QObject(0)
     mHeight = height;
 }
 
-bool uGridLayout::addClass(int i, int j, int width, int height, const QString &name)
+
+QString uGridLayout::getAllNames()
+{
+    QString thisString;
+    for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++) {
+
+            thisString += (*iter)->getName() + " ";
+    }
+    return thisString;
+}
+
+
+bool uGridLayout::addClass(int i, int j, int i_to, int j_to, const QString &name)
+
 {
     uDebugPrinter::printText("adding class: " + name.toStdString() + " index i: " + to_string(i) + " index j: " + to_string(j));
-    if (!checkBounds(i,j,width, height)) return false;
+//    if (!checkBounds(i,j,i_to, j_to)) return false;
 
-    mTable.push_back(uGridObjectFactory::createClass(i ,j ,width ,height ,name));
+    mTable.push_back(uGridObjectFactory::createClass(i ,j ,i_to ,j_to ,name));
 
     return true;
 }
@@ -77,14 +91,14 @@ bool uGridLayout::moveObject(const QString &name, int movX, int movY)
 {
     for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++) {
         if ((*iter)->getName() == name) {
-            if(checkBounds((*iter)->getX() + movX, (*iter)->getY() + movY, (*iter)->getWidth(), (*iter)->getHeight())){
+            //if(checkBounds((*iter)->getX() + movX, (*iter)->getY() + movY, (*iter)->getWidth(), (*iter)->getHeight())){
                 (*iter)->setY((*iter)->getY() + movY);
                 (*iter)->setX((*iter)->getX() + movX);
                 (*iter)->setY_to((*iter)->getY_to() + movY);
                 (*iter)->setX_to((*iter)->getX_to() + movX);
                 (*iter)->notifyMovement(movX, movY); //notifies the arrows that it is moving
                 return true;
-            }
+            //}
         }
     }
 
@@ -205,6 +219,11 @@ int uGridLayout::getArrowSelected(int x, int y) const
 void uGridLayout::modifyArrow(int index, int oldX, int oldY, int newX, int newY)
 {
     mArrows[index]->moveSegments(oldX, oldY, newX, newY);
+}
+
+void uGridLayout::mergeSegments(int arrowIndex)
+{
+    mArrows[arrowIndex]->mergeSegments();
 }
 
 int uGridLayout::getWidth() const
@@ -346,6 +365,11 @@ int uGridLayout::getSegmentY(int arrowIndex, int segIndex) const
     return mArrows[arrowIndex]->getSegment(segIndex)->getY();
 }
 
+//int uGridLayout::getClasses() const
+//{
+//    return 56;
+//}
+
 int uGridLayout::getSegmentX_to(int arrowIndex, int segIndex) const
 {
     return mArrows[arrowIndex]->getSegment(segIndex)->getX_to();
@@ -366,6 +390,11 @@ int uGridLayout::getSegmentHeight(int arrowIndex, int segIndex) const
     return mArrows[arrowIndex]->getSegment(segIndex)->getHeight();
 }
 
+int uGridLayout::getSegmentLength(int arrowIndex, int segIndex) const
+{
+    return mArrows[arrowIndex]->getSegment(segIndex)->getLength();
+}
+
 bool uGridLayout::isEmpty(int x, int y) const
 {
     for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++) {
@@ -384,6 +413,35 @@ bool uGridLayout::contains(const QString &name) const
         }
     }
     return false;
+}
+
+void uGridLayout::cleanAll()
+{
+    mTable.clear();
+    mArrows.clear();
+}
+
+void uGridLayout::moveAll(int movX, int movY)
+{
+    //move all classes
+    for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++)
+    {
+            //if(checkBounds((*iter)->getX() + movX, (*iter)->getY() + movY, (*iter)->getWidth(), (*iter)->getHeight())){
+            (*iter)->setY((*iter)->getY() + movY);
+            (*iter)->setX((*iter)->getX() + movX);
+            (*iter)->setY_to((*iter)->getY_to() + movY);
+            (*iter)->setX_to((*iter)->getX_to() + movX);
+                //(*iter)->notifyMovement(movX, movY); //notifies the arrows that it is moving
+            //}
+    }
+
+    //move all arrows
+    for(TGridArrowConstIter iter=mArrows.begin(); iter!= mArrows.end(); iter++)
+    {
+        (*iter)->moveAllSegments(movX, movY);
+    }
+
+
 }
 
 bool uGridLayout::checkBounds(int i, int j, int width, int height) const
