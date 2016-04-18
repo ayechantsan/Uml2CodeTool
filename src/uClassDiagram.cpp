@@ -146,3 +146,8 @@ int uClassDiagram::getIndex(const QString &name) const
     }
     return -1;
 }
+
+void uClassDiagram::clearAll()
+{
+    mClasses.clear();
+}

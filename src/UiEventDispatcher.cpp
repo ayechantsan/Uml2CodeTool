@@ -352,6 +352,11 @@ QString UiEventDispatcher::getUrl()
     return UiEventDispatcher::url;
 }
 
+void UiEventDispatcher::clearAll()
+{
+    mClassDiagram->clearAll();
+}
+
 int UiEventDispatcher::getDiagramSize()
 {
     return mClassDiagram->size();

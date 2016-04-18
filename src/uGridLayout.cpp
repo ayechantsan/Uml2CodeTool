@@ -34,7 +34,11 @@ bool uGridLayout::addClass(int i, int j, int i_to, int j_to, const QString &name
 
 {
     uDebugPrinter::printText("adding class: " + name.toStdString() + " index i: " + to_string(i) + " index j: " + to_string(j));
+<<<<<<< HEAD
    // if (!checkBounds(i,j,i_to, j_to)) return false;
+=======
+//    if (!checkBounds(i,j,i_to, j_to)) return false;
+>>>>>>> f353b7f6fd187b8a0113ac007496d5436b490c17
 
     mTable.push_back(uGridObjectFactory::createClass(i ,j ,i_to ,j_to ,name));
 
@@ -413,6 +417,12 @@ bool uGridLayout::contains(const QString &name) const
         }
     }
     return false;
+}
+
+void uGridLayout::cleanAll()
+{
+    mTable.clear();
+    mArrows.clear();
 }
 
 void uGridLayout::moveAll(int movX, int movY)

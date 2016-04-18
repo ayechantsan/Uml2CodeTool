@@ -60,7 +60,7 @@ public:
     Q_INVOKABLE void setUrl(QString string);
     Q_INVOKABLE QString getUrl();
 
-
+    Q_INVOKABLE void clearAll();
 
 signals:
 

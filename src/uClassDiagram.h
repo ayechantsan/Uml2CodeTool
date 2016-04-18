@@ -29,6 +29,8 @@ public:
     int size() const;
     int getIndex(QString const& name) const;
 
+    void clearAll();
+
 private:
     TClasses mClasses;
 
