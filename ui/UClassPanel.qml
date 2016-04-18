@@ -191,7 +191,8 @@ ColumnLayout {
                         var height = drawingCanvas.getClassHeight();
 
                        // gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
-                        gridLayout.addClass(x, y, drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
+                        //uDebugger.qPrintText("Postion: (" + x + "," + y +"), Name: " +splitWords[i]);
+                        gridLayout.addClass(x, y, x + drawingCanvas.getClassWidth(), y + drawingCanvas.getClassHeight(), splitWords[i])
 
                         words =  dispatcher.loadDiagram(fileDialog.fileUrl);
                         drawingCanvas.requestPaint()
