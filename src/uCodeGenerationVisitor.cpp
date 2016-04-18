@@ -182,7 +182,10 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, double x, do
 void uCodeGenerationVisitor::visitSave(uChildClass *childClass, double x, double y)
 {
 
-    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()->getName()), url);
+  if (!childClass->hasParent())
+        saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y), url);
+    else
+        saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()->getName()), url);
 
 }
 
