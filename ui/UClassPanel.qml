@@ -3,6 +3,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.0
 
 ColumnLayout {
     id: classPanel
@@ -133,6 +134,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: 10
+
         Button {
 
             StyledText {
@@ -154,6 +156,84 @@ ColumnLayout {
             Layout.fillWidth: true
             onClicked: {
                 deleteMethod()
+            }
+        }
+        Button {
+            id: load
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            StyledText {
+                text: "Load"
+            }
+            tooltip: "click to load file"
+            onClicked:
+            {
+
+                fileDialog.visible = true
+
+            }
+
+            FileDialog {
+                id: fileDialog
+                title: "Please choose a file"
+                folder: shortcuts.home
+                onAccepted: {
+
+                    var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
+                    var splitWords = words.split(" ");
+                    for (var i = 1; i< splitWords.length; i++)
+                    {
+
+
+                        var x = dispatcher.getClassX(splitWords[i]);
+                        var y = dispatcher.getClassY(splitWords[i]);
+                        var width = drawingCanvas.getClassWidth();
+                        var height = drawingCanvas.getClassHeight();
+
+                       // gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
+                        //uDebugger.qPrintText("Postion: (" + x + "," + y +"), Name: " +splitWords[i]);
+                        gridLayout.addClass(x, y, x + drawingCanvas.getClassWidth(), y + drawingCanvas.getClassHeight(), splitWords[i])
+
+                        words =  dispatcher.loadDiagram(fileDialog.fileUrl);
+                        drawingCanvas.requestPaint()
+
+//                        //Check if the class has a parent
+//                        if(parent != "")
+//                            dispatcher.setClassState(2)
+
+//                        //Create the class
+//                        dispatcher.createClass(name, parent, methods, attributes, isAbstract)
+
+//                        //Repaint the canvas
+
+//                        clearTextFields()
+//                        drawingCanvas.selectedClass = ""
+
+
+                    }
+                    close()
+                }
+                onRejected: {
+                    console.log("Canceled")
+                   close()
+                }
+                Component.onCompleted: visible = false
+            }
+        }
+        Button {
+            id: repaint
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            visible: false
+            StyledText {
+                text: "ReDraw"
+            }
+            tooltip: "click to draw"
+            onClicked:
+            {
+
+                drawingCanvas.requestPaint()
+
             }
         }
     }

@@ -2,6 +2,8 @@
 
 #include "uDebugPrinter.h"
 
+
+
 uInheritable::uInheritable()
 {
 
@@ -35,6 +37,10 @@ void uInheritable::accept(uVisitor *visitor)
 
 }
 
+void uInheritable::acceptSave(uVisitor *visitor, double x, double y)
+{
+
+}
 std::vector<uMethod*> uInheritable::getMethods() const
 {
     return mMethods;

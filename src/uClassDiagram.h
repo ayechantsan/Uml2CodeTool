@@ -15,6 +15,7 @@ class uClassDiagram
 public:
     static uClassDiagram &getInstance();
     void addClass(uInheritable * uClass);
+    void addClass(uInheritable *uClass, double x, double y);
     void removeClass(uInheritable * uClass);
     bool removeClass(QString const &name);
 
@@ -23,6 +24,7 @@ public:
     uInheritable * find(QString const& name) const;
     uInheritable * find(std::string const& name) const;
     void applyVisitor(uVisitor* visitor);
+    void applySaveVisitor(uVisitor *visitor, QList<double> x, QList<double> y);
     uInheritable * get(int index) const;
     int size() const;
     int getIndex(QString const& name) const;

@@ -25,4 +25,8 @@ void uInterfaceButton::create(uAccess access, std::string const& name, TParamete
 {
     uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eInterface,access, name, attributes, methods, references, base, isAbstract));
 }
-
+//overloaded create that takes a  x and y location
+void uInterfaceButton::create(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, double x, double y, uInheritable *base, bool isAbstract)
+{
+    uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eInterface,access, name, attributes, methods, references, base, isAbstract, x, y));
+}

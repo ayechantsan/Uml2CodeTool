@@ -1,6 +1,8 @@
 #include "uGridArrow.h"
 #include "uDebugPrinter.h"
+
 #include <math.h>
+
 
 uGridArrow::uGridArrow(QString const& origin, QString const& destination, int type, TGridSegment segments)
 {

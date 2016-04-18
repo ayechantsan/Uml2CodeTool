@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <vector>
+#include <QVector>
+
 #include "uGridArrow.h"
 #include "uGridClass.h"
 
@@ -15,7 +17,10 @@ public:
     explicit uGridLayout(QObject *parent = 0);
     uGridLayout(int width, int height);
 
+    Q_INVOKABLE QString getAllNames();
+
     Q_INVOKABLE bool addClass(int i, int j, int i_to, int j_to, QString const& name);
+
     Q_INVOKABLE bool removeObject(QString const& name);
     Q_INVOKABLE bool removeObject(int i, int j);
     Q_INVOKABLE bool changeObjectName(QString const& name, const QString &newName);
@@ -57,6 +62,8 @@ public:
     Q_INVOKABLE int getSegmentWidth(int arrowIndex, int segIndex) const;
     Q_INVOKABLE int getSegmentHeight(int arrowIndex, int segIndex) const;
     Q_INVOKABLE int getSegmentLength(int arrowIndex, int segIndex) const;
+
+   // Q_INVOKABLE int getClasses() const;
 
     Q_INVOKABLE bool isEmpty(int x, int y) const;
     Q_INVOKABLE bool contains(QString const& name) const;

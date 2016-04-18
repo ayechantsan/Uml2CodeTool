@@ -5,13 +5,13 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.0
 
 FileDialog {
-    id: fileDialog
+    id: saveFileDialog
     title: "Please choose a folder"
     folder: shortcuts.home
     selectFolder: true
     onAccepted: {
         console.log("Accepted "+fileUrl);
-
+        dispatcher.url = fileUrl;
     }
     onRejected: {
 

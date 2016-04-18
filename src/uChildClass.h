@@ -13,8 +13,11 @@ public:
     uChildClass(std::string const& name);
     uChildClass(std::string const& name, uInheritable * base);
     uChildClass(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable * base, bool isAbstract);
+    uChildClass(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable * base, bool isAbstract, double x, double y);
+
     virtual ~uChildClass();
     virtual void accept(uVisitor * visitor);
+    virtual void acceptSave(uVisitor * visitor, double x, double y);
 };
 
 #endif // UCHILDCLASS_H
