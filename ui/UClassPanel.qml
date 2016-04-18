@@ -180,42 +180,26 @@ ColumnLayout {
                 onAccepted: {
 
                     var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
+                    words = words
                     var splitWords = words.split(" ");
+                    uDebugger.qPrintText(splitWords);
                     for (var i = 1; i< splitWords.length; i++)
                     {
 
-
                         var x = dispatcher.getClassX(splitWords[i]);
                         var y = dispatcher.getClassY(splitWords[i]);
-                        var width = drawingCanvas.getClassWidth();
-                        var height = drawingCanvas.getClassHeight();
 
                        // gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
-                        //uDebugger.qPrintText("Postion: (" + x + "," + y +"), Name: " +splitWords[i]);
-                        gridLayout.addClass(x, y, x + drawingCanvas.getClassWidth(), y + drawingCanvas.getClassHeight(), splitWords[i])
-
-                        words =  dispatcher.loadDiagram(fileDialog.fileUrl);
-                        drawingCanvas.requestPaint()
-
-//                        //Check if the class has a parent
-//                        if(parent != "")
-//                            dispatcher.setClassState(2)
-
-//                        //Create the class
-//                        dispatcher.createClass(name, parent, methods, attributes, isAbstract)
-
-//                        //Repaint the canvas
-
-//                        clearTextFields()
-//                        drawingCanvas.selectedClass = ""
-
+                        uDebugger.qPrintText("Postion: (" + x + "," + y +"), Name: " +splitWords[i]);
+                        gridLayout.addClass(x, y, x + drawingCanvas.getClassWidth(), y + drawingCanvas.getClassHeight(), splitWords[i]);
 
                     }
-                    close()
+                     drawingCanvas.requestPaint();
+                    close();
                 }
                 onRejected: {
-                    console.log("Canceled")
-                   close()
+                    console.log("Canceled");
+                   close();
                 }
                 Component.onCompleted: visible = false
             }

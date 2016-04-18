@@ -34,7 +34,7 @@ bool uGridLayout::addClass(int i, int j, int i_to, int j_to, const QString &name
 
 {
     uDebugPrinter::printText("adding class: " + name.toStdString() + " index i: " + to_string(i) + " index j: " + to_string(j));
-    if (!checkBounds(i,j,i_to, j_to)) return false;
+   // if (!checkBounds(i,j,i_to, j_to)) return false;
 
     mTable.push_back(uGridObjectFactory::createClass(i ,j ,i_to ,j_to ,name));
 
