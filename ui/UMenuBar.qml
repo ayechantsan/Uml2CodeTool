@@ -1,7 +1,9 @@
 import QtQuick 2.3
-import QtQuick.Window 2.0
+import QtQuick.Window 2.1
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
+import QtQuick.Dialogs 1.0
+import MyModules 1.0
 
 MenuBar {
     id: mainMenuBar
@@ -25,10 +27,21 @@ MenuBar {
             text: "Save"
             onTriggered: {
                 
-                var component = Qt.createComponent("ULoadFileDialog.qml");
+                var component = Qt.createComponent("USaveFileDialog.qml");
                 var win = component.createObject(root);
                 win.show();
+                win.openSaveFile()
+            }
+        }
 
+        MenuItem {
+            text: "Load"
+            onTriggered: {
+
+                var component = Qt.createComponent("USaveFileDialog.qml");
+                var win = component.createObject(root);
+                win.show();
+                win.openLoadFile()
             }
 
         }
@@ -75,4 +88,3 @@ MenuBar {
     }
 
 }
-

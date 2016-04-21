@@ -146,7 +146,7 @@ void UiEventDispatcher::generateCode()
 void UiEventDispatcher::saveDiagram(QString url, QList<QString> names, QList<double> xLoc, QList<double> yLoc)
 {
 
-    uDebugPrinter::printText("in the save function " + names[0].toStdString() + std::to_string(xLoc[0]));
+    //uDebugPrinter::printText("in the save function " + names[0].toStdString() + std::to_string(xLoc[0]));
     mCodeGenerator->setUrl(url.toStdString());
     mCodeGenerator->setFileAttributes("","");
 

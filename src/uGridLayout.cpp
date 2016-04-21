@@ -22,7 +22,12 @@ uGridLayout::uGridLayout(int width, int height) : QObject(0)
 QString uGridLayout::getAllNames()
 {
     QString thisString;
-    for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++) {
+//    if (mTable.size() > 0)
+//        thisString += (*mTable.begin())->getName();
+//    else
+//        return thisString;
+
+    for(TGridClassConstIter iter= mTable.begin(); iter != mTable.end(); iter++) {
 
             thisString += (*iter)->getName() + " ";
     }
@@ -34,7 +39,6 @@ bool uGridLayout::addClass(int i, int j, int i_to, int j_to, const QString &name
 
 {
     uDebugPrinter::printText("adding class: " + name.toStdString() + " index i: " + to_string(i) + " index j: " + to_string(j));
-//    if (!checkBounds(i,j,i_to, j_to)) return false;
 
     mTable.push_back(uGridObjectFactory::createClass(i ,j ,i_to ,j_to ,name));
 
