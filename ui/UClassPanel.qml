@@ -158,69 +158,6 @@ ColumnLayout {
                 deleteMethod()
             }
         }
-        Button {
-            id: load
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            StyledText {
-                text: "Load"
-            }
-            tooltip: "click to load file"
-            onClicked:
-            {
-
-                fileDialog.visible = true
-
-            }
-
-            FileDialog {
-                id: fileDialog
-                title: "Please choose a file"
-                folder: shortcuts.home
-                onAccepted: {
-                    gridLayout.cleanAll();
-                    dispatcher.clearAll();
-                    var words =  dispatcher.loadDiagram(fileDialog.fileUrl);
-                    words = words
-                    var splitWords = words.split(" ");
-                    uDebugger.qPrintText(splitWords);
-                    for (var i = 1; i< splitWords.length; i++)
-                    {
-
-                        var x = dispatcher.getClassX(splitWords[i]);
-                        var y = dispatcher.getClassY(splitWords[i]);
-
-                       // gridLayout.addClass(k * (width/5), j * (height/5), drawingCanvas.getClassWidth(), drawingCanvas.getClassHeight(), splitWords[i])
-                        uDebugger.qPrintText("Postion: (" + x + "," + y +"), Name: " +splitWords[i]);
-                        gridLayout.addClass(x, y, x + drawingCanvas.getClassWidth(), y + drawingCanvas.getClassHeight(), splitWords[i]);
-
-                    }
-                     drawingCanvas.requestPaint();
-                    close();
-                }
-                onRejected: {
-                    console.log("Canceled");
-                   close();
-                }
-                Component.onCompleted: visible = false
-            }
-        }
-        Button {
-            id: repaint
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            visible: false
-            StyledText {
-                text: "ReDraw"
-            }
-            tooltip: "click to draw"
-            onClicked:
-            {
-
-                drawingCanvas.requestPaint()
-
-            }
-        }
     }
 
     function clearTextFields() {

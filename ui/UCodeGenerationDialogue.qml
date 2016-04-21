@@ -61,10 +61,10 @@ ApplicationWindow {
 //                    var component = Qt.createComponent("UFileDialog.qml");
 //                    var win2 = component.createObject(generationDialog);
 //                    win2.show();
-                    fileDialog.visible = true;
+                    loadFileDialog.visible = true;
                 }
                 FileDialog {
-                    id: fileDialog
+                    id: loadFileDialog
                     title: "Please choose a folder"
                     folder: shortcuts.home
                     selectFolder: true

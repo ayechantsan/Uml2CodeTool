@@ -101,12 +101,14 @@ int main()
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QApplication>
 
 #include "UiEventDispatcher.h"
 #include "uGridLayout.h"
 #include "uDebugPrinter.h"
 
 #include "test/TestMain.h"
+#include "ui/filesavedialog.h"
 
 #define TEST
 
@@ -129,6 +131,8 @@ int main(int argc, char *argv[])
     UiEventDispatcher dispatcher;
     uGridLayout layout(1200, 1600);
     uDebugPrinter debugger;
+
+    qmlRegisterType<FileSaveDialog>("MyModules", 1, 0, "FileSaveDialog");
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("gridLayout", &layout);

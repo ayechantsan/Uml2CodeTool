@@ -199,7 +199,7 @@ void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass, double x, double y
 void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass, double x, double y)
 {
 
-    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass, x, y)), url;
+    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass, x, y), url);
 
 }
 
@@ -226,9 +226,9 @@ bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const
     ofstream myfile;
     bool isOpen = false;
     const string substring = path.substr(7, path.length());
-    uDebugPrinter::printText(substring);
+    uDebugPrinter::printText("Path: " + substring);
 //    myfile.open(temp+name.c_str() + ".uct", ios::app);
-    ifstream ifile(substring +"/"+ "current.uct");
+    ifstream ifile(substring);
 
 
     if (ifile) {
@@ -239,8 +239,8 @@ bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const
             std::cout << "did not exist"<< std::endl;
         }
 
-    myfile.open(substring +"/"+ "current.uct", ios::app);
-    uDebugPrinter::printText(substring +"/"+ "current.uct");
+    myfile.open(substring, ios::app);
+    uDebugPrinter::printText(substring);
     if (!myfile.is_open())
         return false;
 //this will work but i need it do work a bit differently than this because i only want one file.
