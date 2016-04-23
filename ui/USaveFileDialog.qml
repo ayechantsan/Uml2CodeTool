@@ -45,7 +45,7 @@ ApplicationWindow {
                 locationArrayX[i] = gridLayout.getClassX(nameArray[i]);
                 locationArrayY[i] = gridLayout.getClassY(nameArray[i]);
 
-                console.log("name: " + nameArray[i] + " X: " + locationArrayX[i] + " Y: " + locationArrayY[i]);
+                uDebugger.qPrintText("name: " + nameArray[i] + " X: " + locationArrayX[i] + " Y: " + locationArrayY[i]);
             }
             if(nameArray.length > 1)
                 dispatcher.saveDiagram(saveFile.fileUrl, nameArray, locationArrayX, locationArrayY);

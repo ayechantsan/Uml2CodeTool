@@ -165,13 +165,18 @@ QString UiEventDispatcher::loadDiagram(QString url)
     string fileLocation = url.toStdString();
     string fileContent;
     std::smatch match;
-    std::regex reg ("\\b(file://)([^ ]*)");
+    std::string regExpression =  "\\b(file://)([^ ]*)";
+#ifdef Q_OS_WIN
+    regExpression = "\\b(file:///)([^ ]*)";
+#endif
+    std::regex reg (regExpression);
     string location;
     //this searches for file:/ and returns what follows it which is the path to the file selected.
     if (std::regex_search(fileLocation, match, reg))
     {
         //this gives me the string after what i was looking for which was "file:/".
         location = match[2];
+       uDebugPrinter::printText("Location: " + location);
     }
     //regular exprestion to search for things in the file taht wa
     regex anyReg("\"(.*?)\"");

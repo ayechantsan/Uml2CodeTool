@@ -7,6 +7,14 @@
 #include <unistd.h>
 #include "uDebugPrinter.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#define SYSERROR()  GetLastError()
+#else
+#include <errno.h>
+#define SYSERROR()  errno
+#endif
+
 using namespace std;
 
 /**
@@ -50,11 +58,14 @@ void uCodeGenerationVisitor::cleanUrl()
 {
     //TODO
     ofstream myfile;
-    const string substring = url.substr(7, url.length());
+    string substring = url.substr(7, url.length());
+#ifdef Q_OS_WIN
+    substring = url.substr(8, url.length());
+#endif
     uDebugPrinter::printText("Path: " + substring);
     myfile.open(substring);
-    uDebugPrinter::printText(substring);
     myfile << "";
+    myfile.flush();
     myfile.close();
 }
 
@@ -219,7 +230,10 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 {
     //this is clearly not ok for the main branch
       uDebugPrinter::printText("new path " + path+name.c_str());
-    const string thisPath = path.substr(7, path.length());
+    string thisPath = path.substr(7, path.length());
+#ifdef Q_OS_WIN
+    thisPath = path.substr(8, path.length());
+#endif
     uDebugPrinter::printText("new path " + thisPath+"/"+name.c_str());
     ofstream myfile;
     myfile.open(thisPath+"/"+name.c_str());
@@ -236,31 +250,34 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
 {
     ofstream myfile;
-    bool isOpen = false;
-    const string substring = path.substr(7, path.length());
+    string substring = path.substr(7, path.length());
+#ifdef Q_OS_WIN
+    substring = path.substr(8, path.length());
+#endif
     uDebugPrinter::printText("Path: " + substring);
-//    myfile.open(temp+name.c_str() + ".uct", ios::app);
     ifstream ifile(substring);
 
-
     if (ifile) {
-            isOpen = true;
             std::cout << "did  exist"<< std::endl;
         } else {
-            isOpen = false;
             std::cout << "did not exist"<< std::endl;
         }
 
-    myfile.open(substring, ios::app);
+    myfile.open(substring, ios::app | ios::out);
     uDebugPrinter::printText(substring);
     if (!myfile.is_open())
+    {
+        std::string errStr = strerror(errno);
+        uDebugPrinter::printText("open failure as expected: " + errStr);
         return false;
+    }
 
     myfile << "\{\"classes\" : [\n";
     myfile << "\t{\"name\":\"" +name + "\"},\n";
     myfile << "\t{\"author\":\"" + author + "\"},\n";
     myfile << "\t{\"date\":\"" + date + "\"},\n";
     myfile << "\t{\"content\": " + content + "}\n";
+    myfile.flush();
     myfile.close();
     return true;
 }
