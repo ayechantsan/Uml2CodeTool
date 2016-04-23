@@ -165,9 +165,9 @@ QString UiEventDispatcher::loadDiagram(QString url)
     string fileLocation = url.toStdString();
     string fileContent;
     std::smatch match;
-    std::string regExpression =  "\\b(file://)([^ ]*)";
+    std::string regExpression =  "\\b(file://)(.*)";
 #ifdef Q_OS_WIN
-    regExpression = "\\b(file:///)([^ ]*)";
+    regExpression = "\\b(file:///)(.*)";
 #endif
     std::regex reg (regExpression);
     string location;
