@@ -84,6 +84,7 @@ ApplicationWindow {
 
             }
             drawingCanvas.requestPaint();
+            uClassPanel.clearTextFields();
             close();
             root.close()
         }
