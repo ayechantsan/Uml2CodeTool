@@ -219,12 +219,19 @@ ColumnLayout {
         abstractField.visible = true
     }
 
-    function updateMethod()
+    function updateMethod(noParent)
     {
         if (drawingCanvas.selectedClass != "" && !drawingCanvas.selecting) {
 
             var name = nameField.text
-            var parent = parentField.text
+            if (noParent == "noParent")
+            {
+                var parent = ""
+            }
+            else
+            {
+                var parent = parentField.text
+            }
             var methods = methodField.text
             var attributes = attributeField.text
             var isAbstract = abstractField.checked
