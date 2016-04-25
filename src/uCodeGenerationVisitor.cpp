@@ -72,10 +72,10 @@ void uCodeGenerationVisitor::cleanUrl()
 void uCodeGenerationVisitor::visit(uChildClass *childClass)
 {
     if (mLanguage->hasSeparateFiles()) {
-        createFile(childClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment(), url);
+        createFile(childClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(childClass, childClass->getParent()), mLanguage->getLineComment(), url);
         cout << "    " << childClass->getName() + mLanguage->getImplementationFileExtension() << endl;
     }
-    createFile(childClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment(), url);
+    createFile(childClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(childClass, childClass->getParent()), mLanguage->getLineComment(), url);
     cout << "    " << childClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
 
@@ -208,7 +208,7 @@ void uCodeGenerationVisitor::visitSave(uChildClass *childClass, double x, double
   if (!childClass->hasParent())
         saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y), url);
     else
-        saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()->getName()), url);
+        saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()), url);
 
 }
 

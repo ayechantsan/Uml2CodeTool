@@ -6,32 +6,32 @@
 uChildClass::uChildClass(std::string const& name) : uInheritable(name)
 {
     mHasParent = true;
-    mBaseClass = NULL;
+    mBaseClass = "";
     mIsInterface = false;
 }
 
-uChildClass::uChildClass(std::string const& name, uInheritable * base) : uInheritable(name)
+uChildClass::uChildClass(std::string const& name, std::string const& base) : uInheritable(name)
 {
     mHasParent = true;
     mBaseClass = base;
     mIsInterface = false;
 }
 
-uChildClass::uChildClass(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, uInheritable *base, bool isAbstract) : uInheritable(access, name, attributes, methods, references, isAbstract)
+uChildClass::uChildClass(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, std::string const& base, bool isAbstract) : uInheritable(access, name, attributes, methods, references, isAbstract)
 {
     mHasParent = true;
     mBaseClass = base;
     mIsInterface = false;
 }
 
-uChildClass::uChildClass(uAccess access, const std::string & name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable * base, bool isAbstract, double x, double y) : uInheritable(access, name, attributes, methods, references, isAbstract)
+uChildClass::uChildClass(uAccess access, const std::string & name, TParameters & attributes, TMethods & methods, TReferences & references, const std::string &base, bool isAbstract, double x, double y) : uInheritable(access, name, attributes, methods, references, isAbstract)
 {
 
     mHasParent = true;
     mBaseClass = base;
     mIsInterface = false;
-    uChildClass::locX = x;
-    uChildClass::locY = y;
+    locX = x;
+    locY = y;
 
 }
 uChildClass::~uChildClass()

@@ -37,7 +37,7 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
 
     // find parent given name
 
-    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+    std::string const& parentObj = parent.toStdString();
 
 
     // call factory to create object
@@ -59,9 +59,9 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
 
     // find parent given name
 
-    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+    std::string const& parentObj = parent.toStdString();
 
-uDebugPrinter::printText(" create with x" + std::to_string(x));
+    uDebugPrinter::printText(" create with x" + std::to_string(x));
     // call factory to create object
     mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, x, y, parentObj,isAbstract);
 }
@@ -316,7 +316,7 @@ QString UiEventDispatcher::loadDiagram(QString url)
             isAbstract = true;
         }
 
-        std::string::size_type sz;
+        //std::string::size_type sz;
         double x_loc =  atof( classArray[i][xLoc].c_str());
         double y_loc = atof( classArray[i][yLoc].c_str());
 
@@ -428,12 +428,12 @@ QString UiEventDispatcher::getClassParent(int index)
     if (obj == NULL || !obj->hasParent()) {
         return "";
     }
-    uInheritable * parent = obj->getParent();
-    if (parent == NULL) {
-        return "";
-    }
+//    uInheritable * parent = obj->getParent();
+//    if (parent == NULL) {
+//        return "";
+//    }
 
-    return QString::fromStdString(parent->getName());
+    return QString::fromStdString(obj->getParent());
 }
 
 bool UiEventDispatcher::getClassIsInterface(int index)

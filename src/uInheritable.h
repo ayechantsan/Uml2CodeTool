@@ -31,7 +31,7 @@ public:
     uAccess getAccess() const;
     void setAccess(uAccess access);
     std::string getName() const;
-    uInheritable * getParent() const;
+    std::string getParent() const;
     void addMethod(uMethod * method);
     void addAttribute(uParameter * attribute);
     void addReference(uReference * reference);
@@ -54,7 +54,7 @@ public:
 
 protected:
     std::string mName;
-    uInheritable * mBaseClass;
+    std::string mBaseClass;
     std::vector<uMethod*> mMethods;
     std::vector<uParameter*> mAttributes;
     std::vector<uReference*> mReferences;

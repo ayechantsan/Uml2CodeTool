@@ -40,11 +40,11 @@ void uClassDiagram::removeClass(uInheritable *uClass)
 
     //remove parent from classes inheriting from it
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
-        if ((*iter)->hasParent() && (*iter)->getParent()->getName() == uClass->getName()){
+        if ((*iter)->hasParent() && (*iter)->getParent() == uClass->getName()){
             TParameters attributeObjects = (*iter)->getAttributes();
             TMethods methodObjects = (*iter)->getMethods();
             TReferences references = (*iter)->getReferences();
-            uInheritable * father = NULL;
+            std::string const& father = "";
             uClassButton::getInstance().update((*iter)->getName(), (*iter)->getAccess(), (*iter)->getName(), attributeObjects, methodObjects, references, father, (*iter)->isAbstract());
             removeClass(uClass);
             return;
