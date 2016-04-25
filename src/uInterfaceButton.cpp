@@ -9,7 +9,7 @@ uInterfaceButton &uInterfaceButton::getInstance()
     return mInstance;
 }
 
-void uInterfaceButton::update(const std::string &oldName, uAccess access, const std::string &newName, TParameters &attributes, TMethods &methods, TReferences &references, uInheritable *base, bool isAbstract)
+void uInterfaceButton::update(const std::string &oldName, uAccess access, const std::string &newName, TParameters &attributes, TMethods &methods, TReferences &references, std::string const& base, bool isAbstract)
 {
     uDebugPrinter::printText("updating uInterface");
     if (uClassDiagram::getInstance().find(QString::fromStdString(oldName)) != 0){
@@ -21,8 +21,12 @@ void uInterfaceButton::update(const std::string &oldName, uAccess access, const 
 
 
 //Constructor should be changed when the boxes are implemented with the GUI
-void uInterfaceButton::create(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable *base, bool isAbstract)
+void uInterfaceButton::create(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, const std::string &base, bool isAbstract)
 {
     uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eInterface,access, name, attributes, methods, references, base, isAbstract));
 }
-
+//overloaded create that takes a  x and y location
+void uInterfaceButton::create(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, double x, double y,std::string const& base, bool isAbstract)
+{
+    uClassDiagram::getInstance().addClass(uClassFactory::getInstance().createClass(uClassType::eInterface,access, name, attributes, methods, references, base, isAbstract, x, y));
+}

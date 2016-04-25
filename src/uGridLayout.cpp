@@ -1,7 +1,8 @@
 #include "uGridLayout.h"
 #include "uDebugPrinter.h"
 #include "uGridObjectFactory.h"
-
+#include <QVector>
+#include <QString>
 #include <string>
 
 using namespace std;
@@ -17,10 +18,27 @@ uGridLayout::uGridLayout(int width, int height) : QObject(0)
     mHeight = height;
 }
 
+
+QString uGridLayout::getAllNames()
+{
+    QString thisString;
+//    if (mTable.size() > 0)
+//        thisString += (*mTable.begin())->getName();
+//    else
+//        return thisString;
+
+    for(TGridClassConstIter iter= mTable.begin(); iter != mTable.end(); iter++) {
+
+            thisString += (*iter)->getName() + " ";
+    }
+    return thisString;
+}
+
+
 bool uGridLayout::addClass(int i, int j, int i_to, int j_to, const QString &name)
+
 {
     uDebugPrinter::printText("adding class: " + name.toStdString() + " index i: " + to_string(i) + " index j: " + to_string(j));
-    if (!checkBounds(i,j,i_to, j_to)) return false;
 
     mTable.push_back(uGridObjectFactory::createClass(i ,j ,i_to ,j_to ,name));
 
@@ -351,6 +369,11 @@ int uGridLayout::getSegmentY(int arrowIndex, int segIndex) const
     return mArrows[arrowIndex]->getSegment(segIndex)->getY();
 }
 
+//int uGridLayout::getClasses() const
+//{
+//    return 56;
+//}
+
 int uGridLayout::getSegmentX_to(int arrowIndex, int segIndex) const
 {
     return mArrows[arrowIndex]->getSegment(segIndex)->getX_to();
@@ -394,6 +417,12 @@ bool uGridLayout::contains(const QString &name) const
         }
     }
     return false;
+}
+
+void uGridLayout::cleanAll()
+{
+    mTable.clear();
+    mArrows.clear();
 }
 
 void uGridLayout::moveAll(int movX, int movY)

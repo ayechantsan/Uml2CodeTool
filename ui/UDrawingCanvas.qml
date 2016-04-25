@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.LocalStorage 2.0
 
 Canvas {
+
     Layout.fillHeight: true
     Layout.fillWidth: true
     Layout.margins: 5
@@ -618,6 +619,7 @@ Canvas {
 
             //Get information from the logic background via UiDispatcher
             var idx = dispatcher.getClassIndex(name);
+
             var methods = dispatcher.getClassMethods(idx, false); //False implies "access" specified with letters (public, private...)
             var attributes = dispatcher.getClassAttributes(idx, false); //False implies "access" specified with letters
             var parent = dispatcher.getClassParent(idx)

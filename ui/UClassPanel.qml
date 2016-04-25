@@ -3,6 +3,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.0
 
 ColumnLayout {
     id: classPanel
@@ -133,6 +134,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: 10
+
         Button {
 
             StyledText {

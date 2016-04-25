@@ -16,7 +16,8 @@ class uClassFactory
 public:
     static uClassFactory &getInstance();
     uInheritable * createClass(uClassType type, std::string const& name);
-    uInheritable * createClass(uClassType type, uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, uInheritable *base, bool isAbstract);
+    uInheritable * createClass(uClassType type, uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, std::string const& base, bool isAbstract);
+    uInheritable * createClass(uClassType type, uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, const std::string &base, bool isAbstract, double x, double y);
 
 private:
     uClassFactory();
