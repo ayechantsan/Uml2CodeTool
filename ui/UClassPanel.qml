@@ -3,6 +3,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.0
 
 ColumnLayout {
     id: classPanel
@@ -133,6 +134,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: 10
+
         Button {
 
             StyledText {
@@ -237,6 +239,7 @@ ColumnLayout {
 
             //Update the class
             dispatcher.updateClass(drawingCanvas.selectedClass, name, parent, methods, attributes, isAbstract)
+            drawingCanvas.selectedClass = name;
 
             //Repaint the canvas
             drawingCanvas.requestPaint()
@@ -259,7 +262,7 @@ ColumnLayout {
             if (name != "" && !gridLayout.contains(name)) {
 
                 //Add the class to the grid
-                gridLayout.addClass(Number(10),Number(10),drawingCanvas.getClassWidth(),drawingCanvas.getClassHeight(), name)
+                gridLayout.addClass(Number(10),Number(10),drawingCanvas.getClassWidth()+10,drawingCanvas.getClassHeight()+10, name)
 
                 //Check if the class has a parent
                 if(parent != "")

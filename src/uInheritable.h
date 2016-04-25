@@ -24,7 +24,6 @@ public:
     uInheritable(std::string const& name);
     uInheritable(uAccess access, std::string const& name, TParameters & attributes, TMethods & methods, TReferences & references, bool isAbstract);
     virtual ~uInheritable();
-
     //Getters and Setters
     std::vector<uMethod *> getMethods() const;
     std::vector<uParameter *> getAttributes() const;
@@ -37,11 +36,15 @@ public:
     void addAttribute(uParameter * attribute);
     void addReference(uReference * reference);
 
+    double locX = 0.0;
+    double locY = 0.0;
+
     bool hasParent() const;//to check whether it is a childClass or not
     bool isInterface() const;
     bool isAbstract() const;
 
     virtual void accept(uVisitor * visitor); //Accepts the code generation visitor
+    virtual void acceptSave(uVisitor * visitor, double x, double y); //uses the code generator to create a save file for uCode.
 
     //Overload of some operators
     inline bool operator==(const uInheritable &class1) const;

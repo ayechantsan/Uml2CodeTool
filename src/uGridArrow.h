@@ -49,6 +49,9 @@ public:
     //Manages the segment movements
     void moveSegments(int oldX, int oldY, int newX, int newY);
     bool notifyMovement(QString const &name, int movX, int movY);
+    void mergeSegments(); //called after each moveSegments to check possible segment merges
+    bool similarInclination(const uGridSegment * const seg1, const uGridSegment * const seg2);
+    void moveAllSegments(int movX, int movY);
 
 private:
     uArrowType mType;

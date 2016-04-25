@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QString>
+#include <QList>
 #include <string>
+#include <vector>
 #include "uStringConverter.h"
 #include "uClassType.h"
 #include "uLanguageStrategy.h"
@@ -21,15 +23,24 @@ class UiEventDispatcher : public QObject
     Q_OBJECT
 public:
     explicit UiEventDispatcher(QObject *parent = 0);
+
+
     Q_INVOKABLE void createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract);
+    Q_INVOKABLE void createClass(QString name, QString parent, QString methods, QString attributes, bool isAbstract, double x, double y);
+
+    Q_INVOKABLE int getClassX(QString name);
+    Q_INVOKABLE int getClassY(QString name);
     Q_INVOKABLE void updateClass(QString oldName, QString newName, QString parent, QString methods, QString attributes, bool isAbstract);
 
     Q_INVOKABLE void setClassState(int type);
 
     Q_INVOKABLE void setLanguage(QString language);
+
     Q_INVOKABLE void setDevEnv(QString devenv);
     Q_INVOKABLE void generateCode();
     Q_INVOKABLE void generateProjectFile();
+    Q_INVOKABLE void saveDiagram(QString url, QList<QString> names, QList<double> xLoc, QList<double> yLoc);
+    Q_INVOKABLE QString loadDiagram(QString url);
 
     Q_INVOKABLE int getDiagramSize();
     Q_INVOKABLE uInheritable * getClass(int index);
@@ -46,12 +57,28 @@ public:
     Q_INVOKABLE int getClassReferenceCount(QString name);
     Q_INVOKABLE QString getClassReference(QString name, int index);
 
+    Q_INVOKABLE void setUrl(QString string);
+    Q_INVOKABLE QString getUrl();
+
+    Q_INVOKABLE void clearAll();
+
 signals:
 
 public slots:
 
 private:
-
+    //enums to let words represtent indecies in an array
+    enum loadAttribute {
+        name,
+        methods,
+        attributes,
+        parent,
+        interface,
+        abstract,
+        xLoc,
+        yLoc
+    };
+    QString url;
     // link application logic with GUI
     bool mCreateDoxyGenComments;
     std::string folderName;

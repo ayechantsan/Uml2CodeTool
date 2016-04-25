@@ -1,8 +1,9 @@
 #include "uClassDiagram.h"
-
 #include <algorithm>
 #include "uDebugPrinter.h"
 #include "uBaseClass.h"
+#include "uClassFactory.h"
+#include "uClassButton.h"
 
 using namespace std;
 
@@ -23,13 +24,37 @@ void uClassDiagram::addClass(uInheritable *uClass)
         uDebugPrinter::printText("error: null pointer");
     mClasses.push_back(uClass);
 }
-
+//overloaded method that accepts x and y cordinations.
+void uClassDiagram::addClass(uInheritable *uClass, double x, double y)
+{
+    if (uClass == NULL)
+        uDebugPrinter::printText("error: null pointer");
+    uClass->locX = x;
+    uClass->locY = y;
+    mClasses.push_back(uClass);
+}
 void uClassDiagram::removeClass(uInheritable *uClass)
 {
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
-    mClasses.erase(std::remove(mClasses.begin(), mClasses.end(), uClass), mClasses.end());
+
+    //remove parent from classes inheriting from it
+    for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+        if ((*iter)->hasParent() && (*iter)->getParent()->getName() == uClass->getName()){
+            TParameters attributeObjects = (*iter)->getAttributes();
+            TMethods methodObjects = (*iter)->getMethods();
+            TReferences references = (*iter)->getReferences();
+            uInheritable * father = NULL;
+            uClassButton::getInstance().update((*iter)->getName(), (*iter)->getAccess(), (*iter)->getName(), attributeObjects, methodObjects, references, father, (*iter)->isAbstract());
+            removeClass(uClass);
+            return;
+        }
+    }
+
+    removeClass(QString::fromStdString(uClass->getName()));
 }
+
+
 
 bool uClassDiagram::removeClass(QString const &name)
 {
@@ -62,8 +87,10 @@ uInheritable *uClassDiagram::find(QString const &name) const
     if (name == "") return NULL;
 
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
+
         if ((*iter)->getName() == name.toStdString())
             return (*iter);
+
     }
     return NULL;
 }
@@ -89,6 +116,16 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
         (*iter)->accept(visitor);
     }
 }
+void uClassDiagram::applySaveVisitor(uVisitor *visitor, QList<double> x, QList<double> y)
+{
+    if (visitor == NULL)
+        uDebugPrinter::printText("NUll POINTER");
+    int i = 0;
+    for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++, i++){
+        uDebugPrinter::printClass(*iter);
+        (*iter)->acceptSave(visitor, x[i], y[i]);
+    }
+}
 
 uInheritable *uClassDiagram::get(int index) const
 {
@@ -107,4 +144,9 @@ int uClassDiagram::getIndex(const QString &name) const
         if (mClasses[i]->qGetName() == name) return i;
     }
     return -1;
+}
+
+void uClassDiagram::clearAll()
+{
+    mClasses.clear();
 }

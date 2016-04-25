@@ -3,6 +3,7 @@
 
 #include "uGridObject.h"
 #include <QString>
+#include <vector>
 
 class uGridSegment: public uGridObject
 {
@@ -14,6 +15,12 @@ public:
     virtual bool selected(int x, int y) const;
 
     bool pivoteMovement(int oldX, int oldY, int newX, int newY);
+
+    int getLength() const;
+
+    double getInclination() const;
+
+    void move(int movX, int movY);
 
 };
 
