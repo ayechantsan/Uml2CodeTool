@@ -22,6 +22,18 @@ ApplicationWindow {
 
     }
 
+    Menu { id: contextMenu
+            MenuItem {
+                text: qsTr('Delete Class')
+                onTriggered: uClassPanel.deleteMethod();
+            }
+
+            MenuItem {
+                text: qsTr('Delete Inheritance')
+                onTriggered: uClassPanel.updateMethod("noParent");
+            }
+        }
+
     //Main Window
     RowLayout {
         id: mainWindow
@@ -35,6 +47,7 @@ ApplicationWindow {
             Layout.preferredHeight: parent.height
             onHeightChanged: gridLayout.setHeight(Number(height));
             onWidthChanged: gridLayout.setWidth(Number(width));
+
             Keys.onDeletePressed: {
                 uClassPanel.deleteMethod();
                 event.accepted = true;
@@ -42,12 +55,17 @@ ApplicationWindow {
 
             MouseArea {
                 anchors.fill: parent
-                acceptedButtons: Qt.LeftButton
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onPressed: {
                     drawingCanvas.selectedX = mouse.x
                     drawingCanvas.selectedY = mouse.y
                     drawingCanvas.selectClass(mouse.x, mouse.y)
                     drawingCanvas.forceActiveFocus()
+                    if (mouse.button == Qt.RightButton)
+                    {
+                        console.log("Right Click")
+                        contextMenu.popup()
+                    }
                 }
                 onMouseXChanged: drawingCanvas.moveClass(mouse.x, mouse.y)
                 onMouseYChanged: drawingCanvas.moveClass(mouse.x, mouse.y)
