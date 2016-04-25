@@ -30,7 +30,11 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr('Delete Inheritance')
-                onTriggered: uClassPanel.updateMethod("noParent");
+                onTriggered:
+                {
+                    uClassPanel.setParentField("");
+                    uClassPanel.updateMethod();
+                }
             }
         }
 
