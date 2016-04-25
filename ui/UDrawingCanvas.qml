@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.LocalStorage 2.0
 
 Canvas {
+
     Layout.fillHeight: true
     Layout.fillWidth: true
     Layout.margins: 5
