@@ -176,173 +176,173 @@ QString UiEventDispatcher::loadDiagram(QString url)
     {
         //this gives me the string after what i was looking for which was "file:/".
         location = match[2];
-       uDebugPrinter::printText("Location: " + location);
+        uDebugPrinter::printText("Location: " + location);
     }
     //regular exprestion to search for things in the file taht wa
     regex anyReg("\"(.*?)\"");
 
     ifstream infile;
-      infile.open(location);
-      string line;
-        if (infile.is_open())
+    infile.open(location);
+    string line;
+    if (infile.is_open())
+    {
+       //while there is file to read we are going to add to file Content to then parse and get classes
+        while ( getline (infile, line))
         {
-           //while there is file to read we are going to add to file Content to then parse and get classes
-            while ( getline (infile, line))
-          {
-                fileContent += line + "\n";
-          }
-          infile.close();
+            fileContent += line + "\n";
         }
-        else uDebugPrinter::printText("Unable to open file");
+        infile.close();
+    }
+    else
+        uDebugPrinter::printText("Unable to open file");
 
-        int classCount = 0;
+    int classCount = 0;
 
-        auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
-        auto words_end = sregex_iterator();
-        int leng = distance(words_begain, words_end);
-        //array to keep all the strings found between ""s
-        string *foundArray = new string[leng];
-        int myi = 0;
-        //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
-        for (sregex_iterator i = words_begain; i != words_end; ++i)
+    auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
+    auto words_end = sregex_iterator();
+    int leng = distance(words_begain, words_end);
+    //array to keep all the strings found between ""s
+    string *foundArray = new string[leng];
+    int myi = 0;
+    //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
+    for (sregex_iterator i = words_begain; i != words_end; ++i)
+    {
+        smatch match = *i;
+        foundArray[myi] = match.str();
+        myi++;
+        if (match.str() == "\"name\"")
         {
-            smatch match = *i;
-            foundArray[myi] = match.str();
-            myi++;
-            if (match.str() == "\"name\"")
-            {
-                classCount++;
-            }
+            classCount++;
         }
-        //this array represents a class
-        //{name, methodsString, attributesString, parent, interface, abstract, xLoc, yLoc}
-        string **classArray = new string*[classCount];
-        for (int i = 0; i < classCount; i ++)
+    }
+    //this array represents a class
+    //{name, methodsString, attributesString, parent, interface, abstract, xLoc, yLoc}
+    string **classArray = new string*[classCount];
+    for (int i = 0; i < classCount; i ++)
+    {
+        classArray[i] = new string[8];
+    }
+    classLevelCount = classCount;
+    classCount = 0;
+    //for each item that was found we want to check what the value is and then grab the string after it in the array
+    for (int u = 0; u < leng-1; u++ )
+    {
+        string word = foundArray[u];
+        if (word == "\"name\"")
         {
-            classArray[i] = new string[8];
+            classCount++;
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][name] = subString;
+
         }
-        classLevelCount = classCount;
-        classCount = 0;
-        //for each item that was found we want to check what the value is and then grab the string after it in the array
-        for (int u = 0; u < leng-1; u++ )
+        else if (word ==  "\"method\"")
         {
-            string word = foundArray[u];
-            if (word == "\"name\"")
-            {
-                classCount++;
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][name] = subString;
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][methods] += " " + subString + "\n";
 
-            }
-            else if (word ==  "\"method\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][methods] += " " + subString + "\n";
-
-            }
-            else if (word == "\"attribute\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                    classArray[classCount-1][attributes] += " " + subString + "\n";
-
-            }
-            else if (word == "\"parent\"")
-            {
-
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][parent] += subString;
-
-            }
-            else if (word == "\"interface\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][interface] += subString;
-
-            }
-            else if (word == "\"abstract\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][abstract] += subString;
-            }
-            else if (word == "\"x\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][xLoc] += subString;
-            }
-            else if (word == "\"y\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][yLoc] += subString;
-            }
         }
-        //loop to add each of the classes collected to the class array
-        string classNamesString = "";
-        for (int i = 0; i < classCount; i++)
+        else if (word == "\"attribute\"")
         {
-            //need to set setClassState() by checking if the parent attibute is not blank
-            if (classArray[i][parent] == "" )
-            {
-                UiEventDispatcher::setClassState(0);
-            }
-            if (classArray[i][interface] == "true")
-            {
-                UiEventDispatcher::setClassState(1);
-            }
-            if (classArray[i][parent] != "" && classArray[i][interface] != "true")
-            {
-                //uDebugPrinter::printText("should be child");
-                UiEventDispatcher::setClassState(2);
-            }
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][attributes] += " " + subString + "\n";
 
-            bool isAbstract = false;
-            if (classArray[i][abstract] == "true")
-            {
-                isAbstract = true;
-            }
+        }
+        else if (word == "\"parent\"")
+        {
 
- std::string::size_type sz;
- double x_loc =  atof( classArray[i][xLoc].c_str());
- double y_loc = atof( classArray[i][yLoc].c_str());
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][parent] += subString;
 
-
-
-            UiEventDispatcher::createClass(
-                        QString::fromStdString(classArray[i][name]),
-                        QString::fromStdString(classArray[i][parent]),
-                        QString::fromStdString(classArray[i][methods]),
-                        QString::fromStdString(classArray[i][attributes]),
-                        isAbstract,
-                        x_loc,
-                        y_loc);
-            classNamesString += " " + classArray[i][name];
+        }
+        else if (word == "\"interface\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][interface] += subString;
+        }
+        else if (word == "\"abstract\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][abstract] += subString;
+        }
+        else if (word == "\"x\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][xLoc] += subString;
+        }
+        else if (word == "\"y\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][yLoc] += subString;
+        }
+    }
+    //loop to add each of the classes collected to the class array
+    string classNamesString = "";
+    for (int i = 0; i < classCount; i++)
+    {
+        //need to set setClassState() by checking if the parent attibute is not blank
+        if (classArray[i][parent] == "" )
+        {
+            UiEventDispatcher::setClassState(0);
+        }
+        if (classArray[i][interface] == "true")
+        {
+            UiEventDispatcher::setClassState(1);
+        }
+        if (classArray[i][parent] != "" && classArray[i][interface] != "true")
+        {
+            //uDebugPrinter::printText("should be child");
+            UiEventDispatcher::setClassState(2);
         }
 
-        classLevelArray = classArray;
-        //clean up things i've added to the heap.
-        for(int i = 0; i < classCount; ++i) {
-            delete [] classArray[i];
+        bool isAbstract = false;
+        if (classArray[i][abstract] == "true")
+        {
+            isAbstract = true;
         }
-        delete [] foundArray;
-        delete [] classArray;
-        //final conversion from std::string to QString for the QML javascript function to consume.
-        QString returnWords = QString::fromStdString(classNamesString);
-        return returnWords;
+
+        std::string::size_type sz;
+        double x_loc =  atof( classArray[i][xLoc].c_str());
+        double y_loc = atof( classArray[i][yLoc].c_str());
+
+
+
+        UiEventDispatcher::createClass(
+                    QString::fromStdString(classArray[i][name]),
+                    QString::fromStdString(classArray[i][parent]),
+                    QString::fromStdString(classArray[i][methods]),
+                    QString::fromStdString(classArray[i][attributes]),
+                    isAbstract,
+                    x_loc,
+                    y_loc);
+        classNamesString += " " + classArray[i][name];
+    }
+
+    classLevelArray = classArray;
+    //clean up things i've added to the heap.
+    for(int i = 0; i < classCount; ++i) {
+        delete [] classArray[i];
+    }
+    delete [] foundArray;
+    delete [] classArray;
+    //final conversion from std::string to QString for the QML javascript function to consume.
+    QString returnWords = QString::fromStdString(classNamesString);
+    return returnWords;
 }
 //getter and setter for the current url sting for the path of either the generated code
 //or the saved diagram json.

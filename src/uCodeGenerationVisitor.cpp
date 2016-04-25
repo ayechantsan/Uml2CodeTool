@@ -100,14 +100,14 @@ void uCodeGenerationVisitor::visit(uInterface *interfaceClass)
 }
 string uCodeGenerationVisitor::createSaveAttributeString(uParameter * attribute)
 {
-    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getType() + " " + attribute->getName();
+    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getName() + ": " + attribute->getType();
     return attributeString;
 }
 std::string uCodeGenerationVisitor::createSaveMethodString(uMethod * method)
 {
     string methodStr = "{\"method\" : \"";
     TParameters params = method->getParameters();
-    methodStr += getAccessString(method->getAccess()) + " " + method->getReturnType() + " " + method->getName() + "\"},\n";
+    methodStr += getAccessString(method->getAccess()) + " " + method->getName() + " " + method->getReturnType() + "\"},\n";
     methodStr += "\t{\"parameters\" : \"";
     if (params.size() > 0) {
         for (TParametersIter iter = params.begin(); iter < params.end()-1; ++iter) {
