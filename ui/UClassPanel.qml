@@ -224,6 +224,8 @@ ColumnLayout {
         if (drawingCanvas.selectedClass != "" && !drawingCanvas.selecting) {
 
             var name = nameField.text
+            if(name == "")
+                name = "-";
             var parent = parentField.text
             var methods = methodField.text
             var attributes = attributeField.text

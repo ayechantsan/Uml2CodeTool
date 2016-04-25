@@ -94,8 +94,7 @@ void UiEventDispatcher::updateClass(QString oldName, QString newName, QString pa
     TReferences referenceObjects;
 
     // find parent given name
-    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
-    uDebugPrinter::printClass(parentObj);
+    std::string const& parentObj = parent.toStdString();
 
     // call factory to create object
     mClassButton->update(oldName.toStdString(), uPublic, newName.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj, isAbstract);
