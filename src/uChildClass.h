@@ -17,7 +17,7 @@ public:
 
     virtual ~uChildClass();
     virtual void accept(uVisitor * visitor);
-    virtual void acceptSave(uVisitor * visitor, double x, double y);
+    virtual void acceptSave(uVisitor * visitor);
 };
 
 #endif // UCHILDCLASS_H

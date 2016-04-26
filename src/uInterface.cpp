@@ -20,8 +20,8 @@ uInterface::uInterface(uAccess access, const std::string &name, TParameters &att
     mHasParent = false;
     mIsInterface = true;
     mIsAbstract = false;
-    uInterface::locX = x;
-    uInterface::locY = y;
+    locX = x;
+    locY = y;
 }
 
 
@@ -29,7 +29,7 @@ void uInterface::accept(uVisitor *visitor)
 {
     visitor->visit(this);
 }
-void uInterface::acceptSave(uVisitor *visitor, double x, double y)
+void uInterface::acceptSave(uVisitor *visitor)
 {
-    visitor->visitSave(this, x, y);
+    visitor->visitSave(this, locX, locY);
 }

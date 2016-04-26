@@ -29,8 +29,8 @@ void uClassDiagram::addClass(uInheritable *uClass, double x, double y)
 {
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
-    uClass->locX = x;
-    uClass->locY = y;
+    uClass->setLocX(x);
+    uClass->setLocY(y);
     mClasses.push_back(uClass);
 }
 void uClassDiagram::removeClass(uInheritable *uClass)
@@ -116,14 +116,15 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
         (*iter)->accept(visitor);
     }
 }
-void uClassDiagram::applySaveVisitor(uVisitor *visitor, QList<double> x, QList<double> y)
+void uClassDiagram::applySaveVisitor(uVisitor *visitor)
 {
     if (visitor == NULL)
         uDebugPrinter::printText("NUll POINTER");
+
+    //size_t listSize = x.size();
     int i = 0;
     for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++, i++){
-        uDebugPrinter::printClass(*iter);
-        (*iter)->acceptSave(visitor, x[i], y[i]);
+        (*iter)->acceptSave(visitor);
     }
 }
 

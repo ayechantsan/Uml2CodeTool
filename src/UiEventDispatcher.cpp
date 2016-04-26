@@ -70,7 +70,7 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
 int UiEventDispatcher::getClassX(QString name)
 {
    uInheritable found = *mClassDiagram->find(name);
-   int foundX = found.locX;
+   int foundX = found.getLocX();
    return foundX;
 }
 //method to ge the y coridinate of the glass by iterating through the
@@ -78,7 +78,7 @@ int UiEventDispatcher::getClassX(QString name)
 int UiEventDispatcher::getClassY(QString name)
 {
     uInheritable found = *mClassDiagram->find(name);
-    int foundY = found.locY;
+    int foundY = found.getLocY();
     return foundY;
 }
 
@@ -151,7 +151,11 @@ void UiEventDispatcher::saveDiagram(QString url, QList<QString> names, QList<dou
     mCodeGenerator->cleanUrl();
     mCodeGenerator->setFileAttributes("","");
 
-    mClassDiagram->applySaveVisitor(mCodeGenerator, xLoc, yLoc);
+    int listSize = names.size();
+    for(int i = 0; i < listSize-1; i++)
+        mClassDiagram->find(names[i])->setLoc(xLoc[i], yLoc[i]);
+
+    mClassDiagram->applySaveVisitor(mCodeGenerator);
     //this is going to need to to do something
 }
 
