@@ -14,6 +14,11 @@ ApplicationWindow {
     title: "uCode"
     color:  "white"
 
+    function exit()
+    {
+        root.close();
+    }
+
     onWidthChanged: drawingCanvas.requestPaint()
     onHeightChanged: drawingCanvas.requestPaint()
 

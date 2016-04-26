@@ -58,9 +58,6 @@ ApplicationWindow {
                     text: "Choose Folder"
                 }
                 onClicked: {
-//                    var component = Qt.createComponent("UFileDialog.qml");
-//                    var win2 = component.createObject(generationDialog);
-//                    win2.show();
                     loadFileDialog.visible = true;
                 }
                 FileDialog {
@@ -104,22 +101,22 @@ ApplicationWindow {
             }
         }
 
-        RowLayout {
-            Layout.margins: 20
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Label {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                StyledText {
-                    text: "Doxygen Comments"
-                    horizontalAlignment: Text.AlignLeft
-                }
-            }
-            CheckBox {
-                checked: false
-            }
-        }
+//        RowLayout {
+//            Layout.margins: 20
+//            Layout.fillHeight: true
+//            Layout.fillWidth: true
+//            Label {
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+//                StyledText {
+//                    text: "Doxygen Comments"
+//                    horizontalAlignment: Text.AlignLeft
+//                }
+//            }
+//            CheckBox {
+//                checked: false
+//            }
+//        }
 
         RowLayout {
             Layout.margins: 20

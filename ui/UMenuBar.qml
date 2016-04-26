@@ -7,22 +7,21 @@ import MyModules 1.0
 
 MenuBar {
     id: mainMenuBar
+
     Menu {
 
         title: "File"
 
         MenuItem {
-            text: "Open..."
+            text: "Open"
             onTriggered: {
-                var component = Qt.createComponent("ULoadFileDialog.qml");
+                var component = Qt.createComponent("USaveFileDialog.qml");
                 var win = component.createObject(root);
                 win.show();
+                win.openLoadFile()
             }
         }
 
-        MenuItem {
-            text: "Close"
-        }
         MenuItem {
             text: "Save"
             onTriggered: {
@@ -35,34 +34,32 @@ MenuBar {
         }
 
         MenuItem {
-            text: "Load"
-            onTriggered: {
-
-                var component = Qt.createComponent("USaveFileDialog.qml");
+            text: "Close"
+            onTriggered:
+            {
+                var component = Qt.createComponent("uCloseDialog.qml");
                 var win = component.createObject(root);
                 win.show();
-                win.openLoadFile()
             }
-
         }
 
     }
 
-    Menu {
-        title: "Edit"
+//    Menu {
+//        title: "Edit"
 
-        MenuItem {
-            text: "Cut"
-        }
+//        MenuItem {
+//            text: "Cut"
+//        }
 
-        MenuItem {
-            text: "Copy"
-        }
+//        MenuItem {
+//            text: "Copy"
+//        }
 
-        MenuItem {
-            text: "Paste"
-        }
-    }
+//        MenuItem {
+//            text: "Paste"
+//        }
+//    }
 
     Menu {
         title: "Code"
@@ -81,10 +78,13 @@ MenuBar {
     Menu {
         title: "Help"
 
-    }
+        MenuItem {
+            text: "Guide"
+        }
 
-    Menu {
-        title: "About"
-    }
+        MenuItem {
+            text: "About"
+        }
 
+    }
 }
