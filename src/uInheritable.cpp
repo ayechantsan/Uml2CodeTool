@@ -148,6 +148,11 @@ void uInheritable::setLoc(double locx, double locy)
     this->locY = locy;
 }
 
+void uInheritable::setParent(std::string parent)
+{
+    mBaseClass = parent;
+}
+
 static bool operator==(TClasses& classes1, TClasses& classes2){
     if(classes1.size()!=classes2.size())
         return false;

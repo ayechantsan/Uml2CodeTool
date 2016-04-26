@@ -86,6 +86,9 @@ bool uGridLayout::changeObjectName(const QString &name, const QString &newName)
 
     if (found){
         (*foundPosition)->setName(newName);
+        for(TGridArrowConstIter iter = mArrows.begin(); iter != mArrows.end(); iter++)
+            (*iter)->notifyNameChange(name, newName);
+
         return true;
     }
     return false;

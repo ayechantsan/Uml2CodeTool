@@ -96,6 +96,14 @@ void UiEventDispatcher::updateClass(QString oldName, QString newName, QString pa
     // find parent given name
     std::string const& parentObj = parent.toStdString();
 
+    for(int i = 0; i < mClassDiagram->size(); i++)
+    {
+        if(getClass(i)->getParent() == oldName.toStdString())
+        {
+            getClass(i)->setParent(newName.toStdString());
+        }
+    }
+
     // call factory to create object
     mClassButton->update(oldName.toStdString(), uPublic, newName.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj, isAbstract);
 }
