@@ -107,15 +107,14 @@ std::string uCodeGenerationVisitor::createSaveMethodString(uMethod * method)
 {
     string methodStr = "{\"method\" : \"";
     TParameters params = method->getParameters();
-    methodStr += getAccessString(method->getAccess()) + " " + method->getName() + " " + method->getReturnType() + "\"},\n";
-    methodStr += "\t{\"parameters\" : \"";
+    methodStr += getAccessString(method->getAccess()) + " " + method->getName() + "(";
     if (params.size() > 0) {
         for (TParametersIter iter = params.begin(); iter < params.end()-1; ++iter) {
             methodStr += (*iter)->getType() + " " + (*iter)->getName() + ", ";
         }
         methodStr += params[params.size()-1]->getType() + " " + params[params.size()-1]->getName();
     }
-    return methodStr + "}\n";
+    return methodStr + "): " + method->getReturnType() + "\"}\n";
 }
 //create an inheritance string for a child class
 std::string uCodeGenerationVisitor::createChildInheritanceString(string const& base)
@@ -285,7 +284,7 @@ string uCodeGenerationVisitor::getFileHeader(std::string const& fileName, std::s
 {
     string header = "";
     header += lineComment + " ------------------------------------------------------------------\n";
-    header += lineComment + " File created with uCode - https://github.com/dstoeg/Uml2CodeTool\n";
+    header += lineComment + " File created with uCode - https://github.com/UM-ADV16/Uml2CodeTool\n";
     header += lineComment + " ------------------------------------------------------------------\n";
     header += lineComment + " file      : " + fileName + "\n";
     header += lineComment + " author    : " + author + "\n";

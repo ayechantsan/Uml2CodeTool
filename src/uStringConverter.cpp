@@ -34,80 +34,81 @@ TMethods uStringConverter::parseMethods(const std::string &text)
 
     for (vector<string>::iterator iter = methodStrings.begin(); iter < methodStrings.end(); ++iter) {
         string method = (*iter);
-
-        uAccess access;
-        string name;
-        TParameters parameters;
-        string returnType;
-        size_t i = 0;
-
-        // parse access
-        while (!isAccessChar(method[i]) && i<method.size()) {i++; }
-        access = getAccessFromChar(method[i]);
-        // if no char is found, assign defualt
-
-        if(i >= method.size()-1){
-            i=0;
-            access = dAccess;
-            //check if is string access
-            string strAccess;
-            //avoid spaces at the beginning
-            while(method[i] == ' ')
-                i++;
-
-            //read first word
-            while(method[i] != ' '){
-                strAccess+=method[i];
-                i++;
-                if(strAccess.size() > 5 && isAccessString(strAccess)){
-                    access = getAccessFromString(strAccess);
-                    break;
-                }
-                if(strAccess.size() >= 10)
-                    break;
-            }
-
-        } else {
-            i++;
-        }
-
-        // parse name
-        while (method[i] != '(' && i <method.size()) {
-            if (method[i] != ' ') name += method[i];
-            i++;
-        }
-
-        // parse parameters
-        i++;
-        while (method[i] != ')' && i <method.size()) {
-
-            string type;
-            while (method[i] != ' ' && i <method.size()) {
-                type += method[i];
-                i++;
-            }
-
-            i++;
+        if(method != "")
+        {
+            uAccess access;
             string name;
-            while (method[i] != ',' && method[i] != ')' && i <method.size()) {
-                name += method[i];
+            TParameters parameters;
+            string returnType;
+            size_t i = 0;
+
+            // parse access
+            while (!isAccessChar(method[i]) && i<method.size()) {i++; }
+            access = getAccessFromChar(method[i]);
+            // if no char is found, assign defualt
+
+            if(i >= method.size()-1){
+                i=0;
+                access = dAccess;
+                //check if is string access
+                string strAccess;
+                //avoid spaces at the beginning
+                while(method[i] == ' ')
+                    i++;
+
+                //read first word
+                while(method[i] != ' '){
+                    strAccess+=method[i];
+                    i++;
+                    if(strAccess.size() > 5 && isAccessString(strAccess)){
+                        access = getAccessFromString(strAccess);
+                        break;
+                    }
+                    if(strAccess.size() >= 10)
+                        break;
+                }
+
+            } else {
                 i++;
             }
-            if (method[i] == ',') i++;
 
-            while(method[i] == ' ') i++;
-            parameters.push_back(new uParameter(uPublic, type, name));
-        }
+            // parse name
+            while (method[i] != '(' && i <method.size()) {
+                if (method[i] != ' ') name += method[i];
+                i++;
+            }
 
-        // parse return type
-        i++;
-        while (i<method.size()) {
-            if (method[i] != ' ' && method[i] != ':') returnType += method[i];
+            // parse parameters
             i++;
+            while (method[i] != ')' && i <method.size()) {
+
+                string type;
+                while (method[i] != ' ' && i <method.size()) {
+                    type += method[i];
+                    i++;
+                }
+
+                i++;
+                string name;
+                while (method[i] != ',' && method[i] != ')' && i <method.size()) {
+                    name += method[i];
+                    i++;
+                }
+                if (method[i] == ',') i++;
+
+                while(method[i] == ' ') i++;
+                parameters.push_back(new uParameter(uPublic, type, name));
+            }
+
+            // parse return type
+            i++;
+            while (i<method.size()) {
+                if (method[i] != ' ' && method[i] != ':') returnType += method[i];
+                i++;
+            }
+
+            methods.push_back(new uMethod(access, returnType, name, parameters));
         }
-
-        methods.push_back(new uMethod(access, returnType, name, parameters));
-
     }
     return methods;
 }
@@ -121,54 +122,57 @@ TParameters uStringConverter::parseAttributes(const std::string &text)
 
     for (vector<string>::iterator iter = attributeStrings.begin(); iter < attributeStrings.end(); ++iter) {
         string attribute = (*iter);
-        uAccess access;
-        string type = "";
-        string name = "";
+        if(attribute != "")
+        {
+            uAccess access;
+            string type = "";
+            string name = "";
 
-        size_t i = 0;
+            size_t i = 0;
 
-        // parse access
-        while (!isAccessChar(attribute[i]) && i<attribute.size()) {i++; }
-        access = getAccessFromChar(attribute[i]);
-        // if no char is found, assign defualt
-        if(i >= attribute.size()-1){
-            i=0;
-            access = dAccess;
-            //check if is string access
-            string strAccess;
-            //avoid spaces at the beginning
-            while(attribute[i] == ' ')
-                i++;
+            // parse access
+            while (!isAccessChar(attribute[i]) && i<attribute.size()) {i++; }
+            access = getAccessFromChar(attribute[i]);
+            // if no char is found, assign defualt
+            if(i >= attribute.size()-1){
+                i=0;
+                access = dAccess;
+                //check if is string access
+                string strAccess;
+                //avoid spaces at the beginning
+                while(attribute[i] == ' ')
+                    i++;
 
-            //read first word
-            while(attribute[i] != ' '){
-                strAccess+=attribute[i];
-                i++;
-                if(strAccess.size() > 5 && isAccessString(strAccess)){
-                    access = getAccessFromString(strAccess);
-                    break;
+                //read first word
+                while(attribute[i] != ' '){
+                    strAccess+=attribute[i];
+                    i++;
+                    if(strAccess.size() > 5 && isAccessString(strAccess)){
+                        access = getAccessFromString(strAccess);
+                        break;
+                    }
+                    if(strAccess.size() >= 10)
+                        break;
                 }
-                if(strAccess.size() >= 10)
-                    break;
+
+            } else {
+                i++;
             }
 
-        } else {
-            i++;
-        }
+            // parse name
+            while (attribute[i] != ':' && i <attribute.size()) {
+                if (attribute[i] != ' ') name += attribute[i];
+                i++;
+            }
 
-        // parse name
-        while (attribute[i] != ':' && i <attribute.size()) {
-            if (attribute[i] != ' ') name += attribute[i];
+            // parse type
             i++;
+            while (attribute[i] != '\n' && i < attribute.size()) {
+                if (attribute[i] != ' ') type += attribute[i];
+                i++;
+            }
+            attributes.push_back(new uParameter(access, type, name));
         }
-
-        // parse type
-        i++;
-        while (attribute[i] != '\n' && i < attribute.size()) {
-            if (attribute[i] != ' ') type += attribute[i];
-            i++;
-        }
-        attributes.push_back(new uParameter(access, type, name));
     }
 
 
@@ -195,33 +199,33 @@ std::string uStringConverter::createMethodString(const TMethods &methods, bool a
     stringstream text;
     for (TMethodsConstIter iter = methods.begin(); iter < methods.end(); ++iter) {
 
-        // access
-        if(accessSymbol)
-            text << getAccessUmlString((*iter)->getAccess());
-        else
-            text << getAccessString((*iter)->getAccess());
+            // access
+            if(accessSymbol)
+                text << getAccessUmlString((*iter)->getAccess());
+            else
+                text << getAccessString((*iter)->getAccess());
 
-        // method name
-        text << " " << (*iter)->getName() << "(";
+            // method name
+            text << " " << (*iter)->getName() << "(";
 
-        // parameters
-        TParameters parameters = (*iter)->getParameters();
-        for (TParametersIter it = parameters.begin(); it<parameters.end(); ++it) {
-            if (it == parameters.end()-1) {
-                text << (*it)->getType() << " " << (*it)->getName();
+            // parameters
+            TParameters parameters = (*iter)->getParameters();
+            for (TParametersIter it = parameters.begin(); it<parameters.end(); ++it) {
+                if (it == parameters.end()-1) {
+                    text << (*it)->getType() << " " << (*it)->getName();
+                }
+                else {
+                    text << (*it)->getType() << " " << (*it)->getName() << ", ";
+                }
             }
-            else {
-                text << (*it)->getType() << " " << (*it)->getName() << ", ";
-            }
-        }
 
-        // end parameters
-        text << ") : ";
+            // end parameters
+            text << ") : ";
 
-        // return type
-        text << (*iter)->getReturnType();
-        if (iter + 1 != methods.end())
-            text << '\n';
+            // return type
+            text << (*iter)->getReturnType();
+            if (iter + 1 != methods.end())
+                text << '\n';
 
     }
 
@@ -257,20 +261,20 @@ std::string uStringConverter::createAttributeString(const TParameters &attribute
     stringstream text;
     for (TParametersConstIter iter = attributes.begin(); iter < attributes.end(); ++iter) {
 
-        // access
-        if(accessSymbol)
-            text << getAccessUmlString((*iter)->getAccess());
-        else
-            text << getAccessString((*iter)->getAccess());
+            // access
+            if(accessSymbol)
+                text << getAccessUmlString((*iter)->getAccess());
+            else
+                text << getAccessString((*iter)->getAccess());
 
-        // attribute name
-        text << " " << (*iter)->getName() << " : ";
+            // attribute name
+            text << " " << (*iter)->getName() << " : ";
 
-        //  type
-        text << (*iter)->getType();
+            //  type
+            text << (*iter)->getType();
 
-        if (iter + 1 != attributes.end())
-            text << '\n';
+            if (iter + 1 != attributes.end())
+                text << '\n';
     }
 
     return text.str();

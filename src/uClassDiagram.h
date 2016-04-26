@@ -24,7 +24,7 @@ public:
     uInheritable * find(QString const& name) const;
     uInheritable * find(std::string const& name) const;
     void applyVisitor(uVisitor* visitor);
-    void applySaveVisitor(uVisitor *visitor, QList<double> x, QList<double> y);
+    void applySaveVisitor(uVisitor *visitor);
     uInheritable * get(int index) const;
     int size() const;
     int getIndex(QString const& name) const;
