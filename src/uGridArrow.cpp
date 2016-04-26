@@ -332,6 +332,26 @@ bool uGridArrow::notifyMovement(const QString &name, int movX, int movY)
     return true;
 }
 
+bool uGridArrow::notifyNameChange(const QString &oldName, const QString &newName)
+{
+    if(oldName != mOrigin && oldName != mDestination)
+        return false;
+
+    //If class renamed was the origin class
+    if(oldName == mOrigin)
+    {
+        mOrigin = newName;
+    }
+
+    //If class renamed was the destination class
+    if (oldName == mDestination)
+    {
+        mDestination = newName;
+    }
+
+    return true;
+}
+
 void uGridArrow::mergeSegments()
 {
     //Check for flat joints to merge them in one segment
@@ -349,7 +369,6 @@ void uGridArrow::mergeSegments()
             mergeSegments();
             return;
         }
-        //iter2++;
     }
 }
 

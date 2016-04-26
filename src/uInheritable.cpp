@@ -37,7 +37,7 @@ void uInheritable::accept(uVisitor *visitor)
 
 }
 
-void uInheritable::acceptSave(uVisitor *visitor, double x, double y)
+void uInheritable::acceptSave(uVisitor *visitor)
 {
 
 }
@@ -74,6 +74,16 @@ std::string uInheritable::getName() const
 std::string uInheritable::getParent() const
 {
     return mBaseClass;
+}
+
+double uInheritable::getLocX() const
+{
+    return this->locX;
+}
+
+double uInheritable::getLocY() const
+{
+    return this->locY;
 }
 
 QString uInheritable::qGetName() const
@@ -120,6 +130,27 @@ void uInheritable::addAttribute(uParameter *attribute)
 void uInheritable::addReference(uReference * reference)
 {
     mReferences.push_back(reference);
+}
+
+void uInheritable::setLocX(double locx)
+{
+    this->locX = locx;
+}
+
+void uInheritable::setLocY(double locy)
+{
+    this->locY = locy;
+}
+
+void uInheritable::setLoc(double locx, double locy)
+{
+    this->locX = locx;
+    this->locY = locy;
+}
+
+void uInheritable::setParent(std::string parent)
+{
+    mBaseClass = parent;
 }
 
 static bool operator==(TClasses& classes1, TClasses& classes2){
