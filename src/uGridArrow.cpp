@@ -304,7 +304,6 @@ void uGridArrow::mergeSegments()
             mergeSegments();
             return;
         }
-        //iter2++;
     }
 }
 

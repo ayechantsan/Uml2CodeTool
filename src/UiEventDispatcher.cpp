@@ -266,7 +266,6 @@ QString UiEventDispatcher::loadDiagram(QString url)
         }
         else if (word == "\"parent\"")
         {
-
             string foundString = foundArray[u+1];
             const auto lastOfNot = foundString.find_last_not_of(" ");
             string subString = foundString.substr(1, lastOfNot-1);
