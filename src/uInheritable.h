@@ -42,6 +42,7 @@ public:
     void setLocY(double locy);
     void setLoc(double locx, double locy);
     void setParent(std::string parent);
+    void changeParameterType(std::string oldName, std::string newName);
 
     bool hasParent() const;//to check whether it is a childClass or not
     bool isInterface() const;

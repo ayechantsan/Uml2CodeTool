@@ -87,10 +87,9 @@ void tokenize(const string& str,
 
 uGridArrow::uGridArrow(std::string const& str)
 {
-
     std::string delimiters = "[{,}]";
     vector<string> tokens;
-
+    uDebugPrinter::printText("In grid arrow constructor: " + str);
     tokenize(str, tokens, delimiters);
     //first read {type, origin, destination}
     int index = 0;
@@ -103,6 +102,14 @@ uGridArrow::uGridArrow(std::string const& str)
     {
         addSegment(new uGridSegment(stoi(tokens[index]), stoi(tokens[++index]),
                    stoi(tokens[++index]), stoi(tokens[++index])));
+    }
+
+    mSegmentSelected = -1;
+    if(mType == uInheritance){
+        mRatioXdest = 0.5;
+        mRatioXorigin = 0.5;
+        mRatioYdest = 1;
+        mRatioYorigin = 0;
     }
 }
 

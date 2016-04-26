@@ -153,6 +153,15 @@ void uInheritable::setParent(std::string parent)
     mBaseClass = parent;
 }
 
+void uInheritable::changeParameterType(std::string oldName, std::string newName)
+{
+    for(TParametersConstIter iter = mAttributes.begin(); iter != mAttributes.end(); iter++)
+    {
+        if((*iter)->getType() == oldName)
+            (*iter)->setType(newName);
+    }
+}
+
 static bool operator==(TClasses& classes1, TClasses& classes2){
     if(classes1.size()!=classes2.size())
         return false;

@@ -98,9 +98,21 @@ void UiEventDispatcher::updateClass(QString oldName, QString newName, QString pa
 
     for(int i = 0; i < mClassDiagram->size(); i++)
     {
+        //Check inheritance
         if(getClass(i)->getParent() == oldName.toStdString())
         {
             getClass(i)->setParent(newName.toStdString());
+        }
+
+        //Check references
+        std::vector<QString> references = generateReferences(mClassDiagram->find(getClass(i)->getName()));
+        int numberRef = references.size();
+        for(int j = 0; j < numberRef; j++)
+        {
+            if (references[j] == oldName)
+            {
+                mClassDiagram->changeReferenceName(getClass(i)->getName(), oldName.toStdString(), newName.toStdString());
+            }
         }
     }
 
@@ -167,11 +179,14 @@ void UiEventDispatcher::saveDiagram(QString url, QList<QString> names, QList<dou
     //this is going to need to to do something
 }
 
+void UiEventDispatcher::saveArrows(QString arrows)
+{
+    mCodeGenerator->saveArrows(arrows.toStdString());
+}
+
 //this method will load up one of our .uct files and use the uEventDispatcher::creatClass() to add classes to the mClasses stack
 QString UiEventDispatcher::loadDiagram(QString url)
 {
-
-
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
     string fileContent;
@@ -354,6 +369,81 @@ QString UiEventDispatcher::loadDiagram(QString url)
     QString returnWords = QString::fromStdString(classNamesString);
     return returnWords;
 }
+
+QString UiEventDispatcher::loadArrows(QString url)
+{
+    uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
+    string fileLocation = url.toStdString();
+    string fileContent;
+    std::smatch match;
+    std::string regExpression =  "\\b(file://)(.*)";
+#ifdef Q_OS_WIN
+    regExpression = "\\b(file:///)(.*)";
+#endif
+    std::regex reg (regExpression);
+    string location;
+    //this searches for file:/ and returns what follows it which is the path to the file selected.
+    if (std::regex_search(fileLocation, match, reg))
+    {
+        //this gives me the string after what i was looking for which was "file:/".
+        location = match[2];
+        uDebugPrinter::printText("Location: " + location);
+    }
+    //regular exprestion to search for things in the file taht wa
+    regex anyReg("\"(.*?)\"");
+
+    ifstream infile;
+    infile.open(location);
+    string line;
+    if (infile.is_open())
+    {
+       //while there is file to read we are going to add to file Content to then parse and get classes
+        while ( getline (infile, line))
+        {
+            fileContent += line + "\n";
+        }
+        infile.close();
+    }
+    else
+        uDebugPrinter::printText("Unable to open file");
+
+    int arrowCount = 0;
+
+    auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
+    auto words_end = sregex_iterator();
+    int leng = distance(words_begain, words_end);
+    //array to keep all the strings found between ""s
+    string *foundArray = new string[leng];
+    int myi = 0;
+    //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
+    for (sregex_iterator i = words_begain; i != words_end; ++i, myi++)
+    {
+        smatch match = *i;
+        foundArray[myi] = match.str();
+    }
+
+    //for each item that was found we want to check what the value is and then grab the string after it in the array
+    std::string arrowTotalString ="";
+    for (int u = 0; u < leng-1; u++ )
+    {
+        string word = foundArray[u];
+        if (word == "\"Arrow\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            arrowTotalString += subString + " ";
+        }
+    }
+
+    delete [] foundArray;
+    //final conversion from std::string to QString for the QML javascript function to consume.
+    QString returnArrows = QString::fromStdString(arrowTotalString);
+    //uDebugPrinter::printText(arrowTotalString);
+    return returnArrows;
+}
+
+
 //getter and setter for the current url sting for the path of either the generated code
 //or the saved diagram json.
 //these methods are needed to pass the selection from a choice in the view to event dispatcher
@@ -488,7 +578,7 @@ std::vector<QString> UiEventDispatcher::generateReferences(uInheritable * obj)
     return references;
 }
 
-void UiEventDispatcher::generateProjectFile()
+void UiEventDispatcher::generateProjectFile(QString name)
 {
-    mProjectGenerator.createFile(mClassDiagram);
+    mProjectGenerator.createFile(mClassDiagram, name.toStdString(), url.toStdString());
 }

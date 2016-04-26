@@ -94,9 +94,19 @@ ApplicationWindow {
                     horizontalAlignment: Text.AlignLeft
                 }
             }
+            TextField {
+                id: projectNameField
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+                font.family: "Droid Sans"
+                font.bold: false
+                font.italic: false
+                font.pointSize: 9
+                enabled: true
+            }
             ComboBox {
                 id: projectCB
-                model: [ "None", "Visual Studio", "QtCreator" ]
+                model: [ "None", "QtCreator" ]
                 onCurrentIndexChanged: {
                     dispatcher.setDevEnv(projectCB.currentText);
                 }
@@ -152,7 +162,7 @@ ApplicationWindow {
                         else
                         {
                             dispatcher.generateCode()
-                            dispatcher.generateProjectFile()
+                            dispatcher.generateProjectFile(projectNameField.text)
                             close()
                         }
                     }
