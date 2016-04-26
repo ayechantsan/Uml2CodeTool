@@ -46,9 +46,12 @@ ColumnLayout {
 
         CheckBox {
             id: abstractField;
-            Layout.fillWidth: false
+            //Layout.fillWidth: true
+            checked: false
             text: qsTr("Abstract")
             onCheckedChanged: updateMethod()
+            visible: true
+            enabled: true
         }
     }
 

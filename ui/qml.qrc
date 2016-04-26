@@ -9,5 +9,6 @@
         <file>UCodeGenerationDialogue.qml</file>
         <file>UFileDialog.qml</file>
         <file>USaveFileDialog.qml</file>
+        <file>uCloseDialog.qml</file>
     </qresource>
 </RCC>
