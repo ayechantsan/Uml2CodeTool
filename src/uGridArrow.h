@@ -4,6 +4,7 @@
 #include "uGridObject.h"
 #include "uGridSegment.h"
 
+
 #include <QString>
 
 class uGridClass;
@@ -55,7 +56,7 @@ public:
     void mergeSegments(); //called after each moveSegments to check possible segment merges
     bool similarInclination(const uGridSegment * const seg1, const uGridSegment * const seg2);
     void moveAllSegments(int movX, int movY);
-    void checkSides();
+    void checkSides(const uGridClass * const referencedClass);
 
     std::string toString() const;
 

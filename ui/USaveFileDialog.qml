@@ -96,7 +96,7 @@ ApplicationWindow {
                 uDebugger.qPrintText("Load arrow: " + splitArrows[j]);
                 gridLayout.addArrowFromString(splitArrows[j]);
             }
-
+            gridLayout.checkArrowSides();
             drawingCanvas.requestPaint();
             uClassPanel.clearTextFields();
             close();

@@ -54,6 +54,12 @@ void uGridLayout::addArrowFromString(QString arrowString)
     mArrows.push_back(arrow);
 }
 
+void uGridLayout::checkArrowSides()
+{
+    for(TGridClassConstIter iter = mTable.begin(); iter != mTable.end(); iter++)
+        (*iter)->checkArrowConnections();
+}
+
 bool uGridLayout::checkReferences(uGridArrow * arrow)
 {
     bool reference_found = false;
@@ -98,7 +104,8 @@ bool uGridLayout::changeObjectName(const QString &name, const QString &newName)
 
     for(TGridClassConstIter iter=mTable.begin(); iter != mTable.end(); iter++)
     {
-        if ((*iter)->getName() == name) {
+        if ((*iter)->getName() == name)
+        {
             foundPosition = iter;
             found = true;
         }
@@ -107,7 +114,8 @@ bool uGridLayout::changeObjectName(const QString &name, const QString &newName)
             return false;
     }
 
-    if (found){
+    if (found)
+    {
         (*foundPosition)->setName(newName);
         for(TGridArrowConstIter iter = mArrows.begin(); iter != mArrows.end(); iter++)
             (*iter)->notifyNameChange(name, newName);
@@ -240,6 +248,10 @@ void uGridLayout::deleteNonExistentArrows()
     for(TGridArrowConstIter iter = mArrows.begin(); iter != mArrows.end(); iter++)
         if((*iter)->getDeleted()){
             mArrows.erase(iter);
+
+            for(TGridClassConstIter iter2 = mTable.begin(); iter2 != mTable.end(); iter2++)
+                (*iter2)->deleteArrow(*iter);
+
             deleteNonExistentArrows();
             return;
         }

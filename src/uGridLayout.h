@@ -21,6 +21,7 @@ public:
 
     Q_INVOKABLE bool addClass(int i, int j, int i_to, int j_to, QString const& name);
     Q_INVOKABLE void addArrowFromString(QString arrowString);
+    Q_INVOKABLE void checkArrowSides();
 
     Q_INVOKABLE bool removeObject(QString const& name);
     Q_INVOKABLE bool removeObject(int i, int j);

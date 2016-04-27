@@ -440,6 +440,7 @@ QString UiEventDispatcher::loadArrows(QString url)
     //final conversion from std::string to QString for the QML javascript function to consume.
     QString returnArrows = QString::fromStdString(arrowTotalString);
     //uDebugPrinter::printText(arrowTotalString);
+
     return returnArrows;
 }
 
