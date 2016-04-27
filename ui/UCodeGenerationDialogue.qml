@@ -35,9 +35,10 @@ ApplicationWindow {
                 id: languageCB
                 model: [ "Java", "C++", "Python" ]
                 onCurrentIndexChanged: {
-                   if(languageCB.currentText =="")
-                       languageCB.currentText = "Java"
-                   dispatcher.setLanguage(languageCB.currentText);
+                    if(languageCB.currentText == "")
+                        dispatcher.setLanguage("Java");
+                    else
+                        dispatcher.setLanguage(languageCB.currentText);
                 }
 
             }
