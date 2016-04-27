@@ -420,20 +420,20 @@ void uGridArrow::checkSides(const uGridClass * const referencedClass)
 {
     if(referencedClass->getName() == mOrigin)
     {
-        if (mType = uInheritance)
+        if (mType == uInheritance)
         {
             mSegments[0]->setX((referencedClass->getX() + referencedClass->getX_to())/2);
             mSegments[0]->setY(referencedClass->getY());
         }
-        else if (mType = uAggregation)
+        else if (mType == uAggregation)
         {
             mSegments[0]->setX(referencedClass->getX());
-            mSegments[0]->setY((referencedClass->getY() + referencedClass->getY_to())*1/4);
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
         }
         else //uDependency
         {
             mSegments[0]->setX(referencedClass->getX());
-            mSegments[0]->setY((referencedClass->getY() + referencedClass->getY_to())*3/4);
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())*3/4);
         }
 
     }
@@ -441,20 +441,20 @@ void uGridArrow::checkSides(const uGridClass * const referencedClass)
     if(referencedClass->getName() == mDestination)
     {
         int lastIndex = mSegments.size()-1;
-        if (mType = uInheritance)
+        if (mType == uInheritance)
         {
             mSegments[lastIndex]->setX_to((referencedClass->getX() + referencedClass->getX_to())/2);
             mSegments[lastIndex]->setY_to(referencedClass->getY_to());
         }
-        else if (mType = uAggregation)
+        else if (mType == uAggregation)
         {
             mSegments[lastIndex]->setX_to(referencedClass->getX());
-            mSegments[lastIndex]->setY_to((referencedClass->getY() + referencedClass->getY_to())*1/4);
+            mSegments[lastIndex]->setY_to(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
         }
         else//uDependency
         {
             mSegments[lastIndex]->setX_to(referencedClass->getX());
-            mSegments[lastIndex]->setY_to((referencedClass->getY() + referencedClass->getY_to())*3/4);
+            mSegments[lastIndex]->setY_to(referencedClass->getY() +(referencedClass->getY_to() - referencedClass->getY())*3/4);
         }
     }
 }
