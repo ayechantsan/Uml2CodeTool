@@ -15,6 +15,7 @@ public:
     std::string getName() const;
     std::string getType() const;
     uAccess getAccess() const;
+    void setType(std::string newType);
     inline bool operator==(const uParameter& p2) const;
     inline bool operator!=(const uParameter& p2) const;
 

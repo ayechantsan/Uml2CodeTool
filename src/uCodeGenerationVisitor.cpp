@@ -116,6 +116,37 @@ std::string uCodeGenerationVisitor::createSaveMethodString(uMethod * method)
     }
     return methodStr + "): " + method->getReturnType() + "\"}\n";
 }
+
+void uCodeGenerationVisitor::saveArrows(string arrows)
+{
+    ofstream myfile;
+    string substring = url.substr(7, url.length());
+#ifdef Q_OS_WIN
+    substring = url.substr(8, url.length());
+#endif
+    uDebugPrinter::printText("Path: " + substring);
+    ifstream ifile(substring);
+
+    if (ifile) {
+        std::cout << "did  exist"<< std::endl;
+    } else {
+        std::cout << "did not exist"<< std::endl;
+    }
+
+    myfile.open(substring, ios::app | ios::out);
+    uDebugPrinter::printText(substring);
+    if (!myfile.is_open())
+    {
+        std::string errStr = strerror(errno);
+        uDebugPrinter::printText("open failure as expected: " + errStr);
+    }
+    else
+    {
+        myfile << arrows;
+        myfile.flush();
+        myfile.close();
+    }
+}
 //create an inheritance string for a child class
 std::string uCodeGenerationVisitor::createChildInheritanceString(string const& base)
 {
@@ -152,7 +183,7 @@ std::string uCodeGenerationVisitor::createBaseInheritanceString(uInheritable * a
 
 string uCodeGenerationVisitor::createContent(uInheritable * aClass, double x, double y, string const& base)
 {
-    uDebugPrinter::printText("createing content mehtod" + std::to_string(x));
+    uDebugPrinter::printText("creating content method" + std::to_string(x));
     stringstream fileContent;
 //iterate through all the attributes associated with the current class and retrun the parameter and methods in a string
         TParameters attributes = aClass->getAttributes();

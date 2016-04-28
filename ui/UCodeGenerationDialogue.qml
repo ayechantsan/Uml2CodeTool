@@ -35,9 +35,10 @@ ApplicationWindow {
                 id: languageCB
                 model: [ "Java", "C++", "Python" ]
                 onCurrentIndexChanged: {
-                   if(languageCB.currentText =="")
-                       languageCB.currentText = "Java"
-                   dispatcher.setLanguage(languageCB.currentText);
+                    if(languageCB.currentText == "")
+                        dispatcher.setLanguage("Java");
+                    else
+                        dispatcher.setLanguage(languageCB.currentText);
                 }
 
             }
@@ -94,9 +95,19 @@ ApplicationWindow {
                     horizontalAlignment: Text.AlignLeft
                 }
             }
+            TextField {
+                id: projectNameField
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+                font.family: "Droid Sans"
+                font.bold: false
+                font.italic: false
+                font.pointSize: 9
+                enabled: true
+            }
             ComboBox {
                 id: projectCB
-                model: [ "None", "Visual Studio", "QtCreator" ]
+                model: [ "None", "QtCreator" ]
                 onCurrentIndexChanged: {
                     dispatcher.setDevEnv(projectCB.currentText);
                 }
@@ -152,7 +163,7 @@ ApplicationWindow {
                         else
                         {
                             dispatcher.generateCode()
-                            dispatcher.generateProjectFile()
+                            dispatcher.generateProjectFile(projectNameField.text)
                             close()
                         }
                     }

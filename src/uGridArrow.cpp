@@ -1,5 +1,6 @@
 #include "uGridArrow.h"
 #include "uDebugPrinter.h"
+#include "uGridClass.h"
 
 #include <math.h>
 #include <iostream>
@@ -87,10 +88,9 @@ void tokenize(const string& str,
 
 uGridArrow::uGridArrow(std::string const& str)
 {
-
     std::string delimiters = "[{,}]";
     vector<string> tokens;
-
+    uDebugPrinter::printText("In grid arrow constructor: " + str);
     tokenize(str, tokens, delimiters);
     //first read {type, origin, destination}
     int index = 0;
@@ -103,6 +103,14 @@ uGridArrow::uGridArrow(std::string const& str)
     {
         addSegment(new uGridSegment(stoi(tokens[index]), stoi(tokens[++index]),
                    stoi(tokens[++index]), stoi(tokens[++index])));
+    }
+
+    mSegmentSelected = -1;
+    if(mType == uInheritance){
+        mRatioXdest = 0.5;
+        mRatioXorigin = 0.5;
+        mRatioYdest = 1;
+        mRatioYorigin = 0;
     }
 }
 
@@ -405,6 +413,49 @@ void uGridArrow::moveAllSegments(int movX, int movY)
     for(TGridSegmentConstIter iter = mSegments.begin(); iter!=mSegments.end(); iter++)
     {
         (*iter)->move(movX, movY);
+    }
+}
+
+void uGridArrow::checkSides(const uGridClass * const referencedClass)
+{
+    if(referencedClass->getName() == mOrigin)
+    {
+        if (mType == uInheritance)
+        {
+            mSegments[0]->setX((referencedClass->getX() + referencedClass->getX_to())/2);
+            mSegments[0]->setY(referencedClass->getY());
+        }
+        else if (mType == uAggregation)
+        {
+            mSegments[0]->setX(referencedClass->getX());
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
+        }
+        else //uDependency
+        {
+            mSegments[0]->setX(referencedClass->getX());
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())*3/4);
+        }
+
+    }
+
+    if(referencedClass->getName() == mDestination)
+    {
+        int lastIndex = mSegments.size()-1;
+        if (mType == uInheritance)
+        {
+            mSegments[lastIndex]->setX_to((referencedClass->getX() + referencedClass->getX_to())/2);
+            mSegments[lastIndex]->setY_to(referencedClass->getY_to());
+        }
+        else if (mType == uAggregation)
+        {
+            mSegments[lastIndex]->setX_to(referencedClass->getX());
+            mSegments[lastIndex]->setY_to(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
+        }
+        else//uDependency
+        {
+            mSegments[lastIndex]->setX_to(referencedClass->getX());
+            mSegments[lastIndex]->setY_to(referencedClass->getY() +(referencedClass->getY_to() - referencedClass->getY())*3/4);
+        }
     }
 }
 

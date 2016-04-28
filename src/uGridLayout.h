@@ -20,6 +20,8 @@ public:
     Q_INVOKABLE QString getAllNames();
 
     Q_INVOKABLE bool addClass(int i, int j, int i_to, int j_to, QString const& name);
+    Q_INVOKABLE void addArrowFromString(QString arrowString);
+    Q_INVOKABLE void checkArrowSides();
 
     Q_INVOKABLE bool removeObject(QString const& name);
     Q_INVOKABLE bool removeObject(int i, int j);
@@ -44,6 +46,7 @@ public:
     Q_INVOKABLE int getArrowsSize() const;
     Q_INVOKABLE int getArrowSize(int index) const;
     Q_INVOKABLE int getArrowType(int index) const;
+    Q_INVOKABLE QString getArrowsString() const;
 
     Q_INVOKABLE bool setWidth(int width);
     Q_INVOKABLE bool setHeight(int height);
@@ -71,6 +74,8 @@ public:
     Q_INVOKABLE void cleanAll();
 
     Q_INVOKABLE void moveAll(int movX, int movY);
+
+    bool checkReferences(uGridArrow *arrow);
 
 signals:
 

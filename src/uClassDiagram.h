@@ -29,6 +29,8 @@ public:
     int size() const;
     int getIndex(QString const& name) const;
 
+    bool changeReferenceName(std::string className, std::string oldName, std::string newName);
+
     void clearAll();
 
 private:

@@ -48,7 +48,10 @@ ApplicationWindow {
                 uDebugger.qPrintText("name: " + nameArray[i] + " X: " + locationArrayX[i] + " Y: " + locationArrayY[i]);
             }
             if(nameArray.length > 1)
+            {
                 dispatcher.saveDiagram(saveFile.fileUrl, nameArray, locationArrayX, locationArrayY);
+                dispatcher.saveArrows(gridLayout.getArrowsString());
+            }
 
             close()
             root.close()
@@ -83,6 +86,17 @@ ApplicationWindow {
                 gridLayout.addClass(x, y, x + drawingCanvas.getClassWidth(), y + drawingCanvas.getClassHeight(), splitWords[i]);
 
             }
+
+            //Load arrows
+            var arrows =  dispatcher.loadArrows(loadFileDialog.fileUrl);
+            arrows = arrows
+            var splitArrows = arrows.split(" ");
+            for (var j = 0; j< splitArrows.length-1; j++)
+            {
+                uDebugger.qPrintText("Load arrow: " + splitArrows[j]);
+                gridLayout.addArrowFromString(splitArrows[j]);
+            }
+            gridLayout.checkArrowSides();
             drawingCanvas.requestPaint();
             uClassPanel.clearTextFields();
             close();

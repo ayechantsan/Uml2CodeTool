@@ -20,6 +20,9 @@ public:
     QString getName() const;
 
     bool addReference(uGridArrow * arrow);
+    bool deleteArrow(uGridArrow * arrow);
+
+    void checkArrowConnections();
 
 private:
     QString mName;

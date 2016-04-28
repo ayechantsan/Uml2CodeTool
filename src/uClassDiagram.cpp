@@ -147,6 +147,21 @@ int uClassDiagram::getIndex(const QString &name) const
     return -1;
 }
 
+bool uClassDiagram::changeReferenceName(string className, string oldName, string newName)
+{
+    bool referenceFound = false;
+    for(TClassesConstIter iter = mClasses.begin(); iter != mClasses.end(); iter++)
+    {
+        if((*iter)->getName() == className)
+        {
+            (*iter)->changeParameterType(oldName, newName);
+            referenceFound = true;
+        }
+    }
+
+    return referenceFound;
+}
+
 void uClassDiagram::clearAll()
 {
     mClasses.clear();
