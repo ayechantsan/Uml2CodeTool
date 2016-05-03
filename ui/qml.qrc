@@ -8,6 +8,7 @@
         <file>StyledText.qml</file>
         <file>UCodeGenerationDialogue.qml</file>
         <file>UFileDialog.qml</file>
-        <file>ULoadFileDialog.qml</file>
+        <file>USaveFileDialog.qml</file>
+        <file>uCloseDialog.qml</file>
     </qresource>
 </RCC>

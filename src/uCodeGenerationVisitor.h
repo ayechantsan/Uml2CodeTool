@@ -18,6 +18,7 @@ public:
     uLanguageStrategy * getLanguage() const;
     void setFileAttributes(std::string const& author, std::string const& date);
     void setUrl(std::string url);
+    void cleanUrl();
     virtual void visit(uChildClass * childClass);
     virtual void visit(uBaseClass * baseClass);
     virtual void visit(uInterface * interfaceClass);
@@ -29,6 +30,7 @@ public:
     bool saveClassInDiagram(std::string const& name, std::string const& author, std::string const& date, std::string const& content, std::string const& path="");
     std::string createSaveAttributeString(uParameter * attribute);
     std::string createSaveMethodString(uMethod * method);
+    void saveArrows(std::string arrows);
 
     std::string createContent(uInheritable * aClass, double x, double y, std::string const& base = "");
     std::string createChildInheritanceString(std::string const& base);

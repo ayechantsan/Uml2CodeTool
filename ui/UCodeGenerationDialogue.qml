@@ -12,6 +12,8 @@ ApplicationWindow {
     title: "Code Generation"
     color:  "white"
 
+    property bool folderChoosen: false
+    property bool languageChoosen: false
 
     ColumnLayout {
         Layout.margins: 20
@@ -31,10 +33,12 @@ ApplicationWindow {
             }
             ComboBox {
                 id: languageCB
-                model: [ "None", "C++", "Java", "Python" ]
+                model: [ "Java", "C++", "Python" ]
                 onCurrentIndexChanged: {
-                    dispatcher.setLanguage(languageCB.currentText);
-                   genButton.visible = true
+                    if(languageCB.currentText == "")
+                        dispatcher.setLanguage("Java");
+                    else
+                        dispatcher.setLanguage(languageCB.currentText);
                 }
 
             }
@@ -58,22 +62,18 @@ ApplicationWindow {
                     text: "Choose Folder"
                 }
                 onClicked: {
-//                    var component = Qt.createComponent("UFileDialog.qml");
-//                    var win2 = component.createObject(generationDialog);
-//                    win2.show();
-                    fileDialog.visible = true;
+                    loadFileDialog.visible = true;
                 }
                 FileDialog {
-                    id: fileDialog
+                    id: loadFileDialog
                     title: "Please choose a folder"
                     folder: shortcuts.home
                     selectFolder: true
                     onAccepted: {
-
-
                         console.log("Accepted "+fileUrl);
                         dispatcher.setUrl(fileUrl);
                         fileLocationLbl.text = fileUrl;
+                        folderChoosen = true;
                     }
                     onRejected: {
 
@@ -95,31 +95,41 @@ ApplicationWindow {
                     horizontalAlignment: Text.AlignLeft
                 }
             }
+            TextField {
+                id: projectNameField
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+                font.family: "Droid Sans"
+                font.bold: false
+                font.italic: false
+                font.pointSize: 9
+                enabled: true
+            }
             ComboBox {
                 id: projectCB
-                model: [ "None", "Visual Studio", "QtCreator" ]
+                model: [ "None", "QtCreator" ]
                 onCurrentIndexChanged: {
                     dispatcher.setDevEnv(projectCB.currentText);
                 }
             }
         }
 
-        RowLayout {
-            Layout.margins: 20
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Label {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                StyledText {
-                    text: "Doxygen Comments"
-                    horizontalAlignment: Text.AlignLeft
-                }
-            }
-            CheckBox {
-                checked: false
-            }
-        }
+//        RowLayout {
+//            Layout.margins: 20
+//            Layout.fillHeight: true
+//            Layout.fillWidth: true
+//            Label {
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+//                StyledText {
+//                    text: "Doxygen Comments"
+//                    horizontalAlignment: Text.AlignLeft
+//                }
+//            }
+//            CheckBox {
+//                checked: false
+//            }
+//        }
 
         RowLayout {
             Layout.margins: 20
@@ -136,19 +146,40 @@ ApplicationWindow {
             }
             Button {
                 id: genButton
-                visible: false
+                visible: true
                 StyledText {
                     text: "Generate"
 
                 }
                 onClicked: {
                     //TODO
-                    dispatcher.generateCode()
-                    dispatcher.generateProjectFile()
-                    close()
+                    if(folderChoosen)
+                    {
+                        if(dispatcher.getDiagramSize() <= 0)
+                        {
+                            errorLabel.text = "No classes to generate";
+                            errorLabel.color = "red"
+                        }
+                        else
+                        {
+                            dispatcher.generateCode()
+                            dispatcher.generateProjectFile(projectNameField.text)
+                            close()
+                        }
+                    }
+                    else
+                    {
+                        errorLabel.text = "You have to choose a folder";
+                        errorLabel.color = "red"
+                    }
                 }
             }
+            Label{
+                id: errorLabel
+            }
+
         }
+
     }
 }
 

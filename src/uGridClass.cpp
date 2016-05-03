@@ -39,3 +39,24 @@ bool uGridClass::addReference(uGridArrow *arrow)
     mArrows.push_back(arrow);
 }
 
+bool uGridClass::deleteArrow(uGridArrow *arrow)
+{
+    for(TGridArrowConstIter iter = mArrows.begin(); iter != mArrows.end(); iter++)
+    {
+        if((*iter)->equals(arrow))
+        {
+            mArrows.erase(iter);
+            return true;
+        }
+    }
+    return false;
+}
+
+void uGridClass::checkArrowConnections()
+{
+    for(TGridArrowConstIter iter = mArrows.begin(); iter != mArrows.end(); iter++)
+    {
+        (*iter)->checkSides(this);
+    }
+}
+

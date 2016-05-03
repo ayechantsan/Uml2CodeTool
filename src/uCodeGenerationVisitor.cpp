@@ -7,6 +7,14 @@
 #include <unistd.h>
 #include "uDebugPrinter.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#define SYSERROR()  GetLastError()
+#else
+#include <errno.h>
+#define SYSERROR()  errno
+#endif
+
 using namespace std;
 
 /**
@@ -46,13 +54,28 @@ void uCodeGenerationVisitor::setUrl(std::string thisurl)
     url = thisurl;
 }
 
+void uCodeGenerationVisitor::cleanUrl()
+{
+    //TODO
+    ofstream myfile;
+    string substring = url.substr(7, url.length());
+#ifdef Q_OS_WIN
+    substring = url.substr(8, url.length());
+#endif
+    uDebugPrinter::printText("Path: " + substring);
+    myfile.open(substring);
+    myfile << "";
+    myfile.flush();
+    myfile.close();
+}
+
 void uCodeGenerationVisitor::visit(uChildClass *childClass)
 {
     if (mLanguage->hasSeparateFiles()) {
-        createFile(childClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment(), url);
+        createFile(childClass->getName() + mLanguage->getImplementationFileExtension(), mAuthor, mDate, mLanguage->createImplementationFileContent(childClass, childClass->getParent()), mLanguage->getLineComment(), url);
         cout << "    " << childClass->getName() + mLanguage->getImplementationFileExtension() << endl;
     }
-    createFile(childClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(childClass, childClass->getParent()->getName()), mLanguage->getLineComment(), url);
+    createFile(childClass->getName() + mLanguage->getDeclarationFileExtension(), mAuthor, mDate, mLanguage->createDeclarationFileContent(childClass, childClass->getParent()), mLanguage->getLineComment(), url);
     cout << "    " << childClass->getName() + mLanguage->getDeclarationFileExtension() << endl;
 }
 
@@ -77,22 +100,52 @@ void uCodeGenerationVisitor::visit(uInterface *interfaceClass)
 }
 string uCodeGenerationVisitor::createSaveAttributeString(uParameter * attribute)
 {
-    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getType() + " " + attribute->getName();
+    string attributeString = getAccessString(attribute->getAccess()) + " " + attribute->getName() + ": " + attribute->getType();
     return attributeString;
 }
 std::string uCodeGenerationVisitor::createSaveMethodString(uMethod * method)
 {
     string methodStr = "{\"method\" : \"";
     TParameters params = method->getParameters();
-    methodStr += getAccessString(method->getAccess()) + " " + method->getReturnType() + " " + method->getName() + "\"},\n";
-    methodStr += "\t{\"parameters\" : \"";
+    methodStr += getAccessString(method->getAccess()) + " " + method->getName() + "(";
     if (params.size() > 0) {
         for (TParametersIter iter = params.begin(); iter < params.end()-1; ++iter) {
             methodStr += (*iter)->getType() + " " + (*iter)->getName() + ", ";
         }
         methodStr += params[params.size()-1]->getType() + " " + params[params.size()-1]->getName();
     }
-    return methodStr + "}\n";
+    return methodStr + "): " + method->getReturnType() + "\"}\n";
+}
+
+void uCodeGenerationVisitor::saveArrows(string arrows)
+{
+    ofstream myfile;
+    string substring = url.substr(7, url.length());
+#ifdef Q_OS_WIN
+    substring = url.substr(8, url.length());
+#endif
+    uDebugPrinter::printText("Path: " + substring);
+    ifstream ifile(substring);
+
+    if (ifile) {
+        std::cout << "did  exist"<< std::endl;
+    } else {
+        std::cout << "did not exist"<< std::endl;
+    }
+
+    myfile.open(substring, ios::app | ios::out);
+    uDebugPrinter::printText(substring);
+    if (!myfile.is_open())
+    {
+        std::string errStr = strerror(errno);
+        uDebugPrinter::printText("open failure as expected: " + errStr);
+    }
+    else
+    {
+        myfile << arrows;
+        myfile.flush();
+        myfile.close();
+    }
 }
 //create an inheritance string for a child class
 std::string uCodeGenerationVisitor::createChildInheritanceString(string const& base)
@@ -130,7 +183,7 @@ std::string uCodeGenerationVisitor::createBaseInheritanceString(uInheritable * a
 
 string uCodeGenerationVisitor::createContent(uInheritable * aClass, double x, double y, string const& base)
 {
-    uDebugPrinter::printText("createing content mehtod" + std::to_string(x));
+    uDebugPrinter::printText("creating content method" + std::to_string(x));
     stringstream fileContent;
 //iterate through all the attributes associated with the current class and retrun the parameter and methods in a string
         TParameters attributes = aClass->getAttributes();
@@ -182,7 +235,10 @@ string uCodeGenerationVisitor::createContent(uInheritable * aClass, double x, do
 void uCodeGenerationVisitor::visitSave(uChildClass *childClass, double x, double y)
 {
 
-    saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()->getName()), url);
+  if (!childClass->hasParent())
+        saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y), url);
+    else
+        saveClassInDiagram(childClass->getName(), mAuthor, mDate, createContent(childClass, x, y, childClass->getParent()), url);
 
 }
 
@@ -196,7 +252,7 @@ void uCodeGenerationVisitor::visitSave(uBaseClass *baseClass, double x, double y
 void uCodeGenerationVisitor::visitSave(uInterface *interfaceClass, double x, double y)
 {
 
-    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass, x, y)), url;
+    saveClassInDiagram(interfaceClass->getName(), mAuthor, mDate, createContent(interfaceClass, x, y), url);
 
 }
 
@@ -204,7 +260,10 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 {
     //this is clearly not ok for the main branch
       uDebugPrinter::printText("new path " + path+name.c_str());
-    const string thisPath = path.substr(7, path.length());
+    string thisPath = path.substr(7, path.length());
+#ifdef Q_OS_WIN
+    thisPath = path.substr(8, path.length());
+#endif
     uDebugPrinter::printText("new path " + thisPath+"/"+name.c_str());
     ofstream myfile;
     myfile.open(thisPath+"/"+name.c_str());
@@ -221,31 +280,34 @@ bool uCodeGenerationVisitor::createFile(string const& name, string const& author
 bool uCodeGenerationVisitor::saveClassInDiagram(string const& name, string const& author, string const& date, string const& content, string const& path)
 {
     ofstream myfile;
-    bool isOpen = false;
-    const string substring = path.substr(7, path.length());
-    uDebugPrinter::printText(substring);
-//    myfile.open(temp+name.c_str() + ".uct", ios::app);
-    ifstream ifile(substring +"/"+ "current.uct");
-
+    string substring = path.substr(7, path.length());
+#ifdef Q_OS_WIN
+    substring = path.substr(8, path.length());
+#endif
+    uDebugPrinter::printText("Path: " + substring);
+    ifstream ifile(substring);
 
     if (ifile) {
-            isOpen = true;
             std::cout << "did  exist"<< std::endl;
         } else {
-            isOpen = false;
             std::cout << "did not exist"<< std::endl;
         }
 
-    myfile.open(substring +"/"+ "current.uct", ios::app);
-    uDebugPrinter::printText(substring +"/"+ "current.uct");
+    myfile.open(substring, ios::app | ios::out);
+    uDebugPrinter::printText(substring);
     if (!myfile.is_open())
+    {
+        std::string errStr = strerror(errno);
+        uDebugPrinter::printText("open failure as expected: " + errStr);
         return false;
-//this will work but i need it do work a bit differently than this because i only want one file.
+    }
+
     myfile << "\{\"classes\" : [\n";
     myfile << "\t{\"name\":\"" +name + "\"},\n";
     myfile << "\t{\"author\":\"" + author + "\"},\n";
     myfile << "\t{\"date\":\"" + date + "\"},\n";
     myfile << "\t{\"content\": " + content + "}\n";
+    myfile.flush();
     myfile.close();
     return true;
 }
@@ -253,7 +315,7 @@ string uCodeGenerationVisitor::getFileHeader(std::string const& fileName, std::s
 {
     string header = "";
     header += lineComment + " ------------------------------------------------------------------\n";
-    header += lineComment + " File created with uCode - https://github.com/dstoeg/Uml2CodeTool\n";
+    header += lineComment + " File created with uCode - https://github.com/UM-ADV16/Uml2CodeTool\n";
     header += lineComment + " ------------------------------------------------------------------\n";
     header += lineComment + " file      : " + fileName + "\n";
     header += lineComment + " author    : " + author + "\n";

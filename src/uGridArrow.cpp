@@ -1,7 +1,16 @@
 #include "uGridArrow.h"
 #include "uDebugPrinter.h"
+#include "uGridClass.h"
 
 #include <math.h>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <iterator>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
 
 
 uGridArrow::uGridArrow(QString const& origin, QString const& destination, int type, TGridSegment segments)
@@ -57,6 +66,54 @@ uGridArrow::uGridArrow(QString const& origin, QString const& destination, uArrow
     mDeleted = false;
 }
 
+void tokenize(const string& str,
+                      vector<string>& tokens,
+                      const string& delimiters = " ")
+{
+    // Skip delimiters at beginning.
+    string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    // Find first "non-delimiter".
+    string::size_type pos     = str.find_first_of(delimiters, lastPos);
+
+    while (string::npos != pos || string::npos != lastPos)
+    {
+        // Found a token, add it to the vector.
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        // Skip delimiters.  Note the "not_of"
+        lastPos = str.find_first_not_of(delimiters, pos);
+        // Find next "non-delimiter"
+        pos = str.find_first_of(delimiters, lastPos);
+    }
+}
+
+uGridArrow::uGridArrow(std::string const& str)
+{
+    std::string delimiters = "[{,}]";
+    vector<string> tokens;
+    uDebugPrinter::printText("In grid arrow constructor: " + str);
+    tokenize(str, tokens, delimiters);
+    //first read {type, origin, destination}
+    int index = 0;
+
+    setType(stoi(tokens[index])); index++;
+    mOrigin = QString::fromStdString(tokens[index]); index++;
+    mDestination = QString::fromStdString(tokens[index]); index++;
+
+    for(index; index < tokens.size(); index++)
+    {
+        addSegment(new uGridSegment(stoi(tokens[index]), stoi(tokens[++index]),
+                   stoi(tokens[++index]), stoi(tokens[++index])));
+    }
+
+    mSegmentSelected = -1;
+    if(mType == uInheritance){
+        mRatioXdest = 0.5;
+        mRatioXorigin = 0.5;
+        mRatioYdest = 1;
+        mRatioYorigin = 0;
+    }
+}
+
 QString uGridArrow::getOrigin() const
 {
     return mOrigin;
@@ -106,6 +163,22 @@ void uGridArrow::addSegment(uGridSegment *segment)
 void uGridArrow::setDeleted(bool del)
 {
     mDeleted = del;
+}
+
+void uGridArrow::setType(int type)
+{
+    if(type == 0)
+    {
+        mType = uInheritance;
+    }
+    else if(type == 1)
+    {
+        mType = uAggregation;
+    }
+    else
+    {
+        mType = uDependency;
+    }
 }
 
 void uGridArrow::resizeX(double ratio, int destinationX, int destWidth)
@@ -267,6 +340,26 @@ bool uGridArrow::notifyMovement(const QString &name, int movX, int movY)
     return true;
 }
 
+bool uGridArrow::notifyNameChange(const QString &oldName, const QString &newName)
+{
+    if(oldName != mOrigin && oldName != mDestination)
+        return false;
+
+    //If class renamed was the origin class
+    if(oldName == mOrigin)
+    {
+        mOrigin = newName;
+    }
+
+    //If class renamed was the destination class
+    if (oldName == mDestination)
+    {
+        mDestination = newName;
+    }
+
+    return true;
+}
+
 void uGridArrow::mergeSegments()
 {
     //Check for flat joints to merge them in one segment
@@ -284,7 +377,6 @@ void uGridArrow::mergeSegments()
             mergeSegments();
             return;
         }
-        //iter2++;
     }
 }
 
@@ -324,6 +416,68 @@ void uGridArrow::moveAllSegments(int movX, int movY)
     }
 }
 
+void uGridArrow::checkSides(const uGridClass * const referencedClass)
+{
+    if(referencedClass->getName() == mOrigin)
+    {
+        if (mType == uInheritance)
+        {
+            mSegments[0]->setX((referencedClass->getX() + referencedClass->getX_to())/2);
+            mSegments[0]->setY(referencedClass->getY());
+        }
+        else if (mType == uAggregation)
+        {
+            mSegments[0]->setX(referencedClass->getX());
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
+        }
+        else //uDependency
+        {
+            mSegments[0]->setX(referencedClass->getX());
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())*3/4);
+        }
+
+    }
+
+    if(referencedClass->getName() == mDestination)
+    {
+        int lastIndex = mSegments.size()-1;
+        if (mType == uInheritance)
+        {
+            mSegments[lastIndex]->setX_to((referencedClass->getX() + referencedClass->getX_to())/2);
+            mSegments[lastIndex]->setY_to(referencedClass->getY_to());
+        }
+        else if (mType == uAggregation)
+        {
+            mSegments[lastIndex]->setX_to(referencedClass->getX());
+            mSegments[lastIndex]->setY_to(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
+        }
+        else//uDependency
+        {
+            mSegments[lastIndex]->setX_to(referencedClass->getX());
+            mSegments[lastIndex]->setY_to(referencedClass->getY() +(referencedClass->getY_to() - referencedClass->getY())*3/4);
+        }
+    }
+}
+
+std::string uGridArrow::toString() const
+{
+    std::string str = "[";
+
+    //First store {type, origin, destination}
+    str += "{" + std::to_string(getType()) + "," + mOrigin.toStdString() + "," + mDestination.toStdString() + "}";
+
+    //Add segments
+    for(TGridSegmentConstIter iter = mSegments.begin(); iter != mSegments.end(); iter++)
+    {
+        str += ",{"+ std::to_string((*iter)->getX()) + "," + std::to_string((*iter)->getY())
+                + "," +std::to_string((*iter)->getX_to()) + "," +std::to_string((*iter)->getY_to()) + "}";
+    }
+    str+="]";
+
+    return str;
+
+}
+
 
 double uGridArrow::distancePointToPoint(int x, int y, int i, int j) const
 {
@@ -337,4 +491,3 @@ double uGridArrow::distancePointToPoint(int x, int y, int i, int j) const
 //        ~(*iter);
 //    }
 //}
-

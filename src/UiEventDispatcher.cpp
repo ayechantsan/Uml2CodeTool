@@ -37,7 +37,7 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
 
     // find parent given name
 
-    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+    std::string const& parentObj = parent.toStdString();
 
 
     // call factory to create object
@@ -59,9 +59,9 @@ void UiEventDispatcher::createClass(QString name, QString parent, QString method
 
     // find parent given name
 
-    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
+    std::string const& parentObj = parent.toStdString();
 
-uDebugPrinter::printText(" create with x" + std::to_string(x));
+    uDebugPrinter::printText(" create with x" + std::to_string(x));
     // call factory to create object
     mClassButton->create(uPublic, name.toStdString(), attributeObjects, methodObjects, referenceObjects, x, y, parentObj,isAbstract);
 }
@@ -70,7 +70,7 @@ uDebugPrinter::printText(" create with x" + std::to_string(x));
 int UiEventDispatcher::getClassX(QString name)
 {
    uInheritable found = *mClassDiagram->find(name);
-   int foundX = found.locX;
+   int foundX = found.getLocX();
    return foundX;
 }
 //method to ge the y coridinate of the glass by iterating through the
@@ -78,7 +78,7 @@ int UiEventDispatcher::getClassX(QString name)
 int UiEventDispatcher::getClassY(QString name)
 {
     uInheritable found = *mClassDiagram->find(name);
-    int foundY = found.locY;
+    int foundY = found.getLocY();
     return foundY;
 }
 
@@ -94,8 +94,27 @@ void UiEventDispatcher::updateClass(QString oldName, QString newName, QString pa
     TReferences referenceObjects;
 
     // find parent given name
-    uInheritable * parentObj = mClassDiagram->find(parent.toStdString());
-    uDebugPrinter::printClass(parentObj);
+    std::string const& parentObj = parent.toStdString();
+
+    for(int i = 0; i < mClassDiagram->size(); i++)
+    {
+        //Check inheritance
+        if(getClass(i)->getParent() == oldName.toStdString())
+        {
+            getClass(i)->setParent(newName.toStdString());
+        }
+
+        //Check references
+        std::vector<QString> references = generateReferences(mClassDiagram->find(getClass(i)->getName()));
+        int numberRef = references.size();
+        for(int j = 0; j < numberRef; j++)
+        {
+            if (references[j] == oldName)
+            {
+                mClassDiagram->changeReferenceName(getClass(i)->getName(), oldName.toStdString(), newName.toStdString());
+            }
+        }
+    }
 
     // call factory to create object
     mClassButton->update(oldName.toStdString(), uPublic, newName.toStdString(), attributeObjects, methodObjects, referenceObjects, parentObj, isAbstract);
@@ -141,202 +160,291 @@ void UiEventDispatcher::generateCode()
     mClassDiagram->applyVisitor(mCodeGenerator);
     uDebugPrinter::printText("done generating code");
 }
+
 //this is the function called by the eventDispatcher to call the mClassDiagram->applySaveVisitor to save the
 //diagram to a text file in json format.
 void UiEventDispatcher::saveDiagram(QString url, QList<QString> names, QList<double> xLoc, QList<double> yLoc)
 {
 
-    uDebugPrinter::printText("in the save function " + names[0].toStdString() + std::to_string(xLoc[0]));
+    //uDebugPrinter::printText("in the save function " + names[0].toStdString() + std::to_string(xLoc[0]));
     mCodeGenerator->setUrl(url.toStdString());
+    mCodeGenerator->cleanUrl();
     mCodeGenerator->setFileAttributes("","");
 
-    mClassDiagram->applySaveVisitor(mCodeGenerator, xLoc, yLoc);
+    int listSize = names.size();
+    for(int i = 0; i < listSize-1; i++)
+        mClassDiagram->find(names[i])->setLoc(xLoc[i], yLoc[i]);
+
+    mClassDiagram->applySaveVisitor(mCodeGenerator);
     //this is going to need to to do something
+}
+
+void UiEventDispatcher::saveArrows(QString arrows)
+{
+    mCodeGenerator->saveArrows(arrows.toStdString());
 }
 
 //this method will load up one of our .uct files and use the uEventDispatcher::creatClass() to add classes to the mClasses stack
 QString UiEventDispatcher::loadDiagram(QString url)
 {
-
-
     uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
     string fileLocation = url.toStdString();
     string fileContent;
     std::smatch match;
-    std::regex reg ("\\b(file://)([^ ]*)");
+    std::string regExpression =  "\\b(file://)(.*)";
+#ifdef Q_OS_WIN
+    regExpression = "\\b(file:///)(.*)";
+#endif
+    std::regex reg (regExpression);
     string location;
     //this searches for file:/ and returns what follows it which is the path to the file selected.
     if (std::regex_search(fileLocation, match, reg))
     {
         //this gives me the string after what i was looking for which was "file:/".
         location = match[2];
+        uDebugPrinter::printText("Location: " + location);
     }
     //regular exprestion to search for things in the file taht wa
     regex anyReg("\"(.*?)\"");
 
     ifstream infile;
-      infile.open(location);
-      string line;
-        if (infile.is_open())
+    infile.open(location);
+    string line;
+    if (infile.is_open())
+    {
+       //while there is file to read we are going to add to file Content to then parse and get classes
+        while ( getline (infile, line))
         {
-           //while there is file to read we are going to add to file Content to then parse and get classes
-            while ( getline (infile, line))
-          {
-                fileContent += line + "\n";
-          }
-          infile.close();
+            fileContent += line + "\n";
         }
-        else uDebugPrinter::printText("Unable to open file");
+        infile.close();
+    }
+    else
+        uDebugPrinter::printText("Unable to open file");
 
-        int classCount = 0;
+    int classCount = 0;
 
-        auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
-        auto words_end = sregex_iterator();
-        int leng = distance(words_begain, words_end);
-        //array to keep all the strings found between ""s
-        string *foundArray = new string[leng];
-        int myi = 0;
-        //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
-        for (sregex_iterator i = words_begain; i != words_end; ++i)
+    auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
+    auto words_end = sregex_iterator();
+    int leng = distance(words_begain, words_end);
+    //array to keep all the strings found between ""s
+    string *foundArray = new string[leng];
+    int myi = 0;
+    //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
+    for (sregex_iterator i = words_begain; i != words_end; ++i)
+    {
+        smatch match = *i;
+        foundArray[myi] = match.str();
+        myi++;
+        if (match.str() == "\"name\"")
         {
-            smatch match = *i;
-            foundArray[myi] = match.str();
-            myi++;
-            if (match.str() == "\"name\"")
-            {
-                classCount++;
-            }
+            classCount++;
         }
-        //this array represents a class
-        //{name, methodsString, attributesString, parent, interface, abstract, xLoc, yLoc}
-        string **classArray = new string*[classCount];
-        for (int i = 0; i < classCount; i ++)
+    }
+    //this array represents a class
+    //{name, methodsString, attributesString, parent, interface, abstract, xLoc, yLoc}
+    string **classArray = new string*[classCount];
+    for (int i = 0; i < classCount; i ++)
+    {
+        classArray[i] = new string[8];
+    }
+    classLevelCount = classCount;
+    classCount = 0;
+    //for each item that was found we want to check what the value is and then grab the string after it in the array
+    for (int u = 0; u < leng-1; u++ )
+    {
+        string word = foundArray[u];
+        if (word == "\"name\"")
         {
-            classArray[i] = new string[8];
+            classCount++;
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][name] = subString;
+
         }
-        classLevelCount = classCount;
-        classCount = 0;
-        //for each item that was found we want to check what the value is and then grab the string after it in the array
-        for (int u = 0; u < leng-1; u++ )
+        else if (word ==  "\"method\"")
         {
-            string word = foundArray[u];
-            if (word == "\"name\"")
-            {
-                classCount++;
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][name] = subString;
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][methods] += " " + subString + "\n";
 
-            }
-            else if (word ==  "\"method\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][methods] += " " + subString + "\n";
-
-            }
-            else if (word == "\"attribute\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                    classArray[classCount-1][attributes] += " " + subString + "\n";
-
-            }
-            else if (word == "\"parent\"")
-            {
-
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][parent] += subString;
-
-            }
-            else if (word == "\"interface\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][interface] += subString;
-
-            }
-            else if (word == "\"abstract\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][abstract] += subString;
-            }
-            else if (word == "\"x\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][xLoc] += subString;
-            }
-            else if (word == "\"y\"")
-            {
-                string foundString = foundArray[u+1];
-                const auto lastOfNot = foundString.find_last_not_of(" ");
-                string subString = foundString.substr(1, lastOfNot-1);
-                classArray[classCount-1][yLoc] += subString;
-            }
         }
-        //loop to add each of the classes collected to the class array
-        string classNamesString = "";
-        for (int i = 0; i < classCount; i++)
+        else if (word == "\"attribute\"")
         {
-            //need to set setClassState() by checking if the parent attibute is not blank
-            if (classArray[i][parent] == "" )
-            {
-                UiEventDispatcher::setClassState(0);
-            }
-            if (classArray[i][interface] == "true")
-            {
-                UiEventDispatcher::setClassState(1);
-            }
-            if (classArray[i][parent] != "" && classArray[i][interface] != "true")
-            {
-                //uDebugPrinter::printText("should be child");
-                UiEventDispatcher::setClassState(2);
-            }
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][attributes] += " " + subString + "\n";
 
-            bool isAbstract = false;
-            if (classArray[i][abstract] == "true")
-            {
-                isAbstract = true;
-            }
+        }
+        else if (word == "\"parent\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][parent] += subString;
 
- std::string::size_type sz;
- double x_loc =  atof( classArray[i][xLoc].c_str());
- double y_loc = atof( classArray[i][yLoc].c_str());
-
-
-
-            UiEventDispatcher::createClass(
-                        QString::fromStdString(classArray[i][name]),
-                        QString::fromStdString(classArray[i][parent]),
-                        QString::fromStdString(classArray[i][methods]),
-                        QString::fromStdString(classArray[i][attributes]),
-                        isAbstract,
-                        x_loc,
-                        y_loc);
-            classNamesString += " " + classArray[i][name];
+        }
+        else if (word == "\"interface\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][interface] += subString;
+        }
+        else if (word == "\"abstract\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][abstract] += subString;
+        }
+        else if (word == "\"x\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][xLoc] += subString;
+        }
+        else if (word == "\"y\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            classArray[classCount-1][yLoc] += subString;
+        }
+    }
+    //loop to add each of the classes collected to the class array
+    string classNamesString = "";
+    for (int i = 0; i < classCount; i++)
+    {
+        //need to set setClassState() by checking if the parent attibute is not blank
+        if (classArray[i][parent] == "" )
+        {
+            UiEventDispatcher::setClassState(0);
+        }
+        if (classArray[i][interface] == "true")
+        {
+            UiEventDispatcher::setClassState(1);
+        }
+        if (classArray[i][parent] != "" && classArray[i][interface] != "true")
+        {
+            //uDebugPrinter::printText("should be child");
+            UiEventDispatcher::setClassState(2);
         }
 
-        classLevelArray = classArray;
-        //clean up things i've added to the heap.
-        for(int i = 0; i < classCount; ++i) {
-            delete [] classArray[i];
+        bool isAbstract = false;
+        if (classArray[i][abstract] == "true")
+        {
+            isAbstract = true;
         }
-        delete [] foundArray;
-        delete [] classArray;
-        //final conversion from std::string to QString for the QML javascript function to consume.
-        QString returnWords = QString::fromStdString(classNamesString);
-        return returnWords;
+
+        //std::string::size_type sz;
+        double x_loc =  atof( classArray[i][xLoc].c_str());
+        double y_loc = atof( classArray[i][yLoc].c_str());
+
+
+
+        UiEventDispatcher::createClass(
+                    QString::fromStdString(classArray[i][name]),
+                    QString::fromStdString(classArray[i][parent]),
+                    QString::fromStdString(classArray[i][methods]),
+                    QString::fromStdString(classArray[i][attributes]),
+                    isAbstract,
+                    x_loc,
+                    y_loc);
+        classNamesString += " " + classArray[i][name];
+    }
+
+    classLevelArray = classArray;
+    //clean up things i've added to the heap.
+    for(int i = 0; i < classCount; ++i) {
+        delete [] classArray[i];
+    }
+    delete [] foundArray;
+    delete [] classArray;
+    //final conversion from std::string to QString for the QML javascript function to consume.
+    QString returnWords = QString::fromStdString(classNamesString);
+    return returnWords;
 }
+
+QString UiEventDispatcher::loadArrows(QString url)
+{
+    uDebugPrinter::printText(" string loaded in:  " + url.toStdString());
+    string fileLocation = url.toStdString();
+    string fileContent;
+    std::smatch match;
+    std::string regExpression =  "\\b(file://)(.*)";
+#ifdef Q_OS_WIN
+    regExpression = "\\b(file:///)(.*)";
+#endif
+    std::regex reg (regExpression);
+    string location;
+    //this searches for file:/ and returns what follows it which is the path to the file selected.
+    if (std::regex_search(fileLocation, match, reg))
+    {
+        //this gives me the string after what i was looking for which was "file:/".
+        location = match[2];
+        uDebugPrinter::printText("Location: " + location);
+    }
+    //regular exprestion to search for things in the file taht wa
+    regex anyReg("\"(.*?)\"");
+
+    ifstream infile;
+    infile.open(location);
+    string line;
+    if (infile.is_open())
+    {
+       //while there is file to read we are going to add to file Content to then parse and get classes
+        while ( getline (infile, line))
+        {
+            fileContent += line + "\n";
+        }
+        infile.close();
+    }
+    else
+        uDebugPrinter::printText("Unable to open file");
+
+    int arrowCount = 0;
+
+    auto words_begain = sregex_iterator(fileContent.begin(), fileContent.end(), anyReg);
+    auto words_end = sregex_iterator();
+    int leng = distance(words_begain, words_end);
+    //array to keep all the strings found between ""s
+    string *foundArray = new string[leng];
+    int myi = 0;
+    //this iterator finds all the matches to the regex, addes them to foundArray and counts how many name tags are found.
+    for (sregex_iterator i = words_begain; i != words_end; ++i, myi++)
+    {
+        smatch match = *i;
+        foundArray[myi] = match.str();
+    }
+
+    //for each item that was found we want to check what the value is and then grab the string after it in the array
+    std::string arrowTotalString ="";
+    for (int u = 0; u < leng-1; u++ )
+    {
+        string word = foundArray[u];
+        if (word == "\"Arrow\"")
+        {
+            string foundString = foundArray[u+1];
+            const auto lastOfNot = foundString.find_last_not_of(" ");
+            string subString = foundString.substr(1, lastOfNot-1);
+            arrowTotalString += subString + " ";
+        }
+    }
+
+    delete [] foundArray;
+    //final conversion from std::string to QString for the QML javascript function to consume.
+    QString returnArrows = QString::fromStdString(arrowTotalString);
+    //uDebugPrinter::printText(arrowTotalString);
+
+    return returnArrows;
+}
+
+
 //getter and setter for the current url sting for the path of either the generated code
 //or the saved diagram json.
 //these methods are needed to pass the selection from a choice in the view to event dispatcher
@@ -421,12 +529,12 @@ QString UiEventDispatcher::getClassParent(int index)
     if (obj == NULL || !obj->hasParent()) {
         return "";
     }
-    uInheritable * parent = obj->getParent();
-    if (parent == NULL) {
-        return "";
-    }
+//    uInheritable * parent = obj->getParent();
+//    if (parent == NULL) {
+//        return "";
+//    }
 
-    return QString::fromStdString(parent->getName());
+    return QString::fromStdString(obj->getParent());
 }
 
 bool UiEventDispatcher::getClassIsInterface(int index)
@@ -471,7 +579,7 @@ std::vector<QString> UiEventDispatcher::generateReferences(uInheritable * obj)
     return references;
 }
 
-void UiEventDispatcher::generateProjectFile()
+void UiEventDispatcher::generateProjectFile(QString name)
 {
-    mProjectGenerator.createFile(mClassDiagram);
+    mProjectGenerator.createFile(mClassDiagram, name.toStdString(), url.toStdString());
 }

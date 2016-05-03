@@ -29,22 +29,27 @@ public:
     std::vector<uParameter *> getAttributes() const;
     std::vector<uReference*> getReferences() const;
     uAccess getAccess() const;
-    void setAccess(uAccess access);
     std::string getName() const;
-    uInheritable * getParent() const;
+    std::string getParent() const;
+    double getLocX() const;
+    double getLocY() const;
+
+    void setAccess(uAccess access);
     void addMethod(uMethod * method);
     void addAttribute(uParameter * attribute);
     void addReference(uReference * reference);
-
-    double locX = 0.0;
-    double locY = 0.0;
+    void setLocX(double locx);
+    void setLocY(double locy);
+    void setLoc(double locx, double locy);
+    void setParent(std::string parent);
+    void changeParameterType(std::string oldName, std::string newName);
 
     bool hasParent() const;//to check whether it is a childClass or not
     bool isInterface() const;
     bool isAbstract() const;
 
     virtual void accept(uVisitor * visitor); //Accepts the code generation visitor
-    virtual void acceptSave(uVisitor * visitor, double x, double y); //uses the code generator to create a save file for uCode.
+    virtual void acceptSave(uVisitor * visitor); //uses the code generator to create a save file for uCode.
 
     //Overload of some operators
     inline bool operator==(const uInheritable &class1) const;
@@ -54,7 +59,7 @@ public:
 
 protected:
     std::string mName;
-    uInheritable * mBaseClass;
+    std::string mBaseClass;
     std::vector<uMethod*> mMethods;
     std::vector<uParameter*> mAttributes;
     std::vector<uReference*> mReferences;
@@ -62,6 +67,8 @@ protected:
     bool mHasParent;
     bool mIsInterface;
     bool mIsAbstract;
+    double locX = 0.0;
+    double locY = 0.0;
 };
 
 //Redefinition of collections and iterators

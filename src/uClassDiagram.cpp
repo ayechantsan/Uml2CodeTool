@@ -29,8 +29,8 @@ void uClassDiagram::addClass(uInheritable *uClass, double x, double y)
 {
     if (uClass == NULL)
         uDebugPrinter::printText("error: null pointer");
-    uClass->locX = x;
-    uClass->locY = y;
+    uClass->setLocX(x);
+    uClass->setLocY(y);
     mClasses.push_back(uClass);
 }
 void uClassDiagram::removeClass(uInheritable *uClass)
@@ -40,11 +40,11 @@ void uClassDiagram::removeClass(uInheritable *uClass)
 
     //remove parent from classes inheriting from it
     for(TClassesConstIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
-        if ((*iter)->hasParent() && (*iter)->getParent()->getName() == uClass->getName()){
+        if ((*iter)->hasParent() && (*iter)->getParent() == uClass->getName()){
             TParameters attributeObjects = (*iter)->getAttributes();
             TMethods methodObjects = (*iter)->getMethods();
             TReferences references = (*iter)->getReferences();
-            uInheritable * father = NULL;
+            std::string const& father = "";
             uClassButton::getInstance().update((*iter)->getName(), (*iter)->getAccess(), (*iter)->getName(), attributeObjects, methodObjects, references, father, (*iter)->isAbstract());
             removeClass(uClass);
             return;
@@ -116,15 +116,15 @@ void uClassDiagram::applyVisitor(uVisitor *visitor)
         (*iter)->accept(visitor);
     }
 }
-void uClassDiagram::applySaveVisitor(uVisitor *visitor, QList<double> x, QList<double> y)
+void uClassDiagram::applySaveVisitor(uVisitor *visitor)
 {
     if (visitor == NULL)
         uDebugPrinter::printText("NUll POINTER");
+
+    //size_t listSize = x.size();
     int i = 0;
-    for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++){
-        uDebugPrinter::printClass(*iter);
-        (*iter)->acceptSave(visitor, x[i], y[i]);
-        i++;
+    for(TClassesIter iter = mClasses.begin(); iter < mClasses.end(); iter++, i++){
+        (*iter)->acceptSave(visitor);
     }
 }
 
@@ -145,6 +145,21 @@ int uClassDiagram::getIndex(const QString &name) const
         if (mClasses[i]->qGetName() == name) return i;
     }
     return -1;
+}
+
+bool uClassDiagram::changeReferenceName(string className, string oldName, string newName)
+{
+    bool referenceFound = false;
+    for(TClassesConstIter iter = mClasses.begin(); iter != mClasses.end(); iter++)
+    {
+        if((*iter)->getName() == className)
+        {
+            (*iter)->changeParameterType(oldName, newName);
+            referenceFound = true;
+        }
+    }
+
+    return referenceFound;
 }
 
 void uClassDiagram::clearAll()
