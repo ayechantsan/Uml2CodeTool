@@ -80,10 +80,20 @@ MenuBar {
 
         MenuItem {
             text: "Guide"
+            onTriggered: {
+                var component = Qt.createComponent("GuideWindow.qml")
+                var window    = component.createObject(root)
+                window.show()
+            }
         }
 
         MenuItem {
-            text: "About"
+            text: "Contact"
+            onTriggered: {
+                var component = Qt.createComponent("ContactWindow.qml")
+                var window    = component.createObject(root)
+                window.show()
+            }
         }
 
     }
