@@ -243,14 +243,16 @@ void uGridLayout::addSegmentToArrow(int arrowIndex, int mX, int mY, int mWidth, 
                               "to arrow: " + to_string(arrowIndex));
 }
 
+//Deletes arrows with flag mDeleted as true
 void uGridLayout::deleteNonExistentArrows()
 {
     for(TGridArrowConstIter iter = mArrows.begin(); iter != mArrows.end(); iter++)
         if((*iter)->getDeleted()){
-            mArrows.erase(iter);
-
+            //Check classes making reference to it to delete those references too
             for(TGridClassConstIter iter2 = mTable.begin(); iter2 != mTable.end(); iter2++)
                 (*iter2)->deleteArrow(*iter);
+
+            mArrows.erase(iter);
 
             deleteNonExistentArrows();
             return;
