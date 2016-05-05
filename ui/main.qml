@@ -27,21 +27,22 @@ ApplicationWindow {
 
     }
 
-    Menu { id: contextMenu
-            MenuItem {
-                text: qsTr('Delete Class')
-                onTriggered: uClassPanel.deleteMethod();
-            }
+    Menu {
+        id: contextMenu
+        MenuItem {
+            text: qsTr('Delete Class')
+            onTriggered: uClassPanel.deleteMethod();
+        }
 
-            MenuItem {
-                text: qsTr('Delete Inheritance')
-                onTriggered:
-                {
-                    uClassPanel.setParentField("");
-                    uClassPanel.updateMethod();
-                }
+        MenuItem {
+            text: qsTr('Delete Inheritance')
+            onTriggered:
+            {
+                uClassPanel.setParentField("");
+                uClassPanel.updateMethod();
             }
         }
+    }
 
     //Main Window
     RowLayout {
@@ -70,7 +71,7 @@ ApplicationWindow {
                     drawingCanvas.selectedY = mouse.y
                     drawingCanvas.selectClass(mouse.x, mouse.y)
                     drawingCanvas.forceActiveFocus()
-                    if (mouse.button == Qt.RightButton)
+                    if (mouse.button == Qt.RightButton && !gridLayout.isEmpty(mouse.x, mouse.y))
                     {
                         console.log("Right Click")
                         contextMenu.popup()

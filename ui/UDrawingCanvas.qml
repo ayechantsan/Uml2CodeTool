@@ -40,6 +40,8 @@ Canvas {
 
         //draw each class from the uClassDiagram and checking position with the
         drawClasses()
+        //It is important that first is called drawClasses because in each drawClass call
+        //is set with arrows will stay and which will be deleted
         drawSegments()
 
         //draw circle around selected arrow point
@@ -57,6 +59,7 @@ Canvas {
 
     function drawClasses()
     {
+        // for each class the information is gathered and the drawClass function called
         for(var i = 0; i < dispatcher.getDiagramSize(); i++) {
             var name = dispatcher.getClassName(i);
             var methods = dispatcher.getClassMethods(i, true); //true implies "access" specified with symbol (+,-,#)
@@ -72,9 +75,12 @@ Canvas {
 
     function drawSegments()
     {
+        //First the arrows that are not useful anymore are deleted
         gridLayout.deleteNonExistentArrows();
+        //Then each arrow not deleted is painted
         for(var i = 0; i < gridLayout.getArrowsSize(); i++)
         {
+            //Draw each segment of current arrow
             var size = gridLayout.getArrowSize(i);
             for(var j = 0; j < size; j++){
 
@@ -83,7 +89,7 @@ Canvas {
                 var x_to = gridLayout.getSegmentX_to(i, j);
                 var y_to = gridLayout.getSegmentY_to(i, j);
                 drawSegment(x, y, x_to, y_to);
-                if(j == size -1){ //last segment in the arrow
+                if(j == size -1){ //last segment in the arrow -> draw reference symbol
                     var arrowType = gridLayout.getArrowType(i);
                     var segmentLength = Number(gridLayout.getSegmentLength(i, j));
                     //uDebugger.qPrintText("Last segment length: " + segmentLength)
@@ -92,7 +98,7 @@ Canvas {
                 }
             }
         }
-
+        //Then all arrows are set as prepared for deletion, if they are useful, they'll be unset for deletion later
         gridLayout.setArrowsDeleted();
     }
 
@@ -184,6 +190,8 @@ Canvas {
 
         // draw inheritance
         if(parent != "") {
+            //createInheritance will check if the arrow is created.
+            //If it is created, it will flag it as "not to be deleted", else, will create a new one
             if(gridLayout.createInheritance(name, parent))
             {
                 autoGenerateInheritanceArrow(name, parent)
@@ -196,6 +204,7 @@ Canvas {
         for (i=0; i<referenceCount; i++) {
             var referenceName = dispatcher.getClassReference(name, i);
             if (referenceName != "") {
+                //createAggregation works as createInheritance before with each arrow in aggregation
                 if(gridLayout.createAggregation(referenceName, name)){
                     autoGenerateAggregationArrow(referenceName, name);
                 }
