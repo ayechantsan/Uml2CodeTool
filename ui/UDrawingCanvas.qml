@@ -718,12 +718,12 @@ Canvas {
 
     function getClassWidth()
     {
-        return Number(width)/9
+        return Number(width)/6
     }
 
     function getClassHeight()
     {
-        return Number(height)/6;
+        return Number(height)/5;
     }
 
     //Class width + right padding

@@ -427,8 +427,11 @@ void uGridArrow::checkSides(const uGridClass * const referencedClass)
         }
         else if (mType == uAggregation)
         {
-            mSegments[0]->setX(referencedClass->getX());
-            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
+            if(referencedClass->getX() <= mSegments[0]->getX_to())
+                mSegments[0]->setX(referencedClass->getX_to());
+            else
+                mSegments[0]->setX(referencedClass->getX());
+            mSegments[0]->setY(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())*3/4);
         }
         else //uDependency
         {
@@ -448,7 +451,10 @@ void uGridArrow::checkSides(const uGridClass * const referencedClass)
         }
         else if (mType == uAggregation)
         {
-            mSegments[lastIndex]->setX_to(referencedClass->getX());
+            if(referencedClass->getX() <= mSegments[lastIndex]->getX())
+                mSegments[lastIndex]->setX_to(referencedClass->getX_to());
+            else
+                mSegments[lastIndex]->setX_to(referencedClass->getX());
             mSegments[lastIndex]->setY_to(referencedClass->getY() + (referencedClass->getY_to() - referencedClass->getY())/4);
         }
         else//uDependency
