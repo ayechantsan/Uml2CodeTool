@@ -3,6 +3,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs 1.0
 
 ColumnLayout {
     id: classPanel
@@ -45,9 +46,12 @@ ColumnLayout {
 
         CheckBox {
             id: abstractField;
-            Layout.fillWidth: false
+            //Layout.fillWidth: true
+            checked: false
             text: qsTr("Abstract")
             onCheckedChanged: updateMethod()
+            visible: true
+            enabled: true
         }
     }
 
@@ -133,6 +137,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: 10
+
         Button {
 
             StyledText {
@@ -222,6 +227,8 @@ ColumnLayout {
         if (drawingCanvas.selectedClass != "" && !drawingCanvas.selecting) {
 
             var name = nameField.text
+            if(name == "")
+                name = "-";
             var parent = parentField.text
             var methods = methodField.text
             var attributes = attributeField.text
@@ -237,6 +244,7 @@ ColumnLayout {
 
             //Update the class
             dispatcher.updateClass(drawingCanvas.selectedClass, name, parent, methods, attributes, isAbstract)
+            drawingCanvas.selectedClass = name;
 
             //Repaint the canvas
             drawingCanvas.requestPaint()
@@ -259,7 +267,7 @@ ColumnLayout {
             if (name != "" && !gridLayout.contains(name)) {
 
                 //Add the class to the grid
-                gridLayout.addClass(Number(10),Number(10),drawingCanvas.getClassWidth(),drawingCanvas.getClassHeight(), name)
+                gridLayout.addClass(Number(10),Number(10),drawingCanvas.getClassWidth()+10,drawingCanvas.getClassHeight()+10, name)
 
                 //Check if the class has a parent
                 if(parent != "")

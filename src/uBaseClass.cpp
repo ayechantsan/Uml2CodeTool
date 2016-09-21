@@ -26,6 +26,15 @@ uBaseClass::uBaseClass(uAccess access, const std::string &name, TParameters &att
     mIsInterface = false;
 }
 
+
+uBaseClass::uBaseClass(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, bool isAbstract, double x, double y) : uInheritable(access, name, attributes, methods, references, isAbstract)
+{
+    mHasParent = false;
+    mIsInterface = false;
+    uBaseClass::locX = x;
+    uBaseClass::locY = y;
+}
+
 uBaseClass::~uBaseClass()
 {
     uDebugPrinter::printText("uBaseClass DTor called: " + mName);
@@ -34,6 +43,10 @@ uBaseClass::~uBaseClass()
 void uBaseClass::accept(uVisitor *visitor)
 {
     visitor->visit(this);
+}
+void uBaseClass::acceptSave(uVisitor *visitor)
+{
+    visitor->visitSave(this, locX, locY);
 }
 
 

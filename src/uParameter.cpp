@@ -30,6 +30,11 @@ uAccess uParameter::getAccess() const
     return mAccess;
 }
 
+void uParameter::setType(string newType)
+{
+    mType = newType;
+}
+
 bool uParameter::operator==(const uParameter &p2) const
 {
     return mAccess==p2.getAccess() && mName==p2.getName() && mType==p2.getType();

@@ -2,6 +2,8 @@
 
 #include "uDebugPrinter.h"
 
+
+
 uInheritable::uInheritable()
 {
 
@@ -10,7 +12,7 @@ uInheritable::uInheritable()
 uInheritable::uInheritable(const std::string &name)
 {
     mName = name;
-    mBaseClass = NULL;
+    mBaseClass = "";
 }
 
 uInheritable::uInheritable(uAccess access, const std::string &name, TParameters &attributes, TMethods &methods, TReferences &references, bool isAbstract)
@@ -21,7 +23,7 @@ uInheritable::uInheritable(uAccess access, const std::string &name, TParameters 
     mMethods = methods;
     mReferences = references;
     mHasParent = false;
-    mBaseClass = NULL;
+    mBaseClass = "";
     mIsAbstract = isAbstract;
 }
 
@@ -35,6 +37,10 @@ void uInheritable::accept(uVisitor *visitor)
 
 }
 
+void uInheritable::acceptSave(uVisitor *visitor)
+{
+
+}
 std::vector<uMethod*> uInheritable::getMethods() const
 {
     return mMethods;
@@ -65,9 +71,19 @@ std::string uInheritable::getName() const
     return mName;
 }
 
-uInheritable * uInheritable::getParent() const
+std::string uInheritable::getParent() const
 {
     return mBaseClass;
+}
+
+double uInheritable::getLocX() const
+{
+    return this->locX;
+}
+
+double uInheritable::getLocY() const
+{
+    return this->locY;
 }
 
 QString uInheritable::qGetName() const
@@ -114,6 +130,36 @@ void uInheritable::addAttribute(uParameter *attribute)
 void uInheritable::addReference(uReference * reference)
 {
     mReferences.push_back(reference);
+}
+
+void uInheritable::setLocX(double locx)
+{
+    this->locX = locx;
+}
+
+void uInheritable::setLocY(double locy)
+{
+    this->locY = locy;
+}
+
+void uInheritable::setLoc(double locx, double locy)
+{
+    this->locX = locx;
+    this->locY = locy;
+}
+
+void uInheritable::setParent(std::string parent)
+{
+    mBaseClass = parent;
+}
+
+void uInheritable::changeParameterType(std::string oldName, std::string newName)
+{
+    for(TParametersConstIter iter = mAttributes.begin(); iter != mAttributes.end(); iter++)
+    {
+        if((*iter)->getType() == oldName)
+            (*iter)->setType(newName);
+    }
 }
 
 static bool operator==(TClasses& classes1, TClasses& classes2){

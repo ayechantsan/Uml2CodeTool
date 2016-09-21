@@ -15,16 +15,23 @@ class uClassDiagram
 public:
     static uClassDiagram &getInstance();
     void addClass(uInheritable * uClass);
+    void addClass(uInheritable *uClass, double x, double y);
     void removeClass(uInheritable * uClass);
     bool removeClass(QString const &name);
+
     bool contains(uInheritable * uClass) const;
     bool contains (std::string const& name) const;
     uInheritable * find(QString const& name) const;
     uInheritable * find(std::string const& name) const;
     void applyVisitor(uVisitor* visitor);
+    void applySaveVisitor(uVisitor *visitor);
     uInheritable * get(int index) const;
     int size() const;
     int getIndex(QString const& name) const;
+
+    bool changeReferenceName(std::string className, std::string oldName, std::string newName);
+
+    void clearAll();
 
 private:
     TClasses mClasses;

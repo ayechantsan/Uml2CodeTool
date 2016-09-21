@@ -59,7 +59,6 @@ int uGridObject::getHeight() const
 bool uGridObject::setX(int newX)
 {
     //TODO add comparison >= with GridLayout max width
-    if(newX < 0) return false;
     this->mX = newX;
     return true;
 }
@@ -67,7 +66,6 @@ bool uGridObject::setX(int newX)
 bool uGridObject::setY(int newY)
 {
     //TODO add comparison >= with GridLayout max height
-    if(newY < 0) return false;
     this->mY = newY;
     return true;
 }

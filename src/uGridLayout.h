@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <vector>
+#include <QVector>
+
 #include "uGridArrow.h"
 #include "uGridClass.h"
 
@@ -15,7 +17,12 @@ public:
     explicit uGridLayout(QObject *parent = 0);
     uGridLayout(int width, int height);
 
-    Q_INVOKABLE bool addClass(int i, int j, int width, int height, QString const& name);
+    Q_INVOKABLE QString getAllNames();
+
+    Q_INVOKABLE bool addClass(int i, int j, int i_to, int j_to, QString const& name);
+    Q_INVOKABLE void addArrowFromString(QString arrowString);
+    Q_INVOKABLE void checkArrowSides();
+
     Q_INVOKABLE bool removeObject(QString const& name);
     Q_INVOKABLE bool removeObject(int i, int j);
     Q_INVOKABLE bool changeObjectName(QString const& name, const QString &newName);
@@ -32,12 +39,14 @@ public:
     Q_INVOKABLE QString getString(int x, int y) const;
     Q_INVOKABLE int getArrowSelected(int x, int y) const;
     Q_INVOKABLE void modifyArrow(int index, int oldX, int oldY, int newX, int newY);
+    Q_INVOKABLE void mergeSegments(int arrowIndex);
 
     Q_INVOKABLE int getWidth() const;
     Q_INVOKABLE int getHeight() const;
     Q_INVOKABLE int getArrowsSize() const;
     Q_INVOKABLE int getArrowSize(int index) const;
     Q_INVOKABLE int getArrowType(int index) const;
+    Q_INVOKABLE QString getArrowsString() const;
 
     Q_INVOKABLE bool setWidth(int width);
     Q_INVOKABLE bool setHeight(int height);
@@ -55,9 +64,18 @@ public:
     Q_INVOKABLE int getSegmentY_to(int arrowIndex, int segIndex) const;
     Q_INVOKABLE int getSegmentWidth(int arrowIndex, int segIndex) const;
     Q_INVOKABLE int getSegmentHeight(int arrowIndex, int segIndex) const;
+    Q_INVOKABLE int getSegmentLength(int arrowIndex, int segIndex) const;
+
+   // Q_INVOKABLE int getClasses() const;
 
     Q_INVOKABLE bool isEmpty(int x, int y) const;
     Q_INVOKABLE bool contains(QString const& name) const;
+
+    Q_INVOKABLE void cleanAll();
+
+    Q_INVOKABLE void moveAll(int movX, int movY);
+
+    bool checkReferences(uGridArrow *arrow);
 
 signals:
 
@@ -68,7 +86,7 @@ private:
     int mHeight;
     TGridClass mTable;
     TGridArrow mArrows;
-    TGridSegment mSegments;
+    //TGridSegment mSegments;
     bool checkBounds(int i, int j, int width, int height) const;
     bool checkBounds(int i, int j) const;
 

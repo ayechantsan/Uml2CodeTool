@@ -5,12 +5,14 @@ import QtQuick.Layouts 1.1
 import QtQuick.LocalStorage 2.0
 
 Canvas {
+
     Layout.fillHeight: true
     Layout.fillWidth: true
     Layout.margins: 5
 
     property string selectedClass: ""
     property bool selectingParent: false
+    property bool dropableSite: true
     property int selectedX: 0
     property int selectedY: 0
     property bool selecting: false //this is a flag for avoiding uClassPanel.updateMethod() to be call when a class is clicked
@@ -25,19 +27,39 @@ Canvas {
         // Get drawing context
         var context = getContext("2d");
         //context.fillStyle = "white"
-        context.strokeStyle = "black"
+        context.strokeStyle = "#999999"
+        context.lineWidth = 3
+
         // Make canvas all white
         context.beginPath();
         context.clearRect(0, 0, width, height);
-        context.fill();
+        context.strokeRect(0,0, width, height)
+
+        //context.fill();
+
 
         //draw each class from the uClassDiagram and checking position with the
         drawClasses()
+        //It is important that first is called drawClasses because in each drawClass call
+        //is set with arrows will stay and which will be deleted
         drawSegments()
+
+        //draw circle around selected arrow point
+        if(arrowSelected)
+        {
+            //Draw circle around point selected in arrow
+            context.beginPath();
+            context.moveTo(selectedArrowX+20, selectedArrowY);
+            context.arc(selectedArrowX, selectedArrowY, 20, 0, 2*Math.PI, true)
+            context.strokeStyle = "red"
+            context.stroke();
+        }
+
     }
 
     function drawClasses()
     {
+        // for each class the information is gathered and the drawClass function called
         for(var i = 0; i < dispatcher.getDiagramSize(); i++) {
             var name = dispatcher.getClassName(i);
             var methods = dispatcher.getClassMethods(i, true); //true implies "access" specified with symbol (+,-,#)
@@ -53,36 +75,40 @@ Canvas {
 
     function drawSegments()
     {
+        //First the arrows that are not useful anymore are deleted
         gridLayout.deleteNonExistentArrows();
+        //Then each arrow not deleted is painted
         for(var i = 0; i < gridLayout.getArrowsSize(); i++)
         {
+            //Draw each segment of current arrow
             var size = gridLayout.getArrowSize(i);
             for(var j = 0; j < size; j++){
 
                 var x = gridLayout.getSegmentX(i, j);
                 var y = gridLayout.getSegmentY(i, j);
-                var width = gridLayout.getSegmentWidth(i, j);
-                var height = gridLayout.getSegmentHeight(i, j);
-                drawSegmentWidthHeight(x, y, width, height);
-                if(j == size -1){
+                var x_to = gridLayout.getSegmentX_to(i, j);
+                var y_to = gridLayout.getSegmentY_to(i, j);
+                drawSegment(x, y, x_to, y_to);
+                if(j == size -1){ //last segment in the arrow -> draw reference symbol
                     var arrowType = gridLayout.getArrowType(i);
-                    var paddingX = Number(offsetX()) - Number(getClassWidth())
-                    var paddingY = Number(offsetY()) - Number(getClassHeight())
-                    drawReferenceSymbol(x + width, y + height, paddingX/10, paddingY/10, arrowType);
+                    var segmentLength = Number(gridLayout.getSegmentLength(i, j));
+                    //uDebugger.qPrintText("Last segment length: " + segmentLength)
+                    //uDebugger.qPrintText("From: ("+Number(x +(x_to-x)/segmentLength)+","+Number(y + (y_to -y)/segmentLength)+") to ("+x_to+","+y_to+")")
+                    drawReferenceSymbol(Number(x_to - 18*(x_to-x)/segmentLength),Number(y_to - 18*(y_to -y)/segmentLength), x_to, y_to, arrowType);
                 }
             }
         }
-
+        //Then all arrows are set as prepared for deletion, if they are useful, they'll be unset for deletion later
         gridLayout.setArrowsDeleted();
     }
 
-    function drawReferenceSymbol(x, y, width, height, arrowType)
+    function drawReferenceSymbol(x, y, x_to, y_to, arrowType)
     {
         if(arrowType === 0)
-            drawTriangle(x, y, width, height, true)
+            drawTriangle(x, y, x_to, y_to, true)
 
         if(arrowType === 1)
-            drawDiamond(x, y, width, height, false)
+            drawDiamond(x, y, x_to, y_to, false)
 
     }
 
@@ -107,7 +133,10 @@ Canvas {
         var methodsOffset = classHeight * 0.65;
 
         var context = getContext("2d");
+
         context.strokeStyle = "black"
+        context.lineWidth = 1
+
         var letterFont = width < height ? Number(width)/90: Number(height)/60;
         //console.log("LetterFont: " + letterFont)
         if(isAbstract)
@@ -128,6 +157,16 @@ Canvas {
         context.moveTo(x, y+secondDelimiter);
         context.lineTo(x+classWidth, y+secondDelimiter);
         context.stroke();
+
+        //draw green frame around if the class is selected
+        if(name == selectedClass)
+        {
+            context.beginPath();
+            context.rect(x-1, y-1, classWidth+2, classHeight+2);
+            context.strokeStyle = "#66ff33"
+            context.stroke()
+            context.strokeStyle = "black"
+        }
 
         // draw class name
         context.moveTo(x+textOffset, y+nameOffset);
@@ -151,6 +190,8 @@ Canvas {
 
         // draw inheritance
         if(parent != "") {
+            //createInheritance will check if the arrow is created.
+            //If it is created, it will flag it as "not to be deleted", else, will create a new one
             if(gridLayout.createInheritance(name, parent))
             {
                 autoGenerateInheritanceArrow(name, parent)
@@ -163,6 +204,7 @@ Canvas {
         for (i=0; i<referenceCount; i++) {
             var referenceName = dispatcher.getClassReference(name, i);
             if (referenceName != "") {
+                //createAggregation works as createInheritance before with each arrow in aggregation
                 if(gridLayout.createAggregation(referenceName, name)){
                     autoGenerateAggregationArrow(referenceName, name);
                 }
@@ -210,6 +252,7 @@ Canvas {
     }
 
     function drawInheritance(name, parent) {
+        dropableSite = true
 
         var objI = gridLayout.getClassX(name)
         var objJ = gridLayout.getClassY(name)
@@ -241,6 +284,7 @@ Canvas {
 
     function autoGenerateInheritanceArrow(name, parent)
     {
+        dropableSite = true
         var x = gridLayout.getClassX(name)
         var y = gridLayout.getClassY(name)
 
@@ -282,6 +326,7 @@ Canvas {
     }
 
     function drawInheritanceArrow(x, y, x_to, y_to) {
+        dropableSite = true
 
         var paddingX = Number(offsetX()) - Number(getClassWidth())
         var paddingY = Number(offsetY()) - Number(getClassHeight())
@@ -384,14 +429,15 @@ Canvas {
 
         //Line5 up Parent
 //        context.moveTo(newX ,newY)
-//        if(x_to<x){
-//            //context.lineTo(x_to + getClassWidth(), newY)
-//            newX = x_to + getClassWidth()
-//        }
-//        else{
-//            //context.lineTo(x_to, newY)
-//            newX = x_to
-//        }
+        if(x_to<x){
+//            context.lineTo(x_to + getClassWidth(), newY)
+            gridLayout.addSegmentToArrow(index, newX, newY, x_to + getClassWidth() - newX, 0)
+            newX = x_to + getClassWidth()
+        }
+        else{
+            gridLayout.addSegmentToArrow(index, newX, newY, x_to - newX, 0)
+            newX = x_to
+        }
 
 //        var diamondW = paddingX/2
 //        var diamondH = paddingY/7
@@ -502,33 +548,60 @@ Canvas {
 //        }
 //    }
 
-    function drawTriangle(x,y,triangleWidth, triangleHeight, isFilled){
+    function drawTriangle( x, y, x_to, y_to, isFilled){
+
+
+        var xLeft = x + (x_to - x)/2 - (y - y_to)/3;
+        var yLeft = y + (y_to - y)/2 - (x_to - x)/3;
+        var xRight = x + (x_to - x)/2 + (y - y_to)/3;
+        var yRight = y + (y_to - y)/2 + (x_to - x)/3;
+
         context.strokeStyle = "black";
 
         // draw the triangle
-        context.moveTo(x,y);
-        context.lineTo(x-triangleWidth/2, y+triangleHeight);
-        context.lineTo(x+triangleWidth/2, y+triangleHeight);
+        context.moveTo(xLeft,yLeft);
+        context.lineTo(x_to, y_to);
+        context.lineTo(xRight, yRight);
         context.closePath();
         if (isFilled)
             context.fill();
         context.stroke()
     }
 
-    function drawDiamond( x , y , diamondWidth, diamondHeight, isFilled){
+    function drawDiamond( x, y, x_to, y_to, isFilled){
         context.strokeStyle = "black";
 
         // draw the diamond
+        //vector from (x,y) to (x_to,y_to) is (x_to - x, y_to - y)
+        //ortogonal is (y - y_to, x_to - x)
+
+        var xLeft = x + (x_to - x)/2 - (y - y_to)/4;
+        var yLeft = y + (y_to - y)/2 - (x_to - x)/4;
+        var xRight = x + (x_to - x)/2 + (y - y_to)/4;
+        var yRight = y + (y_to - y)/2 + (x_to - x)/4;
+        context.stroke()
+
+        //draw white line on segment line inside diamond
+        context.beginPath()
+        context.strokeStyle = "white"
         context.moveTo(x,y);
-        context.lineTo(x+diamondWidth/2, y+diamondHeight/2);
-        context.moveTo(x+diamondWidth/2, y+diamondHeight/2)
-        context.lineTo(x+diamondWidth, y);
-        context.moveTo(x+diamondWidth, y)
-        context.lineTo(x+diamondWidth/2, y-diamondHeight/2)
-        context.moveTo(x+diamondWidth/2, y-diamondHeight/2)
-        context.lineTo(x,y)
+        context.lineTo(x_to,y_to);
+        context.stroke();
+
+        //draw actual diamond
+        context.beginPath()
+        context.strokeStyle = "black"
+        context.moveTo(x,y);
+        context.lineTo(xLeft, yLeft);
+        context.moveTo(xLeft, yLeft)
+        context.lineTo(x_to, y_to);
+        context.moveTo(x_to, y_to)
+        context.lineTo(xRight, yRight)
+        context.moveTo(xRight, yRight)
+        context.lineTo(x,y)      
         if (isFilled)
             context.fill();
+        context.stroke()
     }
 
 
@@ -540,6 +613,11 @@ Canvas {
 
         //First check class
         var name = gridLayout.getString(parseInt(x), parseInt(y))
+
+        //If new selected Class is not the previous one, repaint
+        if(name != selectedClass)
+            requestPaint()
+
         if (name != "" && !selectingParent) {
 
             selectedClass = name
@@ -548,8 +626,9 @@ Canvas {
 
             selecting = true; //avoid uClassPanel.updateMethod() to be called
 
-            //Get information from the logic background via uDispatcher
+            //Get information from the logic background via UiDispatcher
             var idx = dispatcher.getClassIndex(name);
+
             var methods = dispatcher.getClassMethods(idx, false); //False implies "access" specified with letters (public, private...)
             var attributes = dispatcher.getClassAttributes(idx, false); //False implies "access" specified with letters
             var parent = dispatcher.getClassParent(idx)
@@ -562,7 +641,8 @@ Canvas {
             selecting = false;//allows uClassPanel.updateMethod() to be called
 
         }
-        else if(selectingParent && name != ""){
+        else if(selectingParent && name != "")
+        {
            uClassPanel.setParentField(name);
         }
         else
@@ -573,7 +653,7 @@ Canvas {
             //if no class selected, check arrows
             arrowSelectedIndex = gridLayout.getArrowSelected(x,y)
             if(arrowSelectedIndex >= 0){
-                uDebugger.qPrintText("Found arrow: " +arrowSelectedIndex)
+                uDebugger.qPrintText("Found arrow: " + arrowSelectedIndex)
                 arrowSelected = true;
                 selectedArrowX = x
                 selectedArrowY = y
@@ -587,23 +667,30 @@ Canvas {
     {
         var movX = x - selectedX
         var movY = y - selectedY
+
         if(selectedClass != "")
         {
-            //uDebugger.qPrintText("Move class: " + selectedClass)
+            var name = gridLayout.getString(parseInt(x), parseInt(y))
+
+            dropableSite = (selectedClass == name);
+
             gridLayout.moveObject(selectedClass, Number(movX), Number(movY))
-            requestPaint()
+
+
         }
-        else
+        else if(arrowSelected)
         {
             //test for arrow movement
-            if(arrowSelected){
-                gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
-                requestPaint()
-                selectedArrowX = x
-                selectedArrowY = y
-            }
-        }
+            gridLayout.modifyArrow(arrowSelectedIndex, selectedArrowX, selectedArrowY, x, y)
 
+            selectedArrowX = x
+            selectedArrowY = y
+        }
+        else //move everything
+        {
+            gridLayout.moveAll(movX, movY)
+        }
+        requestPaint();
         selectedX = x;
         selectedY = y;
     }
@@ -611,26 +698,32 @@ Canvas {
     function releasedMouse(x, y)
     {
         uDebugger.qPrintText("Mouse RELEASED in (" + x +"," + y + ")")
-        arrowSelected = false;
-        arrowSelectedIndex = -1;
-//        //test for arrow movement
-//        if(arrowSelected){
-//            uDebugger.qPrintText("arrow Selected in release")
-//            var index = gridLayout.getArrowSelected(selectedArrowX,selectedArrowY)
-//            gridLayout.modifyArrow(index, selectedArrowX, selectedArrowY, x, y)
-//            arrowSelected = false;
+
+        //Handle of objects clash - Needs testing
+//        if (dropableSite == false)
+//        {
+//            gridLayout.moveObject(selectedClass, 150, 0)
 //            requestPaint()
 //        }
+
+        if(arrowSelected){
+            gridLayout.mergeSegments(arrowSelectedIndex);
+            requestPaint()
+        }
+
+        arrowSelected = false;
+        arrowSelectedIndex = -1;
+
     }
 
     function getClassWidth()
     {
-        return Number(width)/9
+        return Number(width)/6
     }
 
     function getClassHeight()
     {
-        return Number(height)/6;
+        return Number(height)/5;
     }
 
     //Class width + right padding

@@ -14,11 +14,14 @@ uProjectFileCreator::uProjectFileCreator()
     mDevenv = new uProjectFileQT();
 }
 
-void uProjectFileCreator::createFile(uClassDiagram const * const diagram)
+void uProjectFileCreator::createFile(uClassDiagram const * const diagram, const string &name, string const& path )
 {
     if(mDevenv != NULL){
         string content = mDevenv->createFile(diagram);
-        generateFile(content);
+        if(name == "")
+            generateFile(content, "uCodeProjectFile", path);
+        else
+            generateFile(content, name, path);
     }
 }
 
@@ -36,10 +39,14 @@ std::string uProjectFileCreator::getDevEnvString() const
     return mDevenv->getName();
 }
 
-bool uProjectFileCreator::generateFile(const string &content)
+bool uProjectFileCreator::generateFile(const string &content, const string &name, string const& path)
 {
+    string thisPath = path.substr(7, path.length());
+#ifdef Q_OS_WIN
+    thisPath = path.substr(8, path.length());
+#endif
     ofstream myfile;
-    myfile.open("Test.pro");
+    myfile.open(thisPath+"/"+name.c_str()+".pro");
     if (!myfile.is_open())
         return false;
 

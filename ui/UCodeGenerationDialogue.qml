@@ -12,6 +12,8 @@ ApplicationWindow {
     title: "Code Generation"
     color:  "white"
 
+    property bool folderChoosen: false
+    property bool languageChoosen: false
 
     ColumnLayout {
         Layout.margins: 20
@@ -31,10 +33,14 @@ ApplicationWindow {
             }
             ComboBox {
                 id: languageCB
-                model: [ "None", "C++", "Java", "Python" ]
+                model: [ "Java", "C++", "Python" ]
                 onCurrentIndexChanged: {
-                    dispatcher.setLanguage(languageCB.currentText);
+                    if(languageCB.currentText == "")
+                        dispatcher.setLanguage("Java");
+                    else
+                        dispatcher.setLanguage(languageCB.currentText);
                 }
+
             }
         }
 
@@ -43,6 +49,7 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Label {
+                id: fileLocationLbl
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 StyledText {
@@ -55,9 +62,23 @@ ApplicationWindow {
                     text: "Choose Folder"
                 }
                 onClicked: {
-                    var component = Qt.createComponent("UFileDialog.qml");
-                    var win2 = component.createObject(generationDialog);
-                    win2.show();
+                    loadFileDialog.visible = true;
+                }
+                FileDialog {
+                    id: loadFileDialog
+                    title: "Please choose a folder"
+                    folder: shortcuts.home
+                    selectFolder: true
+                    onAccepted: {
+                        console.log("Accepted "+fileUrl);
+                        dispatcher.setUrl(fileUrl);
+                        fileLocationLbl.text = fileUrl;
+                        folderChoosen = true;
+                    }
+                    onRejected: {
+
+                    }
+                    Component.onCompleted: visible = false
                 }
             }
         }
@@ -74,31 +95,41 @@ ApplicationWindow {
                     horizontalAlignment: Text.AlignLeft
                 }
             }
+            TextField {
+                id: projectNameField
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+                font.family: "Droid Sans"
+                font.bold: false
+                font.italic: false
+                font.pointSize: 9
+                enabled: true
+            }
             ComboBox {
                 id: projectCB
-                model: [ "None", "Visual Studio", "QtCreator" ]
+                model: [ "None", "QtCreator" ]
                 onCurrentIndexChanged: {
                     dispatcher.setDevEnv(projectCB.currentText);
                 }
             }
         }
 
-        RowLayout {
-            Layout.margins: 20
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Label {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                StyledText {
-                    text: "Doxygen Comments"
-                    horizontalAlignment: Text.AlignLeft
-                }
-            }
-            CheckBox {
-                checked: false
-            }
-        }
+//        RowLayout {
+//            Layout.margins: 20
+//            Layout.fillHeight: true
+//            Layout.fillWidth: true
+//            Label {
+//                Layout.fillHeight: true
+//                Layout.fillWidth: true
+//                StyledText {
+//                    text: "Doxygen Comments"
+//                    horizontalAlignment: Text.AlignLeft
+//                }
+//            }
+//            CheckBox {
+//                checked: false
+//            }
+//        }
 
         RowLayout {
             Layout.margins: 20
@@ -114,18 +145,40 @@ ApplicationWindow {
 
             }
             Button {
+                id: genButton
+                visible: true
                 StyledText {
                     text: "Generate"
+
                 }
                 onClicked: {
                     //TODO
-                    dispatcher.generateCode()
-                    dispatcher.generateProjectFile()
-                    close()
+                    if(folderChoosen)
+                    {
+                        if(dispatcher.getDiagramSize() <= 0)
+                        {
+                            errorLabel.text = "No classes to generate";
+                            errorLabel.color = "red"
+                        }
+                        else
+                        {
+                            dispatcher.generateCode()
+                            dispatcher.generateProjectFile(projectNameField.text)
+                            close()
+                        }
+                    }
+                    else
+                    {
+                        errorLabel.text = "You have to choose a folder";
+                        errorLabel.color = "red"
+                    }
                 }
             }
-        }
+            Label{
+                id: errorLabel
+            }
 
+        }
 
     }
 }
